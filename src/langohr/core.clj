@@ -40,11 +40,11 @@
      (let [conn-factory (ConnectionFactory.)]
        (.newConnection conn-factory)))
   ;; settings
-  ([{username :username, password :password, vhost :vhost, host :host, port :port}]
+  ([{:keys [username password vhost host port] :or {username *default-username*, password *default-password*, vhost *default-vhost*, host *default-host*, port *default-port*}}]
      (let [conn-factory (doto (ConnectionFactory.)
-                          (.setUsername    (or username *default-username*))
-                          (.setPassword    (or password *default-password*))
-                          (.setVirtualHost (or vhost *default-vhost*))
-                          (.setHost        (or host *default-host*))
-                          (.setPort        (or port *default-port*)))]
+                          (.setUsername    username)
+                          (.setPassword    password)
+                          (.setVirtualHost vhost)
+                          (.setHost        host)
+                          (.setPort        port))]
        (.newConnection conn-factory))))

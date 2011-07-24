@@ -9,22 +9,9 @@
 (defn publish
   "Publishes a message using basic.publish AMQP method"
   [^Channel channel, ^String payload,
-   {exchange         :exchange
-    routing-key      :routing-key
-    content-type     :content-type
-    content-encoding :content-encoding
-    headers          :headers
-    persistent       :persistent
-    priority         :priority
-    correlation-id   :correlation-id
-    reply-to         :reply-to
-    expiration       :expiration
-    message-id       :message-id
-    timestamp        :timestamp
-    type             :type
-    user-id          :user-id
-    app-id           :app-id
-    cluster-id       :cluster-id}]
+   {:keys [exchange routing-key content-type content-encoding headers
+           persistent priority correlation-id reply-to expiration message-id
+           timestamp type user-id app-id cluster-id]}]
   (let [payload-bytes      (.getBytes payload)
         properties-builder (AMQP$BasicProperties$Builder.)
         properties         (.build (doto properties-builder
