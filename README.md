@@ -1,6 +1,6 @@
-# leporidae
+# Langohr
 
-Leporidae is an experimental Clojure wrapper around the RabbitMQ Java client.
+Langohr is an experimental Clojure wrapper around the RabbitMQ Java client.
 It is very much a work in progress and without most of key AMQP operations being
 supported, proper test suite and documentation guides, there is nothing to
 see here, really.
