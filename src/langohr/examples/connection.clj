@@ -1,6 +1,6 @@
-(ns leporidae.examples.connection
+(ns langohr.examples.connection
   (:import (com.rabbitmq.client ConnectionFactory Connection Channel))
-  (:use [leporidae core]))
+  (:use [langohr core]))
 
 (defn default-settings-via-java-interop
   [& arguments]
@@ -18,7 +18,7 @@
 
 (defn default-settings
   [& arguments]
-  (let [conn         (leporidae.core/connect { :username "leporidae", :password "leporidae", :vhost "leporidae.dev" })
+  (let [conn         (langohr.core/connect { :username "langohr", :password "langohr", :vhost "langohr.dev" })
         ch           (.createChannel conn)]
     (do
       (println "Connected.")

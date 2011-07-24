@@ -1,4 +1,4 @@
-(ns leporidae.core
+(ns langohr.core
   (:import (com.rabbitmq.client ConnectionFactory Connection))
   )
 

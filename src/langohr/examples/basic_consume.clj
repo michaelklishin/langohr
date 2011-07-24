@@ -1,6 +1,6 @@
-(ns leporidae.examples.basic-consume
+(ns langohr.examples.basic-consume
   (:import (java.security SecureRandom) (java.math.BigInteger))
-  (:use [leporidae.core :only [connect close]] [leporidae.basic :only [consume]]))
+  (:use [langohr.core :only [connect close]] [langohr.basic :only [consume]]))
 
 (declare message-handler)
 

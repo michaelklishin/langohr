@@ -1,4 +1,4 @@
-(ns leporidae.basic
+(ns langohr.basic
   (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer)))
 
 
