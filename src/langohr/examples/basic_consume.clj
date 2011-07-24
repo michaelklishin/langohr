@@ -6,7 +6,7 @@
 
 (defn default
   [queue]
-  (let [conn         (connect)
+  (let [conn         (connect { :username "langohr", :password "langohr", :vhost "langohr.dev" })
         ch           (.createChannel conn)
         consumer-tag (.toString (new BigInteger 130 (SecureRandom.)) 32)]
     (do
