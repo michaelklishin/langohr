@@ -1,7 +1,6 @@
 (ns langohr.test.queue
-  (:import (com.rabbitmq.client Channel AMQP AMQP$Queue$DeclareOk))
+  (:import (com.rabbitmq.client Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk))
   (:use [clojure.test] [langohr.core :as lhc] [langohr.queue :as lhq]))
-
 
 ;;
 ;; queue.declare
@@ -47,4 +46,19 @@
 ;; queue.bind
 ;;
 
-;; TBD
+(deftest t-bind-a-server-named-queue-to-amq-fanout
+  (let [channel  (lhc/create-channel *conn*)
+        queue    (.getQueue (lhq/declare channel))
+        exchange "amq.fanout"
+        bind-ok  (lhq/bind channel queue exchange)]
+    (is (instance? AMQP$Queue$BindOk bind-ok))))
+
+
+(deftest t-bind-a-client-named-queue-to-amq-fanout
+  (let [channel  (lhc/create-channel *conn*)
+        queue    "langohr.tests.queues.client-named.non-durable.exclusive.auto-deleted"
+        exchange "amq.fanout"
+        bind-ok  (do
+                   (lhq/declare channel queue)
+                   (lhq/bind    channel queue exchange))]
+        (is (instance? AMQP$Queue$BindOk bind-ok))))
