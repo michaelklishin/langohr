@@ -54,8 +54,7 @@
        (.newConnection conn-factory)))
   ;; settings
   ([settings]
-     (let [conn-factory (create-connection-factory settings)]
-       (.newConnection conn-factory))))
+     (.newConnection (create-connection-factory settings))))
 
 (defn ^com.rabbitmq.client.Channel create-channel
   "Opens a new channel on given connection"
