@@ -45,6 +45,7 @@
 ;; API
 ;;
 
+(declare create-connection-factory)
 (defn ^com.rabbitmq.client.Connection connect
   "Creates and returns a new connection to RabbitMQ"
   ;; defaults
@@ -52,18 +53,29 @@
      (let [conn-factory (ConnectionFactory.)]
        (.newConnection conn-factory)))
   ;; settings
-  ([{:keys [username password vhost host port] :or {username *default-username*, password *default-password*, vhost *default-vhost*, host *default-host*, port *default-port*}}]
-     (let [conn-factory (doto (ConnectionFactory.)
-                          (.setUsername    username)
-                          (.setPassword    password)
-                          (.setVirtualHost vhost)
-                          (.setHost        host)
-                          (.setPort        port))]
+  ([settings]
+     (let [conn-factory (create-connection-factory settings)]
        (.newConnection conn-factory))))
 
 (defn ^com.rabbitmq.client.Channel create-channel
-   "Opens a new channel on given connection"
-   ([^Connection connection]
-      (.createChannel connection))
-   ([^Connection connection ^int channel-id]
-      (.createChannel connection channel-id)))
+  "Opens a new channel on given connection"
+  ([^Connection connection]
+     (.createChannel connection))
+  ([^Connection connection ^int channel-id]
+     (.createChannel connection channel-id)))
+
+
+
+;;
+;; Implementation
+;;
+
+(defn ^com.rabbitmq.client.ConnectionFactory create-connection-factory
+  "Creates connection factory from given attributes"
+  [{ :keys [host port username password vhost] :or {username *default-username*, password *default-password*, vhost *default-vhost*, host *default-host*, port *default-port* }}]
+  (doto (ConnectionFactory.)
+    (.setUsername    username)
+    (.setPassword    password)
+    (.setVirtualHost vhost)
+    (.setHost        host)
+    (.setPort        port)))
