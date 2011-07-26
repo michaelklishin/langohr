@@ -9,7 +9,9 @@
   "Declares a queue using queue.declare AMQP method"
   ([^Channel channel]
      (.queueDeclare channel))
-  ([^Channel channel ^String queue {:keys [durable auto-delete exclusive arguments] :or {durable false, auto-delete true, exclusive true}}]
+  ([^Channel channel ^String queue]
+     (.queueDeclare channel queue false true true nil))
+  ([^Channel channel ^String queue {:keys [durable exclusive auto-delete arguments] :or {durable false, exclusive true, auto-delete true}}]
      (.queueDeclare channel queue durable exclusive auto-delete arguments)))
 
 
