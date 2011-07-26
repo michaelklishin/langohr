@@ -29,11 +29,23 @@
   (close [this] (.close this)))
 
 
+(defprotocol Openable
+  (open? [this] "Checks whether given entity is still open"))
+
+(extend-protocol Openable
+  com.rabbitmq.client.Connection
+  (open? [this] (.isOpen this)))
+
+(extend-protocol Openable
+  com.rabbitmq.client.Channel
+  (open? [this] (.isOpen this)))
+
+
 ;;
 ;; API
 ;;
 
-(defn connect
+(defn ^com.rabbitmq.client.Connection connect
   "Creates and returns a new connection to RabbitMQ"
   ;; defaults
   ([]
@@ -48,3 +60,10 @@
                           (.setHost        host)
                           (.setPort        port))]
        (.newConnection conn-factory))))
+
+(defn ^com.rabbitmq.client.Channel create-channel
+   "Opens a new channel on given connection"
+   ([^Connection connection]
+      (.createChannel connection))
+   ([^Connection connection ^int channel-id]
+      (.createChannel connection channel-id)))
