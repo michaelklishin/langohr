@@ -44,3 +44,12 @@
             (message-handler delivery (.getProperties delivery) (.getBody delivery)))
           (catch InterruptedException e
             nil))))))
+
+
+(defn qos
+  "Sets channel or connection prefetch level using basic.qos AMQP method"
+  ([^Channel channel ^int prefetch-count]
+     (.basicQos channel prefetch-count))
+  ([^Channel channel ^int prefetch-size ^int prefetch-count ^boolean global]
+     (.basicQos channel prefetch-size prefetch-count global)))
+

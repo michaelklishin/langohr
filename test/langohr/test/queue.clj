@@ -1,3 +1,5 @@
+(set! *warn-on-reflection* true)
+
 (ns langohr.test.queue
   (:import (com.rabbitmq.client Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk))
   (:use [clojure.test] [langohr.core :as lhc] [langohr.queue :as lhq]))
@@ -6,7 +8,7 @@
 ;; queue.declare
 ;;
 
-(defonce *conn*    (lhc/connect))
+(defonce *conn* (lhc/connect))
 
 
 (deftest t-declare-a-server-named-queue-with-default-attributes

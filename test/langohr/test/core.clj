@@ -1,3 +1,5 @@
+(set! *warn-on-reflection* true)
+
 (ns langohr.test.core
   (:import (com.rabbitmq.client Connection Channel))
   (:use [clojure.test] [langohr.core]))
