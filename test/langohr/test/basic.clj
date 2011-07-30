@@ -1,13 +1,14 @@
 (set! *warn-on-reflection* true)
 
 (ns langohr.test.basic
+  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer))
   (:use [clojure.test] [langohr.core :as lhc] [langohr.queue :as lhq] [langohr.basic :as lhb]))
 
 ;;
 ;; basic.publish, basic.consume
 ;;
 
-(defonce *conn* (lhc/connect))
+(defonce ^Connection *conn* (lhc/connect))
 
 
 (deftest t-publishing-using-default-exchange-and-default-message-attributes
