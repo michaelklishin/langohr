@@ -1,11 +1,11 @@
 (ns langohr.exchange
-  (:import (com.rabbitmq.client Channel)))
+  (:import (com.rabbitmq.client Channel AMQP$Exchange$DeclareOk)))
 
 ;;
 ;; API
 ;;
 
-(defn declare
+(defn ^AMQP$Exchange$DeclareOk declare
   "Declares an exchange using exchange.declare AMQP method"
   ([^Channel channel ^String name ^String type]
      (.exchangeDeclare channel name type))
