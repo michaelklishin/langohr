@@ -65,3 +65,29 @@
                    (lhq/declare channel queue)
                    (lhq/bind    channel queue exchange))]
         (is (instance? AMQP$Queue$BindOk bind-ok))))
+
+
+
+;;
+;; queue.delete
+;;
+
+(deftest t-declare-and-immediately-delete-a-client-named-queue-with-default-attributes
+  (let  [^Channel              channel    (lhc/create-channel *conn*)
+         ^String               queue-name "langohr.tests.queues.client-named-with-default-attributes"
+         ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel queue-name)]
+    (lhq/delete channel queue-name)))
+
+
+(deftest t-declare-and-immediately-delete-a-client-named-queue-if-it-is-empty
+  (let  [^Channel              channel    (lhc/create-channel *conn*)
+         ^String               queue-name "langohr.tests.queues.client-named-with-default-attributes"
+         ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel queue-name)]
+    (lhq/delete channel queue-name false true)))
+
+
+(deftest t-declare-and-immediately-delete-a-client-named-queue-if-it-is-unused
+  (let  [^Channel              channel    (lhc/create-channel *conn*)
+         ^String               queue-name "langohr.tests.queues.client-named-with-default-attributes"
+         ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel queue-name)]
+    (lhq/delete channel queue-name true false)))
