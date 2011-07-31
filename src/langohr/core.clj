@@ -6,11 +6,11 @@
 ;; Defaults
 ;;
 
-(def *default-username* "guest")
-(def *default-password* "guest")
-(def *default-vhost*    "/")
-(def *default-host*     "localhost")
-(def *default-port*     5672)
+(def ^:dynamic *default-username* "guest")
+(def ^:dynamic *default-password* "guest")
+(def ^:dynamic *default-vhost*    "/")
+(def ^:dynamic *default-host*     "localhost")
+(def ^:dynamic *default-port*     5672)
 
 
 ;;
