@@ -1,11 +1,11 @@
 (ns langohr.queue
-  (:import (com.rabbitmq.client Channel)))
+  (:import (com.rabbitmq.client Channel AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$DeleteOk)))
 
 ;;
 ;; API
 ;;
 
-(defn declare
+(defn ^AMQP$Queue$DeclareOk declare
   "Declares a queue using queue.declare AMQP method"
   ([^Channel channel]
      (.queueDeclare channel))
@@ -15,7 +15,7 @@
      (.queueDeclare channel queue durable exclusive auto-delete arguments)))
 
 
-(defn bind
+(defn ^AMQP$Queue$BindOk bind
   "Binds a queue to an exchange using queue.bind AMQP method"
   ([^Channel channel ^String queue ^String exchange]
      (.queueBind channel queue exchange ""))
@@ -23,7 +23,7 @@
      (.queueBind channel queue exchange routing-key arguments)))
 
 
-(defn delete
+(defn ^AMQP$Queue$DeleteOk delete
   "Deletes a queue using queue.delete AMQP method"
   ([^Channel channel ^String queue]
      (.queueDelete channel queue))
