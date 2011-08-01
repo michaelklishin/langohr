@@ -21,6 +21,11 @@ Here is what Langohr *does not* try to be:
  * A port of Ruby amqp gem to Clojure
 
 
+## Supported Clojure versions
+
+Langohr is built from the ground up for Clojure 1.3 and up.
+
+
 ## This is a Work In Progress
 
 Langohr is very much a work in progress and without most of key AMQP operations being
