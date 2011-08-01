@@ -27,7 +27,7 @@
   "Deletes a queue using queue.delete AMQP method"
   ([^Channel channel ^String queue]
      (.queueDelete channel queue))
-  ([^Channel channel ^String queue ^boolean if-unused ^boolean if-empty]
+  ([^Channel channel ^String queue if-unused if-empty]
      (.queueDelete channel queue if-unused if-empty)))
 
 

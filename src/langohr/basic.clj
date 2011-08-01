@@ -18,7 +18,7 @@
                              (.contentType     content-type)
                              (.contentEncoding content-encoding)
                              (.headers         headers)
-                             (.deliveryMode    (if persistent 2 1))
+                             (.deliveryMode    (java.lang.Integer/valueOf (if persistent 2 1)))
                              (.priority        priority)
                              (.correlationId   correlation-id)
                              (.replyTo         reply-to)
@@ -48,8 +48,8 @@
 
 (defn qos
   "Sets channel or connection prefetch level using basic.qos AMQP method"
-  ([^Channel channel ^int prefetch-count]
+  ([^Channel channel ^long prefetch-count]
      (.basicQos channel prefetch-count))
-  ([^Channel channel ^int prefetch-size ^int prefetch-count ^boolean global]
+  ([^Channel channel ^long prefetch-size ^long prefetch-count global]
      (.basicQos channel prefetch-size prefetch-count global)))
 

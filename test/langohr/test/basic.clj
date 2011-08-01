@@ -8,7 +8,7 @@
 ;; basic.publish, basic.consume
 ;;
 
-(defonce ^Connection *conn* (lhc/connect))
+(defonce ^:dynamic ^Connection *conn* (lhc/connect))
 
 
 (deftest t-publishing-using-default-exchange-and-default-message-attributes

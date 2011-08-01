@@ -61,7 +61,7 @@
   "Opens a new channel on given connection"
   ([^Connection connection]
      (.createChannel connection))
-  ([^Connection connection ^int channel-id]
+  ([^Connection connection ^long channel-id]
      (.createChannel connection channel-id)))
 
 

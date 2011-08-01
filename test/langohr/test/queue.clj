@@ -8,7 +8,7 @@
 ;; queue.declare
 ;;
 
-(defonce ^Connection *conn* (lhc/connect))
+(defonce ^:dynamic ^Connection *conn* (lhc/connect))
 
 
 (deftest t-declare-a-server-named-queue-with-default-attributes
