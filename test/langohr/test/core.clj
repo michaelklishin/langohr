@@ -1,4 +1,5 @@
 (set! *warn-on-reflection* true)
+(println (str "Using Clojure version " *clojure-version*))
 
 (ns langohr.test.core
   (:import (com.rabbitmq.client Connection Channel))
