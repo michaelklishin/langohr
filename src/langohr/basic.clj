@@ -15,20 +15,20 @@
   (let [payload-bytes      (.getBytes payload)
         properties-builder (AMQP$BasicProperties$Builder.)
         properties         (.build (doto properties-builder
-                             (.contentType     content-type)
-                             (.contentEncoding content-encoding)
-                             (.headers         headers)
-                             (.deliveryMode    (java.lang.Integer/valueOf (if persistent 2 1)))
-                             (.priority        priority)
-                             (.correlationId   correlation-id)
-                             (.replyTo         reply-to)
-                             (.expiration      expiration)
-                             (.messageId       message-id)
-                             (.timestamp       timestamp)
-                             (.type            type)
-                             (.userId          user-id)
-                             (.appId           app-id)
-                             (.clusterId       cluster-id)))]
+                                     (.contentType     content-type)
+                                     (.contentEncoding content-encoding)
+                                     (.headers         headers)
+                                     (.deliveryMode    (java.lang.Integer/valueOf (if persistent 2 1)))
+                                     (.priority        priority)
+                                     (.correlationId   correlation-id)
+                                     (.replyTo         reply-to)
+                                     (.expiration      expiration)
+                                     (.messageId       message-id)
+                                     (.timestamp       timestamp)
+                                     (.type            type)
+                                     (.userId          user-id)
+                                     (.appId           app-id)
+                                     (.clusterId       cluster-id)))]
     (.basicPublish channel exchange routing-key properties payload-bytes)))
 
 
@@ -49,8 +49,10 @@
 
 (defn ^GetResponse get
   "Fetches a message from a queue using basic.get AMQP method"
-  [^Channel channel, ^String queue]
-  (.basicGet channel queue true))
+  ([^Channel channel, ^String queue]
+     (.basicGet channel queue true))
+  ([^Channel channel, ^String queue, auto-ack]
+     (.basicGet channel queue auto-ack)))
 
 
 

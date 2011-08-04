@@ -41,6 +41,18 @@
       (is (= (.. get-response getEnvelope getExchange) exchange))
       (is (= (.. get-response getEnvelope getRoutingKey) queue)))))
 
+(deftest t-basic-get-with-automatic-ack
+  (let [channel    (.createChannel *conn*)
+        exchange   ""
+        payload    "A message we will fetch with basic.get"
+        queue      "langohr.examples.basic.get.queue1"
+        declare-ok (lhq/declare channel queue { :auto-delete true })]
+    (lhb/publish channel payload { :routing-key queue, :exchange exchange })
+    (let [get-response (lhb/get channel queue false)]
+      (is (instance? GetResponse get-response))
+      (is (= (String. (.getBody get-response)) payload)))))
+
+
 
 
 
