@@ -1,5 +1,5 @@
 (ns langohr.basic
-  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer)))
+  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse)))
 
 
 ;;
@@ -44,6 +44,14 @@
             (message-handler delivery (.getProperties delivery) (.getBody delivery)))
           (catch InterruptedException e
             nil))))))
+
+
+
+(defn ^GetResponse get
+  "Fetches a message from a queue using basic.get AMQP method"
+  [^Channel channel, ^String queue]
+  (.basicGet channel queue true))
+
 
 
 (defn qos
