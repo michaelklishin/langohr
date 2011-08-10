@@ -33,6 +33,13 @@ supported, proper test suite and documentation guides, there is nothing to
 see here, really.
 
 
+## Continuous Integration
+
+!secure.travis-ci.org/michaelklishin/langohr.png!
+
+CI is hosted by [travis-ci.org](http://travis-ci.org)
+
+
 ## Usage
 
 Since these are very early days of the library, it is fair to say that it is completely unusable to anyone
