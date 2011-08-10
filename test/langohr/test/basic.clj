@@ -1,8 +1,7 @@
 (set! *warn-on-reflection* true)
 
 (ns langohr.test.basic
-  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse QueueingConsumer$Delivery)
-           (java.security SecureRandom) (java.math.BigInteger))
+  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse))
   (:use [clojure.test] [langohr.core :as lhc] [langohr.queue :as lhq] [langohr.basic :as lhb]))
 
 ;;
@@ -12,22 +11,16 @@
 (defonce ^:dynamic ^Connection *conn* (lhc/connect))
 
 
-(deftest t-publishing-using-default-exchange-and-default-message-attributes-take-1
+(deftest t-publishing-using-default-exchange-and-default-message-attributes
   (let [channel    (.createChannel *conn*)
         exchange   ""
         ;; yes, payload may be blank. This is an edge case Ruby amqp
         ;; gem did not support for a long time so I want to use it in the langohr
         ;; test suite. MK.
         payload    ""
-        queue        "langohr.examples.publishing.using-default-exchange"
-        declare-ok   (lhq/declare channel queue { :auto-delete true })
-        monitor      (Object.)
-        consumer-tag (.toString (new BigInteger 130 (SecureRandom.)) 32)]
-    (do
-      (lhb/publish channel payload { :routing-key queue, :exchange exchange })
-      (lhb/consume channel queue #((.notify monitor)) { :consumer-tag consumer-tag, :auto-ack true })
-      (.wait monitor))))
-
+        queue      "langohr.examples.publishing.using-default-exchange"
+        declare-ok (lhq/declare channel queue { :auto-delete true })]
+    (lhb/publish channel payload { :routing-key queue, :exchange exchange })))
 
 
 ;;
@@ -48,7 +41,7 @@
       (is (= (.. get-response getEnvelope getExchange) exchange))
       (is (= (.. get-response getEnvelope getRoutingKey) queue)))))
 
-(deftest t-basic-get-with-explicit-ack
+(deftest t-basic-get-with-automatic-ack
   (let [channel    (.createChannel *conn*)
         exchange   ""
         payload    "A message we will fetch with basic.get"
