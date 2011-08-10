@@ -35,7 +35,8 @@ see here, really.
 
 ## Continuous Integration
 
-!secure.travis-ci.org/michaelklishin/langohr.png!
+[![Continuous Integration status](secure.travis-ci.org/michaelklishin/langohr.png!)](http://travis-ci.org/michaelklishin/langohr)
+
 
 CI is hosted by [travis-ci.org](http://travis-ci.org)
 
