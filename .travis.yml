@@ -1,2 +1,3 @@
+language: Clojure
 before_script: "lein deps"
 script: "lein test"
