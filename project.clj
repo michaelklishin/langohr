@@ -1,6 +1,6 @@
 ;; See https://github.com/technomancy/leiningen/blob/stable/sample.project.clj
 ;; to learn more about available options.
-(defproject langohr "0.1.0-SNAPSHOT"
+(defproject langohr "0.1.0"
   :description "An experimental Clojure layer on top of the RabbitMQ Java client"
   :dependencies [[org.clojure/clojure "1.3.0-beta1"]
                  [com.rabbitmq/amqp-client "2.5.1"]]
