@@ -1,6 +1,5 @@
 (ns langohr.core
-  (:import (com.rabbitmq.client ConnectionFactory Connection))
-  )
+  (:import (com.rabbitmq.client ConnectionFactory Connection)))
 
 ;;
 ;; Defaults
