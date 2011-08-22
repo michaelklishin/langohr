@@ -10,6 +10,7 @@ and does not try to hide it behind many layers of DSLs.
  * Be well documented. Two example READMEs do not cut it
  * Strict TDD development style (with tests sometimes being freeform examples first)
  * Support all of the [RabbitMQ extensions to AMQP 0.9.1](http://www.rabbitmq.com/extensions.html)
+ * Provide support for testing of AMQP applications, including asynchronous workflows
  * Provide additional batteries such as CLI interface to AMQP operations
 
 ## Project Anti-Goals
