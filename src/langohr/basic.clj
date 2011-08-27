@@ -8,8 +8,8 @@
 
 (defn publish
   "Publishes a message using basic.publish AMQP method"
-  [^Channel channel, ^String payload,
-   {:keys [exchange routing-key content-type content-encoding headers
+  [^Channel channel, ^String exchange, ^String routing-key, ^String payload,
+   {:keys [content-type content-encoding headers
            persistent priority correlation-id reply-to expiration message-id
            timestamp type user-id app-id cluster-id]}]
   (let [payload-bytes      (.getBytes payload)
@@ -18,8 +18,8 @@
                                      (.contentType     content-type)
                                      (.contentEncoding content-encoding)
                                      (.headers         headers)
-                                     (.deliveryMode    (java.lang.Integer/valueOf (if persistent 2 1)))
-                                     (.priority        priority)
+                                     (.deliveryMode    (Integer/valueOf (if persistent 2 1)))
+                                     (.priority        (if priority (Integer/valueOf priority) nil))
                                      (.correlationId   correlation-id)
                                      (.replyTo         reply-to)
                                      (.expiration      expiration)
@@ -29,7 +29,8 @@
                                      (.userId          user-id)
                                      (.appId           app-id)
                                      (.clusterId       cluster-id)))]
-    (.basicPublish channel exchange routing-key properties payload-bytes)))
+    (.basicPublish channel exchange routing-key properties payload-bytes)
+    ))
 
 
 (defn consume

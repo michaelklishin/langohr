@@ -10,7 +10,7 @@
         exchange     ""]
     (do
       (println (str "Going to publish " payload))
-      (publish ch payload { :routing-key routing-key, :exchange exchange })
+      (publish ch exchange routing-key payload {})
       (close ch)
       (close conn))))
 
@@ -24,6 +24,6 @@
         exchange     ""]
     (do
       (println (str "Going to publish " payload))
-      (publish ch payload {:exchange exchange, :routing-key routing-key, :type "simple.message", :priority 7, :persistent true })
+      (publish ch exchange routing-key payload { :type "simple.message", :priority 7, :persistent true })
       (close ch)
       (close conn))))

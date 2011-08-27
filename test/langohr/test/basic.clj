@@ -2,7 +2,7 @@
 
 (ns langohr.test.basic
   (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse))
-  (:use [clojure.test] [langohr.core :as lhc] [langohr.queue :as lhq] [langohr.basic :as lhb]))
+  (:use [clojure.test] [langohr.core :as lhc] [langohr.queue :as lhq] [langohr.basic :as lhb] [langohr.util :as lhu]))
 
 ;;
 ;; basic.publish, basic.consume
@@ -19,8 +19,19 @@
         ;; test suite. MK.
         payload    ""
         queue      "langohr.examples.publishing.using-default-exchange"
-        declare-ok (lhq/declare channel queue { :auto-delete true })]
-    (lhb/publish channel payload { :routing-key queue, :exchange exchange })))
+        declare-ok (lhq/declare channel queue { :auto-delete true })
+        tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")
+        latch      (java.util.concurrent.CountDownLatch. 10)
+        msg-handler (fn [delivery message-properties message-payload]
+                      (.countDown latch)
+                      )]
+    (.start (Thread. #((lhb/consume channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "consumer"))
+    (.start (Thread. (fn []
+                       (dotimes [n 10]
+                         (lhb/publish channel exchange queue payload {}))
+                       (Thread/sleep 10000)) "publisher"))
+    (.await latch)
+    ))
 
 
 ;;
@@ -33,7 +44,7 @@
         payload    "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue1"
         declare-ok (lhq/declare channel queue { :auto-delete true })]
-    (lhb/publish channel payload { :routing-key queue, :exchange exchange })
+    (lhb/publish channel exchange queue payload {})
     (let [get-response (lhb/get channel queue)]
       (is (instance? GetResponse get-response))
       (is (= (String. (.getBody get-response)) payload))
@@ -47,7 +58,7 @@
         payload    "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue1"
         declare-ok (lhq/declare channel queue { :auto-delete true })]
-    (lhb/publish channel payload { :routing-key queue, :exchange exchange })
+    (lhb/publish channel exchange queue payload {})
     (let [get-response (lhb/get channel queue false)]
       (is (instance? GetResponse get-response))
       (is (= (String. (.getBody get-response)) payload)))))
