@@ -20,7 +20,7 @@
                                      (.contentEncoding content-encoding)
                                      (.headers         headers)
                                      (.deliveryMode    (Integer/valueOf (if persistent 2 1)))
-                                     (.priority        (if priority (Integer/valueOf priority) nil))
+                                     (.priority        (if priority (Integer/valueOf ^Long priority) nil))
                                      (.correlationId   correlation-id)
                                      (.replyTo         reply-to)
                                      (.expiration      expiration)
@@ -30,8 +30,7 @@
                                      (.userId          user-id)
                                      (.appId           app-id)
                                      (.clusterId       cluster-id)))]
-    (.basicPublish channel exchange routing-key properties payload-bytes)
-    ))
+    (.basicPublish channel exchange routing-key properties payload-bytes)))
 
 
 (defn consume
