@@ -28,10 +28,8 @@
     (.start (Thread. #((lhb/consume channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "consumer"))
     (.start (Thread. (fn []
                        (dotimes [n 10]
-                         (lhb/publish channel exchange queue payload {}))
-                       (Thread/sleep 10000)) "publisher"))
-    (.await latch)
-    ))
+                         (lhb/publish channel exchange queue payload {}))) "publisher"))
+    (.await latch)))
 
 
 ;;
