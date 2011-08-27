@@ -18,7 +18,7 @@ and does not try to hide it behind many layers of DSLs.
 Here is what Langohr *does not* try to be:
 
  * A replacement for the RabbitMQ Java client
- * Sugar-coated API for task queues that hides all the AMQP machinery from developer
+ * Sugar-coated API for task queues that hides all the AMQP machinery from the developer
  * A port of Ruby amqp gem to Clojure
 
 
@@ -44,7 +44,7 @@ CI is hosted by [travis-ci.org](http://travis-ci.org)
 
 ## Usage
 
-Since these are very early days of the library, it is fair to say that it is completely unusable to anyone
+Since these are very early days of the library, it is fair to say that it is *completely unusable* to anyone
 other than the author.
 
 
