@@ -5,7 +5,7 @@
   [& arguments]
   (let [conn         (connect)
         ch           (.createChannel conn)
-        payload      (or (first arguments) "Clj rcks")
+        payload      (or (first arguments) "¡Hola! de Clojure! à bientôt")
         routing-key  (or (second arguments)  "langohr.examples.hello_world")
         exchange     ""]
     (do
@@ -19,7 +19,7 @@
   [& arguments]
   (let [conn         (langohr.core/connect)
         ch           (.createChannel conn)
-        payload      (or (first arguments) "Clj rcks")
+        payload      (or (first arguments) "¡Hola! de Clojure! à bientôt")
         routing-key  (or (second arguments)  "langohr.examples.hello_world")
         exchange     ""]
     (do
