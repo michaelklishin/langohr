@@ -23,8 +23,7 @@
         tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")
         latch      (java.util.concurrent.CountDownLatch. 10)
         msg-handler (fn [delivery message-properties message-payload]
-                      (.countDown latch)
-                      )]
+                      (.countDown latch))]
     (.start (Thread. #((lhb/consume channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "consumer"))
     (.start (Thread. (fn []
                        (dotimes [n 10]
