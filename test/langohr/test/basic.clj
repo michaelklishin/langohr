@@ -24,14 +24,14 @@
 
         content-type "text/plain"
         msg-id       (.toString (java.util.UUID/randomUUID))
-
-        latch      (java.util.concurrent.CountDownLatch. 10)
-        msg-handler (fn [delivery message-properties message-payload]
-                      (print ".")
-                      (.countDown latch))]
+        n            3000
+        latch        (java.util.concurrent.CountDownLatch. n)
+        msg-handler   (fn [delivery message-properties message-payload]
+                        (print ".")
+                        (.countDown latch))]
     (.start (Thread. #((lhb/consume channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "consumer"))
     (.start (Thread. (fn []
-                       (dotimes [n 10]
+                       (dotimes [i n]
                          (lhb/publish channel exchange queue payload { :priority 8, :message-id msg-id, :content-type content-type, :headers { "see you soon" "à bientôt" } }))) "publisher"))
     (.await latch)))
 
