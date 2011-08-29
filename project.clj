@@ -5,5 +5,6 @@
   :license { :name "Eclipse Public License" }
   :dependencies [[org.clojure/clojure "1.3.0-beta2"]
                  [com.rabbitmq/amqp-client "2.5.1"]]
+  :dev-dependencies [[lein-marginalia "0.6.0"]]
   :warn-on-reflection true
   :jvm-opts ["-Xmx512m"])
