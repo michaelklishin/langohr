@@ -62,7 +62,7 @@
   (let [channel    (.createChannel *conn*)
         exchange   ""
         payload    "A message we will fetch with basic.get"
-        queue      "langohr.examples.basic.get.queue1"
+        queue      "langohr.examples.basic.get.queue2"
         declare-ok (lhq/declare channel queue { :auto-delete true })]
     (lhb/publish channel exchange queue payload {})
     (let [get-response (lhb/get channel queue false)]
@@ -70,6 +70,10 @@
       (is (= (String. (.getBody get-response)) payload)))))
 
 
+(deftest t-basic-get-with-an-empty-queue
+  (let [channel    (.createChannel *conn*)
+        queue      (.getQueue (lhq/declare channel "" { :auto-delete true }))]
+    (is (nil? (lhb/get channel queue false)))))
 
 
 
