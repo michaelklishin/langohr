@@ -1,5 +1,5 @@
 (ns langohr.core
-  (:import (com.rabbitmq.client ConnectionFactory Connection)))
+  (:import (com.rabbitmq.client ConnectionFactory Connection Channel)))
 
 ;;
 ;; Defaults
@@ -45,7 +45,7 @@
 ;;
 
 (declare create-connection-factory)
-(defn ^com.rabbitmq.client.Connection connect
+(defn ^Connection connect
   "Creates and returns a new connection to RabbitMQ"
   ;; defaults
   ([]
@@ -56,7 +56,7 @@
      (let [^ConnectionFactory conn-factory (create-connection-factory settings)]
        (.newConnection conn-factory))))
 
-(defn ^com.rabbitmq.client.Channel create-channel
+(defn ^Channel create-channel
   "Opens a new channel on given connection"
   ([^Connection connection]
      (.createChannel connection))
@@ -69,7 +69,7 @@
 ;; Implementation
 ;;
 
-(defn ^com.rabbitmq.client.ConnectionFactory create-connection-factory
+(defn ^ConnectionFactory create-connection-factory
   "Creates connection factory from given attributes"
   [{ :keys [host port username password vhost] :or {username *default-username*, password *default-password*, vhost *default-vhost*, host *default-host*, port *default-port* }}]
   (doto (ConnectionFactory.)
