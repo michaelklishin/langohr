@@ -32,7 +32,7 @@
     (.start (Thread. #((lhb/consume channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "consumer"))
     (.start (Thread. (fn []
                        (dotimes [i n]
-                         (lhb/publish channel exchange queue payload { :priority 8, :message-id msg-id, :content-type content-type, :headers { "see you soon" "à bientôt" } }))) "publisher"))
+                         (lhb/publish channel exchange queue payload :priority 8, :message-id msg-id, :content-type content-type, :headers { "see you soon" "à bientôt" }))) "publisher"))
     (.await latch)))
 
 
@@ -50,7 +50,7 @@
         payload    "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue1"
         declare-ok (lhq/declare channel queue { :auto-delete true })]
-    (lhb/publish channel exchange queue payload {})
+    (lhb/publish channel exchange queue payload)
     (let [get-response (lhb/get channel queue)]
       (is (instance? GetResponse get-response))
       (is (= (String. (.getBody get-response)) payload))
@@ -64,7 +64,7 @@
         payload    "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue2"
         declare-ok (lhq/declare channel queue { :auto-delete true })]
-    (lhb/publish channel exchange queue payload {})
+    (lhb/publish channel exchange queue payload)
     (let [get-response (lhb/get channel queue false)]
       (is (instance? GetResponse get-response))
       (is (= (String. (.getBody get-response)) payload)))))

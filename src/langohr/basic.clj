@@ -10,7 +10,7 @@
 (defn publish
   "Publishes a message using basic.publish AMQP method"
   [^Channel channel, ^String exchange, ^String routing-key, ^String payload,
-   {:keys [content-type content-encoding headers
+   &{:keys [content-type content-encoding headers
            persistent priority correlation-id reply-to expiration message-id
            timestamp type user-id app-id cluster-id]}]
   (let [payload-bytes      (.getBytes payload)
