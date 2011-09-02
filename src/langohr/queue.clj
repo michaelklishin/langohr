@@ -1,5 +1,5 @@
 (ns langohr.queue
-  (:import (com.rabbitmq.client Channel AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$DeleteOk)))
+  (:import (com.rabbitmq.client Channel AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$DeleteOk AMQP$Queue$PurgeOk)))
 
 ;;
 ;; API
@@ -31,3 +31,7 @@
      (.queueDelete channel queue if-unused if-empty)))
 
 
+(defn ^AMQP$Queue$PurgeOk purge
+  "Purges a queue using queue.purge AMQP method"
+  [^Channel channel ^String queue]
+  (.queuePurge channel queue))
