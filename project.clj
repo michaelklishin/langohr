@@ -4,7 +4,7 @@
   :description "An experimental Clojure layer on top of the RabbitMQ Java client"
   :url         "https://github.com/michaelklishin/langohr"
   :license     { :name "Eclipse Public License" }
-  :dependencies [[org.clojure/clojure "1.3.0-beta2"]
+  :dependencies [[org.clojure/clojure "1.3.0-beta3"]
                  [com.rabbitmq/amqp-client "2.5.1"]]
   :warn-on-reflection true
   :jvm-opts ["-Xmx512m"])
