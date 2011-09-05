@@ -106,7 +106,7 @@
       (lhb/ack consumer-channel delivery-tag))
     (lhq/purge   producer-channel queue)))
 
-(deftest t-acknowledge-multiple-message
+(deftest t-acknowledge-multiple-messages
   (let [producer-channel (.createChannel *conn*)
         consumer-channel (.createChannel *conn*)
         queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue2" { :auto-delete true }))]
@@ -124,3 +124,41 @@
       (is (= 2 delivery-tag2))
       (lhb/ack consumer-channel delivery-tag1 true))
     (lhq/purge   producer-channel queue)))
+
+
+;;
+;; basic.nack
+;;
+
+(deftest t-nack-one-message-to-requeue-it
+  (let [channel (.createChannel *conn*)
+        queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue1" { :auto-delete true }))]
+    (lhq/purge channel queue)
+    (.start (Thread. ^Callable (fn []
+                                 (lhb/publish channel "" queue "One")
+                                 (lhb/publish channel "" queue "Two")
+                                 (lhb/publish channel "" queue "Three"))))
+    (Thread/sleep 200)
+    (let [get-response (lhb/get channel queue false)
+          delivery-tag (.. get-response getEnvelope getDeliveryTag)]
+      (is (= 1 delivery-tag))
+      (lhb/nack channel delivery-tag false true))
+    (lhq/purge channel queue)))
+
+(deftest t-nack-multiple-messages-without-requeueing
+  (let [channel (.createChannel *conn*)
+        queue   (.getQueue (lhq/declare channel "langohr.examples.basic.ack.queue2" { :auto-delete true }))]
+    (lhq/purge channel queue)
+    (.start (Thread. ^Callable (fn []
+                                 (lhb/publish channel "" queue "One")
+                                 (lhb/publish channel "" queue "Two")
+                                 (lhb/publish channel "" queue "Three"))))
+    (Thread/sleep 200)
+    (let [get-response1 (lhb/get channel queue false)
+          get-response2 (lhb/get channel queue false)
+          delivery-tag1  (.. get-response1 getEnvelope getDeliveryTag)
+          delivery-tag2  (.. get-response2 getEnvelope getDeliveryTag)]
+      (is (= 1 delivery-tag1))
+      (is (= 2 delivery-tag2))
+      (lhb/nack channel delivery-tag1 true false))
+    (lhq/purge channel queue)))

@@ -11,8 +11,8 @@
   "Publishes a message using basic.publish AMQP method"
   [^Channel channel, ^String exchange, ^String routing-key, ^String payload,
    &{:keys [content-type content-encoding headers
-           persistent priority correlation-id reply-to expiration message-id
-           timestamp type user-id app-id cluster-id]}]
+            persistent priority correlation-id reply-to expiration message-id
+            timestamp type user-id app-id cluster-id]}]
   (let [payload-bytes      (.getBytes payload)
         properties-builder (AMQP$BasicProperties$Builder.)
         properties         (.build (doto properties-builder
@@ -71,3 +71,9 @@
      (.basicAck channel delivery-tag false))
   ([^Channel channel ^long delivery-tag multiple]
      (.basicAck channel delivery-tag multiple)))
+
+
+(defn nack
+  "Negative acknowledgement of one or more messages using basic.nack AMQP methods (a RabbitMQ extension to AMQP 0.9.1"
+  [^Channel channel ^long delivery-tag multiple requeue]
+  (.basicNack channel delivery-tag multiple requeue))
