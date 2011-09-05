@@ -1,7 +1,7 @@
 (set! *warn-on-reflection* true)
 
 (ns langohr.test.queue
-  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk))
+  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk))
   (:use [clojure.test]
         [langohr.core  :as lhc]
         [langohr.queue :as lhq]
@@ -68,6 +68,20 @@
                    (lhq/declare channel queue)
                    (lhq/bind    channel queue exchange))]
         (is (instance? AMQP$Queue$BindOk bind-ok))))
+
+
+;;
+;; queue.unbind
+;;
+
+(deftest t-unbind-a-server-named-queue-from-amq-fanout
+  (let [^Channel              channel  (lhc/create-channel *conn*)
+        ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel)
+        queue    (.getQueue declare-ok)
+        exchange "amq.fanout"
+        bind-ok    (lhq/bind   channel queue exchange :routing-key "abc")
+        unbind-ok  (lhq/unbind channel queue exchange "abc")]
+    (is (instance? AMQP$Queue$UnbindOk unbind-ok))))
 
 
 

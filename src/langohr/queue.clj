@@ -1,5 +1,6 @@
 (ns langohr.queue
-  (:import (com.rabbitmq.client Channel AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$DeleteOk AMQP$Queue$PurgeOk)))
+  (:import (com.rabbitmq.client Channel AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk AMQP$Queue$DeleteOk AMQP$Queue$PurgeOk)
+           (java.util Map)))
 
 ;;
 ;; API
@@ -19,8 +20,16 @@
   "Binds a queue to an exchange using queue.bind AMQP method"
   ([^Channel channel ^String queue ^String exchange]
      (.queueBind channel queue exchange ""))
-  ([^Channel channel ^String queue ^String exchange { :keys [routing-key arguments] :or { routing-key "", arguments nil } }]
+  ([^Channel channel ^String queue ^String exchange &{ :keys [routing-key arguments] :or { routing-key "", arguments nil } }]
      (.queueBind channel queue exchange routing-key arguments)))
+
+
+(defn ^AMQP$Queue$UnbindOk unbind
+  "Unbinds a queue from an exchange using queue.bind AMQP method"
+  ([^Channel channel ^String queue ^String exchange ^String routing-key]
+     (.queueUnbind channel queue exchange routing-key))
+  ([^Channel channel ^String queue ^String exchange ^String routing-key ^Map arguments]
+     (.queueUnbind channel queue exchange routing-key arguments)))
 
 
 (defn ^AMQP$Queue$DeleteOk delete
