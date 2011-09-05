@@ -115,6 +115,7 @@
          n                                30]
     (doseq [i (range n)]
       (lhb/publish channel "" queue-name "Hi"))
+    (Thread/sleep 200)
     (is (= (.getMessageCount (lhq/declare channel queue-name)) n))
     (lhq/purge channel queue-name)
     (is (= (.getMessageCount (lhq/declare channel queue-name)) 0))))
