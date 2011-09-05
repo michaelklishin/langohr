@@ -2,7 +2,10 @@
 
 (ns langohr.test.queue
   (:import (com.rabbitmq.client Connection Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk))
-  (:use [clojure.test] [langohr.core :as lhc] [langohr.queue :as lhq]))
+  (:use [clojure.test]
+        [langohr.core  :as lhc]
+        [langohr.queue :as lhq]
+        [langohr.basic :as lhb]))
 
 ;;
 ;; queue.declare
@@ -91,3 +94,27 @@
          ^String               queue-name "langohr.tests.queues.client-named-with-default-attributes"
          ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel queue-name)]
     (lhq/delete channel queue-name true false)))
+
+
+;;
+;; queue.purge
+;;
+
+(deftest t-purge-a-queue-without-messages
+  (let  [^Channel              channel    (lhc/create-channel *conn*)
+         ^String               queue-name "langohr.tests.queues.client-named-with-default-attributes"
+         ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel queue-name)]
+    (is (= (.getMessageCount declare-ok) 0))
+    (lhq/purge channel queue-name)
+    (is (= (.getMessageCount declare-ok) 0))))
+
+(deftest t-purge-a-queue-that-has-messages-in-it
+  (let  [^Channel              channel    (lhc/create-channel *conn*)
+         ^String               queue-name "langohr.tests.queues.client-named-with-default-attributes"
+         ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel queue-name)
+         n                                30]
+    (doseq [i (range n)]
+      (lhb/publish channel "" queue-name "Hi"))
+    (is (= (.getMessageCount (lhq/declare channel queue-name)) n))
+    (lhq/purge channel queue-name)
+    (is (= (.getMessageCount (lhq/declare channel queue-name)) 0))))
