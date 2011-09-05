@@ -72,6 +72,13 @@
   ([^Channel channel ^long delivery-tag multiple]
      (.basicAck channel delivery-tag multiple)))
 
+(defn reject
+  "Rejects (and, optionally, requeues) a messages using basic.reject AMQP method"
+  ([^Channel channel ^long delivery-tag]
+     (.basicAck channel delivery-tag false))
+  ([^Channel channel ^long delivery-tag requeue]
+     (.basicAck channel delivery-tag requeue)))
+
 
 (defn nack
   "Negative acknowledgement of one or more messages using basic.nack AMQP methods (a RabbitMQ extension to AMQP 0.9.1"
