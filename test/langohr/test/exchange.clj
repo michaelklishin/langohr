@@ -1,7 +1,7 @@
 (set! *warn-on-reflection* true)
 
 (ns langohr.test.exchange
-  (:import (com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk))
+  (:import (com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk))
   (:use [clojure.test] [langohr.core :as lhc] [langohr.exchange :as lhe]))
 
 
@@ -78,3 +78,22 @@
         declare-ok (lhe/declare channel exchange "topic" { :auto-delete true })]
     (is (instance? AMQP$Exchange$DeclareOk declare-ok))))
 
+
+
+;;
+;; exchange.delete
+;;
+
+(deftest t-delete-a-fresh-declared-direct-exchange
+  (let [^Channel   channel    (lhc/create-channel *conn*)
+        ^String    exchange   "langohr.tests.exchanges.direct4"
+        declare-ok (lhe/declare channel exchange "direct")
+        delete-ok  (lhe/delete  channel exchange)]
+    (is (instance? AMQP$Exchange$DeleteOk delete-ok))))
+
+(deftest t-delete-a-fresh-declared-direct-exchange-if-it-is-unused
+  (let [^Channel   channel    (lhc/create-channel *conn*)
+        ^String    exchange   "langohr.tests.exchanges.direct5"
+        declare-ok (lhe/declare channel exchange "direct")
+        delete-ok  (lhe/delete  channel exchange true)]
+    (is (instance? AMQP$Exchange$DeleteOk delete-ok))))
