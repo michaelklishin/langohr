@@ -58,7 +58,7 @@
       (is (= (.. get-response getEnvelope getExchange) exchange))
       (is (= (.. get-response getEnvelope getRoutingKey) queue)))))
 
-(deftest t-basic-get-with-automatic-ack
+(deftest t-basic-get-with-explicit-ack
   (let [channel    (.createChannel *conn*)
         exchange   ""
         payload    "A message we will fetch with basic.get"
@@ -84,4 +84,9 @@
 (deftest t-using-non-global-basic-qos
   (let [channel (.createChannel *conn*)]
     (lhb/qos channel 5)))
+
+
+;;
+;; basic.ack
+;;
 
