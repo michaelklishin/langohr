@@ -90,3 +90,30 @@
 ;; basic.ack
 ;;
 
+(deftest t-acknowledge-one-message
+  (let [producer-channel (.createChannel *conn*)
+        consumer-channel (.createChannel *conn*)
+        queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue1" { :auto-delete true }))]
+    (lhq/purge   producer-channel queue)
+    (lhb/publish producer-channel "" queue "One")
+    (lhb/publish producer-channel "" queue "Two")
+    (let [get-response (lhb/get consumer-channel queue false)
+          delivery-tag (.. get-response getEnvelope getDeliveryTag)]
+      (is (= 1 delivery-tag))
+      (lhb/ack consumer-channel delivery-tag))))
+
+(deftest t-acknowledge-multiple-message
+  (let [producer-channel (.createChannel *conn*)
+        consumer-channel (.createChannel *conn*)
+        queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue2" { :auto-delete true }))]
+    (lhq/purge   producer-channel queue)
+    (lhb/publish producer-channel "" queue "One")
+    (lhb/publish producer-channel "" queue "Two")
+    (lhb/publish producer-channel "" queue "Two")
+    (let [get-response1 (lhb/get consumer-channel queue false)
+          get-response2 (lhb/get consumer-channel queue false)
+          delivery-tag1  (.. get-response1 getEnvelope getDeliveryTag)
+          delivery-tag2  (.. get-response2 getEnvelope getDeliveryTag)]
+      (is (= 1 delivery-tag1))
+      (is (= 2 delivery-tag2))
+      (lhb/ack consumer-channel delivery-tag1 true))))

@@ -64,3 +64,10 @@
   ([^Channel channel ^long prefetch-size ^long prefetch-count global]
      (.basicQos channel prefetch-size prefetch-count global)))
 
+
+(defn ack
+  "Acknowledges one or more messages using basic.ack AMQP method"
+  ([^Channel channel ^long delivery-tag]
+     (.basicAck channel delivery-tag false))
+  ([^Channel channel ^long delivery-tag multiple]
+     (.basicAck channel delivery-tag multiple)))
