@@ -1,6 +1,7 @@
 (set! *warn-on-reflection* true)
 
 (ns langohr.test.exchange
+  (:refer-clojure :exclude [declare])
   (:import (com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk))
   (:use [clojure.test] [langohr.core :as lhc] [langohr.exchange :as lhe]))
 

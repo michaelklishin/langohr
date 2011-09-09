@@ -1,6 +1,7 @@
 (set! *warn-on-reflection* true)
 
 (ns langohr.test.queue
+  (:refer-clojure :exclude [declare get])
   (:import (com.rabbitmq.client Connection Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk))
   (:use [clojure.test]
         [langohr.core  :as lhc]

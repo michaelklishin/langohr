@@ -1,6 +1,7 @@
 (set! *warn-on-reflection* true)
 
 (ns langohr.test.basic
+  (:refer-clojure :exclude [get declare])
   (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse))
   (:use [clojure.test] [langohr.core :as lhc] [langohr.queue :as lhq] [langohr.basic :as lhb] [langohr.util :as lhu]))
 

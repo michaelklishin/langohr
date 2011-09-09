@@ -1,4 +1,5 @@
 (ns langohr.exchange
+  (:refer-clojure :exclude [declare])
   (:import (com.rabbitmq.client Channel AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk)))
 
 ;;
