@@ -3,7 +3,12 @@
 (ns langohr.test.basic
   (:refer-clojure :exclude [get declare])
   (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse))
-  (:use [clojure.test] [langohr.core :as lhc] [langohr.queue :as lhq] [langohr.basic :as lhb] [langohr.util :as lhu]))
+  (:use [clojure.test]
+        [langohr.core      :as lhc]
+        [langohr.consumers :as lhcons]
+        [langohr.queue     :as lhq]
+        [langohr.basic     :as lhb]
+        [langohr.util      :as lhu]))
 
 ;;
 ;; basic.publish, basic.consume
@@ -30,7 +35,7 @@
         msg-handler   (fn [delivery message-properties message-payload]
                         (print ".")
                         (.countDown latch))]
-    (.start (Thread. #((lhb/consume channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "consumer"))
+    (.start (Thread. #((lhcons/subscribe channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "consumer"))
     (.start (Thread. (fn []
                        (dotimes [i n]
                          (lhb/publish channel exchange queue payload :priority 8, :message-id msg-id, :content-type content-type, :headers { "see you soon" "à bientôt" }))) "publisher"))

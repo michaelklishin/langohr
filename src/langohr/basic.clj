@@ -1,7 +1,8 @@
 (ns langohr.basic
   (:refer-clojure :exclude [get])
   (:require [langohr util])
-  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse)))
+  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse)
+           (java.util Map)))
 
 
 ;;
@@ -36,16 +37,9 @@
 
 (defn consume
   "Adds new consumer to a queue using basic.consume AMQP method"
-  [^Channel channel, ^String queue, ^clojure.lang.IFn message-handler, { :keys [consumer-tag, auto-ack] :or { consumer-tag (langohr.util/generate-consumer-tag queue), auto-ack false } }]
-  (let [queueing-consumer (QueueingConsumer. channel)]
-    (do
-      (.basicConsume channel queue auto-ack queueing-consumer)
-      (while true
-        (try
-          (let [delivery (.nextDelivery queueing-consumer)]
-            (message-handler delivery (.getProperties delivery) (.getBody delivery)))
-          (catch InterruptedException e
-            nil))))))
+  [^Channel channel, ^String queue, ^Consumer consumer, &{ :keys [consumer-tag auto-ack exclusive arguments no-local]
+                                                          :or { consumer-tag "", auto-ack false, exclusive false, no-local false } }]
+  (.basicConsume ^Channel channel ^String queue ^Boolean auto-ack ^String consumer-tag ^Boolean no-local ^Boolean exclusive ^Map arguments ^Consumer consumer))
 
 
 
