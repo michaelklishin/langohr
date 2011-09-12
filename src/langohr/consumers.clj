@@ -1,4 +1,5 @@
 (ns langohr.consumers
+  (:refer-clojure :exclude [get])
   (:import (com.rabbitmq.client Channel QueueingConsumer))
   (:use [langohr.basic :as lhb]))
 
