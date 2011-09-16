@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.util
-  (:import (java.security SecureRandom) (java.math.BigInteger)))
+  (:import (java.util UUID)))
 
 
 ;;
@@ -17,4 +17,4 @@
 
 (defn generate-consumer-tag
   [base]
-  (str base "-" (.toString (new BigInteger 130 (SecureRandom.)) 32)))
+  (str base "-" (UUID/randomUUID)))
