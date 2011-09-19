@@ -1,8 +1,8 @@
 (ns langohr.test.channel
   (:import (com.rabbitmq.client Connection Channel))
   (:use [clojure.test])
-  (:require [langohr.core :as lhcore]
-            [langohr.core :as lhch]))
+  (:require [langohr.core    :as lhcore]
+            [langohr.channel :as lhch]))
 
 (deftest t-open-a-channel
   (let [conn (lhcore/connect)
@@ -30,5 +30,16 @@
   (let [conn (lhcore/connect)
         ch   (.createChannel conn)]
     (is (lhcore/open? ch))
+    (lhch/close ch)
+    (is (not (lhcore/open? ch)))))
+
+
+(deftest t-toggle-flow-control
+  (let [conn (lhcore/connect)
+        ch   (.createChannel conn)]
+    (is (lhch/flow? ch))
+    (lhch/flow ch false)
+    (lhch/flow ch true)
+    (is (lhch/flow? ch))
     (lhch/close ch)
     (is (not (lhch/open? ch)))))

@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.channel
-  (:import (com.rabbitmq.client ConnectionFactory Connection Channel)))
+  (:import (com.rabbitmq.client ConnectionFactory Connection Channel AMQP$Channel$FlowOk)))
 
 
 ;;
@@ -26,5 +26,21 @@
 (defn close
   "Closes given channel using channel.close AMQP method"
   [channel]
-  (.close channel))
+  (.close ^Channel channel))
 
+
+(defn open?
+  [channel]
+  (.isOpen ^Channel channel))
+
+
+(defn flow?
+  "Returns true if flow is active on given channel. Uses channel.flow AMQP method."
+  ^Boolean [channel]
+  (.getActive (.getFlow ^Channel channel)))
+
+
+(defn flow
+  "Enables or disables channel flow using channel.flow AMQP method"
+  ^AMQP$Channel$FlowOk [channel ^Boolean on]
+  (.flow ^Channel channel on))
