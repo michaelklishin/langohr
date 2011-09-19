@@ -15,25 +15,3 @@
     (is (open? conn))
     (close conn)
     (is (not (open? conn)))))
-
-(deftest t-open-a-channel
-  (let [conn (connect)
-        ch   (.createChannel conn)]
-    (is (instance? com.rabbitmq.client.Channel ch))
-    (is (open? ch))))
-
-(deftest t-open-a-channel-with-explicitly-given-id
-  (let [conn (connect)
-        ch   (.createChannel conn 987)]
-    (is (instance? com.rabbitmq.client.Channel ch))
-    (is (open? ch))
-    (is (= (.getChannelNumber ch) 987))
-    (close ch)))
-
-
-(deftest t-close-a-channel
-  (let [conn (connect)
-        ch   (.createChannel conn)]
-    (is (open? ch))
-    (close ch)
-    (is (not (open? ch)))))

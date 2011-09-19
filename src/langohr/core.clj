@@ -8,7 +8,8 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.core
-  (:import (com.rabbitmq.client ConnectionFactory Connection Channel)))
+  (:import (com.rabbitmq.client ConnectionFactory Connection Channel))
+  (:require [langohr.channel]))
 
 ;;
 ;; Defaults
@@ -54,23 +55,22 @@
 ;;
 
 (declare create-connection-factory)
-(defn ^Connection connect
+(defn connect
   "Creates and returns a new connection to RabbitMQ"
   ;; defaults
-  ([]
-     (let [conn-factory (ConnectionFactory.)]
-       (.newConnection conn-factory)))
+  (^Connection []
+               (let [conn-factory (ConnectionFactory.)]
+                 (.newConnection conn-factory)))
   ;; settings
-  ([settings]
-     (let [^ConnectionFactory conn-factory (create-connection-factory settings)]
-       (.newConnection conn-factory))))
+  (^Connection [settings]
+               (let [^ConnectionFactory conn-factory (create-connection-factory settings)]
+                 (.newConnection conn-factory))))
 
-(defn ^Channel create-channel
-  "Opens a new channel on given connection"
-  ([^Connection connection]
-     (.createChannel connection))
-  ([^Connection connection ^long channel-id]
-     (.createChannel connection channel-id)))
+
+(defn create-channel
+  "Delegates to langohr.channel/open, kept for backwards compatibility"
+  ^Channel [& args]
+  (apply langohr.channel/open args))
 
 
 
@@ -78,9 +78,9 @@
 ;; Implementation
 ;;
 
-(defn ^ConnectionFactory create-connection-factory
+(defn create-connection-factory
   "Creates connection factory from given attributes"
-  [{ :keys [host port username password vhost] :or {username *default-username*, password *default-password*, vhost *default-vhost*, host *default-host*, port *default-port* }}]
+  ^ConnectionFactory [{ :keys [host port username password vhost] :or {username *default-username*, password *default-password*, vhost *default-vhost*, host *default-host*, port *default-port* }}]
   (doto (ConnectionFactory.)
     (.setUsername    username)
     (.setPassword    password)
