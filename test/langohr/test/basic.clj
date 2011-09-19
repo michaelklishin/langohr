@@ -33,15 +33,39 @@
         n            3000
         latch        (java.util.concurrent.CountDownLatch. n)
         msg-handler   (fn [delivery message-properties message-payload]
-                        (print ".")
                         (.countDown latch))]
-    (.start (Thread. #((lhcons/subscribe channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "consumer"))
+    (.start (Thread. #((lhcons/subscribe channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "t-publishing-using-default-exchange-and-default-message-attributes/consumer"))
     (.start (Thread. (fn []
                        (dotimes [i n]
                          (lhb/publish channel exchange queue payload :priority 8, :message-id msg-id, :content-type content-type, :headers { "see you soon" "à bientôt" }))) "publisher"))
     (.await latch)))
 
 
+
+
+;;
+;; basic.cancel
+;;
+
+(deftest t-basic-cancel
+  (let [channel     (.createChannel *conn*)
+        exchange    ""
+        payload     ""
+        queue       (.getQueue (lhq/declare channel "" { :auto-delete true }))
+        tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")        
+        counter     (atom 0)
+        msg-handler (fn [delivery message-properties message-payload]
+                      (print ".")
+                      (swap! counter inc))]
+    (.start (Thread. #((lhcons/subscribe channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "t-basic-cancel/consumer"))
+    (lhb/publish channel exchange queue payload)
+    (Thread/sleep 200)
+    (is (= @counter 1))
+    (lhb/cancel channel tag)
+    (dotimes [i 50]
+      (lhb/publish channel exchange queue payload))
+    (Thread/sleep 200)
+    (is (= @counter 1))))
 
 
 

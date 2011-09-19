@@ -51,6 +51,11 @@
            (.basicConsume ^Channel channel ^String queue ^Boolean auto-ack ^String consumer-tag ^Boolean no-local ^Boolean exclusive ^Map arguments ^Consumer consumer)))
 
 
+(defn cancel
+  "Cancels consumer using basic.cancel AMQP method"
+  [^Channel channel, ^String consumer-tag]
+  (.basicCancel ^Channel channel ^String consumer-tag))
+
 
 (defn get
   "Fetches a message from a queue using basic.get AMQP method"
