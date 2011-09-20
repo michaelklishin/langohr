@@ -10,7 +10,7 @@
 (ns langohr.basic
   (:refer-clojure :exclude [get])
   (:require [langohr util])
-  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse)
+  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse AMQP$Basic$RecoverOk)
            (java.util Map)))
 
 
@@ -93,3 +93,14 @@
   "Negative acknowledgement of one or more messages using basic.nack AMQP methods (a RabbitMQ extension to AMQP 0.9.1"
   [^Channel channel ^long delivery-tag multiple requeue]
   (.basicNack channel delivery-tag multiple requeue))
+
+
+(defn recover
+  (^AMQP$Basic$RecoverOk [^Channel channel]
+                         (.basicRecover channel))
+  (^AMQP$Basic$RecoverOk [^Channel channel, ^Boolean requeue]
+                         (.basicRecover channel requeue)))
+
+(defn recover-async
+  [^Channel channel, ^Boolean requeue]
+  (.basicRecoverAsync channel requeue))

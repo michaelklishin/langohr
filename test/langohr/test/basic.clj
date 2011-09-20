@@ -231,3 +231,12 @@
       (is (= 2 delivery-tag2))
       (lhb/reject channel delivery-tag1 false))
     (lhq/purge channel queue)))
+
+
+;;
+;; basic.recover, basic.recovery-async
+;;
+
+(deftest t-kind-of-deprecated-recovery-methods
+  (let [channel (.createChannel *conn*)]
+    (lhb/recover-async channel true)))
