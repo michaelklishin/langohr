@@ -26,12 +26,23 @@
     (lhcore/close ch)
     (is (not (lhcore/open? ch)))))
 
+
+
 (deftest t-close-a-channel-using-langohr-channel-close
   (let [conn (lhcore/connect)
         ch   (.createChannel conn)]
     (is (lhcore/open? ch))
     (lhch/close ch)
     (is (not (lhcore/open? ch)))))
+
+
+(deftest t-close-a-channel-using-langohr-channel-close-with-provided-message
+  (let [conn (lhcore/connect)
+        ch   (.createChannel conn)]
+    (is (lhcore/open? ch))
+    (lhch/close ch 200 "Bye-bye")
+    (is (not (lhcore/open? ch)))))
+
 
 
 (deftest t-toggle-flow-control
