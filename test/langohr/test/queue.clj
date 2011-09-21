@@ -36,14 +36,14 @@
 (deftest t-declare-a-non-durable-exclusive-auto-deleted-client-named-queue
   (let  [^Channel              channel    (lhc/create-channel *conn*)
          ^String               queue-name "langohr.tests.queues.client-named.non-durable.exclusive.auto-deleted"
-         ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel queue-name { :durable false, :exclusive true, :auto-delete true })]
+         ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel queue-name :durable false, :exclusive true, :auto-delete true)]
     (is (= (.getQueue declare-ok) queue-name))))
 
 
 (deftest t-declare-a-durable-non-exclusive-non-auto-deleted-client-named-queue
   (let  [^Channel              channel    (lhc/create-channel *conn*)
          ^String               queue-name "langohr.tests.queues.client-named.durable.non-exclusive.non-auto-deleted"
-         ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel queue-name { :durable true, :exclusive false, :auto-delete false })]
+         ^AMQP$Queue$DeclareOk declare-ok (lhq/declare channel queue-name :durable true, :exclusive false, :auto-delete false)]
     (is (= (.getQueue declare-ok) queue-name))))
 
 

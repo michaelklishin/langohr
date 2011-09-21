@@ -19,7 +19,7 @@
 
 (defn subscribe
   "Adds new blocking consumer to a queue using basic.consume AMQP method"
-  [^Channel channel, ^String queue, ^clojure.lang.IFn message-handler, { :keys [consumer-tag, auto-ack, exclusive, no-local, arguments]
+  [^Channel channel, ^String queue, ^clojure.lang.IFn message-handler, & { :keys [consumer-tag, auto-ack, exclusive, no-local, arguments]
                                                                          :or { consumer-tag "", auto-ack false, exclusive false, no-local false } }]
   (let [queueing-consumer (QueueingConsumer. channel)]
     (do

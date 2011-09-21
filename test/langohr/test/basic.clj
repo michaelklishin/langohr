@@ -25,7 +25,7 @@
         ;; test suite. MK.
         payload    ""
         queue      "langohr.examples.publishing.using-default-exchange"
-        declare-ok (lhq/declare channel queue { :auto-delete true })
+        declare-ok (lhq/declare channel queue :auto-delete true)
         tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")
 
         content-type "text/plain"
@@ -34,7 +34,7 @@
         latch        (java.util.concurrent.CountDownLatch. n)
         msg-handler   (fn [delivery message-properties message-payload]
                         (.countDown latch))]
-    (.start (Thread. #((lhcons/subscribe channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "t-publishing-using-default-exchange-and-default-message-attributes/consumer"))
+    (.start (Thread. #((lhcons/subscribe channel queue msg-handler :consumer-tag tag, :auto-ack true)) "t-publishing-using-default-exchange-and-default-message-attributes/consumer"))
     (.start (Thread. (fn []
                        (dotimes [i n]
                          (lhb/publish channel exchange queue payload :priority 8, :message-id msg-id, :content-type content-type, :headers { "see you soon" "à bientôt" }))) "publisher"))
@@ -51,13 +51,13 @@
   (let [channel     (.createChannel *conn*)
         exchange    ""
         payload     ""
-        queue       (.getQueue (lhq/declare channel "" { :auto-delete true }))
+        queue       (.getQueue (lhq/declare channel "" :auto-delete true))
         tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")        
         counter     (atom 0)
         msg-handler (fn [delivery message-properties message-payload]
                       (print ".")
                       (swap! counter inc))]
-    (.start (Thread. #((lhcons/subscribe channel queue msg-handler { :consumer-tag tag, :auto-ack true })) "t-basic-cancel/consumer"))
+    (.start (Thread. #((lhcons/subscribe channel queue msg-handler :consumer-tag tag, :auto-ack true)) "t-basic-cancel/consumer"))
     (lhb/publish channel exchange queue payload)
     (Thread/sleep 200)
     (is (= @counter 1))
@@ -79,7 +79,7 @@
         exchange   ""
         payload    "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue1"
-        declare-ok (lhq/declare channel queue { :auto-delete true })]
+        declare-ok (lhq/declare channel queue :auto-delete true)]
     (lhb/publish channel exchange queue payload)
     (let [get-response (lhb/get channel queue)]
       (is (instance? GetResponse get-response))
@@ -93,7 +93,7 @@
         exchange   ""
         payload    "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue2"
-        declare-ok (lhq/declare channel queue { :auto-delete true })]
+        declare-ok (lhq/declare channel queue :auto-delete true)]
     (lhb/publish channel exchange queue payload)
     (let [get-response (lhb/get channel queue false)]
       (is (instance? GetResponse get-response))
@@ -102,7 +102,7 @@
 
 (deftest t-basic-get-with-an-empty-queue
   (let [channel    (.createChannel *conn*)
-        queue      (.getQueue (lhq/declare channel "" { :auto-delete true }))]
+        queue      (.getQueue (lhq/declare channel "" :auto-delete true))]
     (is (nil? (lhb/get channel queue false)))))
 
 
@@ -123,7 +123,7 @@
 (deftest t-acknowledge-one-message
   (let [producer-channel (.createChannel *conn*)
         consumer-channel (.createChannel *conn*)
-        queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue1" { :auto-delete true }))]
+        queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue1" :auto-delete true))]
     (lhq/purge   producer-channel queue)
     (.start (Thread. ^Callable (fn []
                                  (lhb/publish producer-channel "" queue "One")
@@ -139,7 +139,7 @@
 (deftest t-acknowledge-multiple-messages
   (let [producer-channel (.createChannel *conn*)
         consumer-channel (.createChannel *conn*)
-        queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue2" { :auto-delete true }))]
+        queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue2" :auto-delete true))]
     (lhq/purge   producer-channel queue)
     (.start (Thread. ^Callable (fn []
                                  (lhb/publish producer-channel "" queue "One")
@@ -162,7 +162,7 @@
 
 (deftest t-nack-one-message-to-requeue-it
   (let [channel (.createChannel *conn*)
-        queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue1" { :auto-delete true }))]
+        queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue1" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
                                  (lhb/publish channel "" queue "One")
@@ -177,7 +177,7 @@
 
 (deftest t-nack-multiple-messages-without-requeueing
   (let [channel (.createChannel *conn*)
-        queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue2" { :auto-delete true }))]
+        queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue2" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
                                  (lhb/publish channel "" queue "One")
@@ -201,7 +201,7 @@
 
 (deftest t-reject-one-message-to-requeue-it
   (let [channel (.createChannel *conn*)
-        queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue1" { :auto-delete true }))]
+        queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue1" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
                                  (lhb/publish channel "" queue "One")
@@ -216,7 +216,7 @@
 
 (deftest t-reject-one-message-without-requeueing
   (let [channel (.createChannel *conn*)
-        queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue2" { :auto-delete true }))]
+        queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue2" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
                                  (lhb/publish channel "" queue "One")
