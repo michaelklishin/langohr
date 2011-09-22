@@ -121,3 +121,16 @@
     (lhe/bind    channel destination source)
     (lhb/publish channel source "" "")
     (is (lhb/get channel queue))))
+
+(deftest t-exchange-bind-with-arguments
+  (let [channel     (lhc/create-channel *conn*)
+        source      "langohr.tests.exchanges.source2"
+        destination "langohr.tests.exchanges.destination2"
+        queue       (.getQueue (lhq/declare channel "" :auto-delete true))]
+    (lhe/declare channel source      "fanout" :auto-delete true)
+    (lhe/declare channel destination "fanout" :auto-delete true)
+    (lhq/bind channel queue destination :arguments { "X-For-Some-Extension" "a value" })
+    (is (nil? (lhb/get channel queue)))
+    (lhe/bind    channel destination source)
+    (lhb/publish channel source "" "")
+    (is (lhb/get channel queue))))
