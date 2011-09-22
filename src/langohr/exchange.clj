@@ -9,7 +9,7 @@
 
 (ns langohr.exchange
   (:refer-clojure :exclude [declare])
-  (:import (com.rabbitmq.client Channel AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk)))
+  (:import (com.rabbitmq.client Channel AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Exchange$BindOk)))
 
 ;;
 ;; API
@@ -29,3 +29,11 @@
      (.exchangeDelete channel name))
   ([^Channel channel ^String name if-unused]
      (.exchangeDelete channel name if-unused)))
+
+
+(defn ^AMQP$Exchange$BindOk bind
+  "Binds a queue to an exchange using exchange.bind AMQP method (a RabbitMQ-specific extension)"
+  ([^Channel channel ^String destination ^String source]
+     (.exchangeBind channel destination source ""))
+  ([^Channel channel ^String destination ^String source &{ :keys [routing-key arguments] :or { routing-key "", arguments nil } }]
+     (.exchangeBind channel destination source routing-key arguments)))

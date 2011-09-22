@@ -3,7 +3,11 @@
 (ns langohr.test.exchange
   (:refer-clojure :exclude [declare])
   (:import (com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk))
-  (:use [clojure.test] [langohr.core :as lhc] [langohr.exchange :as lhe]))
+  (:use     [clojure.test])
+  (:require [langohr.core     :as lhc]
+            [langohr.exchange :as lhe]
+            [langohr.queue    :as lhq]
+            [langohr.basic    :as lhb]))
 
 
 ;;
@@ -98,3 +102,22 @@
         declare-ok (lhe/declare channel exchange "direct")
         delete-ok  (lhe/delete  channel exchange true)]
     (is (instance? AMQP$Exchange$DeleteOk delete-ok))))
+
+
+
+;;
+;; exchange.bind
+;;
+
+(deftest t-exchange-bind-without-arguments
+  (let [channel     (lhc/create-channel *conn*)
+        source      "langohr.tests.exchanges.source"
+        destination "langohr.tests.exchanges.destination"
+        queue       (.getQueue (lhq/declare channel "" :auto-delete true))]
+    (lhe/declare channel source      "fanout" :auto-delete true)
+    (lhe/declare channel destination "fanout" :auto-delete true)
+    (lhq/bind channel queue destination)
+    (is (nil? (lhb/get channel queue)))
+    (lhe/bind    channel destination source)
+    (lhb/publish channel source "" "")
+    (is (lhb/get channel queue))))
