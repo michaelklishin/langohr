@@ -31,7 +31,26 @@
         tag      (lhu/generate-consumer-tag "t-cancel-ok-handler")
         latch    (java.util.concurrent.CountDownLatch. 1)
         consumer (lhcons/create-default channel :cancel-ok-fn (fn [consumer-tag]
-                                                                 (.countDown latch)))]
+                                                                (.countDown latch)))]
     (lhb/consume channel queue consumer :consumer-tag tag)
     (lhb/cancel channel tag)
+    (.await latch)))
+
+
+(deftest t-delivery-handler
+  (let [channel    (.createChannel *conn*)
+        exchange   ""
+        payload    ""
+        queue      (.getQueue (lhq/declare channel "" :auto-delete true))
+        n          300
+        latch      (java.util.concurrent.CountDownLatch. (inc n))
+        consumer   (lhcons/create-default channel
+                                          :handle-delivery-fn (fn [delivery message-properties message-payload]
+                                                                (.countDown latch))
+                                          :consume-ok-fn      (fn [consumer-tag]
+                                                                (.countDown latch)))]
+    (lhb/consume channel queue consumer)
+    (.start (Thread. (fn []
+                       (dotimes [i n]
+                         (lhb/publish channel exchange queue payload))) "publisher"))
     (.await latch)))
