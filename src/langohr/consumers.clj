@@ -39,7 +39,7 @@
       (when recover-ok-fn
         (recover-ok-fn)))
 
-    (handleShutdownSignal [^String consumer-tag, ShutdownSignalException sig]
+    (handleShutdownSignal [^String consumer-tag, ^ShutdownSignalException sig]
       (when shutdown-signal-fn
         (shutdown-signal-fn consumer-tag sig)))
 
