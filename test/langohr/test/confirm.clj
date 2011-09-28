@@ -25,3 +25,17 @@
     (.start (Thread. (fn []
                        (lhb/publish channel "" queue "")) "publisher"))
     (.await latch)))
+
+
+(deftest t-confirm-select-with-callback-functions
+  (let [channel  (.createChannel conn)
+        queue    (.getQueue (lhq/declare channel))
+        latch    (java.util.concurrent.CountDownLatch. 1)]
+    (langohr.confirm/select channel
+                            (fn [delivery-tag, multiple]
+                              (.countDown latch))
+                            (fn [delivery-tag, multiple]
+                              (.countDown latch)))
+    (.start (Thread. (fn []
+                       (lhb/publish channel "" queue "")) "publisher"))
+    (.await latch)))

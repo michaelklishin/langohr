@@ -15,10 +15,6 @@
 ;; API
 ;;
 
-(defn select
-  [^Channel channel]
-  (.confirmSelect channel))
-
 
 (defn listener
   [^clojure.lang.IFn ack-handler, ^clojure.lang.IFn nack-handler]
@@ -33,3 +29,13 @@
   [^Channel channel, ^ConfirmListener cl]
   (.setConfirmListener channel cl)
   cl)
+
+
+(defn select
+  ([^Channel channel]
+     (.confirmSelect channel))
+  ([^Channel channel, ^clojure.lang.IFn ack-handler, ^clojure.lang.IFn nack-handler]
+     (let [select-ok (.confirmSelect channel)
+           cl        (listener ack-handler nack-handler)]
+       (.setConfirmListener channel cl)
+       select-ok)))
