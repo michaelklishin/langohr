@@ -32,8 +32,7 @@ Langohr is built from the ground up for Clojure 1.3 and up.
 
 ## This is a Work In Progress
 
-Langohr is very much a work in progress and without most of key AMQP operations being
-supported, proper test suite and documentation guides, there is nothing to
+Langohr is very much a work in progress and until tutorials and documentation guides are written, there is nothing to
 see here, really.
 
 
@@ -47,7 +46,7 @@ CI is hosted by [travis-ci.org](http://travis-ci.org)
 
 ## Usage
 
-Since these are very early days of the library, it is fair to say that it is *completely unusable* to anyone
+Since these are veryearly days of the library, the API is not really fleshed out yet and it is likely to be *completely unusable* to anyone
 other than the author.
 
 
