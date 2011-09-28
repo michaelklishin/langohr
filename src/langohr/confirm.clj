@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.confirm
-  (:import (com.rabbitmq.client Channel AMQP$Confirm$SelectOk)))
+  (:import (com.rabbitmq.client Channel AMQP$Confirm$SelectOk ConfirmListener)))
 
 
 ;;
@@ -18,3 +18,18 @@
 (defn select
   [^Channel channel]
   (.confirmSelect channel))
+
+
+(defn listener
+  [^clojure.lang.IFn ack-handler, ^clojure.lang.IFn nack-handler]
+  (reify ConfirmListener
+    (handleAck [this, delivery-tag, multiple]
+      (ack-handler delivery-tag multiple))
+    (handleNack [this, delivery-tag, multiple]
+      (nack-handler delivery-tag multiple))))
+
+
+(defn add-listener
+  [^Channel channel, ^ConfirmListener cl]
+  (.setConfirmListener channel cl)
+  cl)
