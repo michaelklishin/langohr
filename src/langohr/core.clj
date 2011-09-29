@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.core
-  (:import (com.rabbitmq.client ConnectionFactory Connection Channel))
+  (:import (com.rabbitmq.client ConnectionFactory Connection Channel ShutdownListener))
   (:require [langohr.channel]))
 
 ;;
@@ -72,6 +72,13 @@
   ^Channel [& args]
   (apply langohr.channel/open args))
 
+
+(defn shutdown-listener
+  "Adds new shutdown signal listener to a channel"
+  [^clojure.lang.IFn handler-fn]
+  (reify ShutdownListener
+    (shutdownCompleted [this cause]
+      (handler-fn cause))))
 
 
 ;;

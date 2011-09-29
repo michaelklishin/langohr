@@ -2,7 +2,8 @@
 
 (ns langohr.test.exchange
   (:refer-clojure :exclude [declare])
-  (:import (com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Queue$DeclareOk))
+  (:import (com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Queue$DeclareOk ShutdownSignalException)
+           (java.io IOException))
   (:use     [clojure.test])
   (:require [langohr.core     :as lhc]
             [langohr.exchange :as lhe]
@@ -73,6 +74,20 @@
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.topic3"]
     (lhe/declare channel exchange "topic" :auto-delete true)))
+
+
+(deftest t-redeclare-an-auto-deleted-topic-exchange-with-different-attributes
+  (let [conn        (lhc/connect)
+        channel     (lhc/create-channel conn)
+        exchange    "langohr.tests.exchanges.topic4"
+        shutdown-ln (lhc/shutdown-listener (fn [cause]
+                                             (println "Shutdown listener has fired")))]
+    (try
+      (.addShutdownListener channel shutdown-ln)
+      (lhe/declare channel exchange "topic" :auto-delete true)
+      (lhe/declare channel exchange "topic" :auto-delete false)
+      (catch IOException ioe ;; see http://www.rabbitmq.com/api-guide.html#shutdown
+        nil))))
 
 
 
