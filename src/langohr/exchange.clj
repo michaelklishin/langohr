@@ -15,25 +15,25 @@
 ;; API
 ;;
 
-(defn ^AMQP$Exchange$DeclareOk declare
+(defn declare
   "Declares an exchange using exchange.declare AMQP method"
-  ([^Channel channel ^String name ^String type]
+  (^AMQP$Exchange$DeclareOk [^Channel channel ^String name ^String type]
      (.exchangeDeclare channel name type))
-  ([^Channel channel ^String name ^String type &{ :keys [durable auto-delete internal arguments] :or {durable false, auto-delete false, internal false} }]
+  (^AMQP$Exchange$DeclareOk [^Channel channel ^String name ^String type &{ :keys [durable auto-delete internal arguments] :or {durable false, auto-delete false, internal false} }]
      (.exchangeDeclare channel name type durable auto-delete internal arguments)))
 
 
-(defn ^AMQP$Exchange$DeleteOk delete
+(defn delete
   "Deletes an exchange using exchange.delete AMQP method"
-  ([^Channel channel ^String name]
+  (^AMQP$Exchange$DeleteOk [^Channel channel ^String name]
      (.exchangeDelete channel name))
-  ([^Channel channel ^String name if-unused]
+  (^AMQP$Exchange$DeleteOk [^Channel channel ^String name if-unused]
      (.exchangeDelete channel name if-unused)))
 
 
-(defn ^AMQP$Exchange$BindOk bind
+(defn bind
   "Binds a queue to an exchange using exchange.bind AMQP method (a RabbitMQ-specific extension)"
-  ([^Channel channel ^String destination ^String source]
+  (^AMQP$Exchange$BindOk [^Channel channel ^String destination ^String source]
      (.exchangeBind channel destination source ""))
-  ([^Channel channel ^String destination ^String source &{ :keys [routing-key arguments] :or { routing-key "", arguments nil } }]
+  (^AMQP$Exchange$BindOk [^Channel channel ^String destination ^String source &{ :keys [routing-key arguments] :or { routing-key "", arguments nil } }]
      (.exchangeBind channel destination source routing-key arguments)))
