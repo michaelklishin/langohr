@@ -14,11 +14,11 @@
 ;; basic.publish, basic.consume
 ;;
 
-(defonce ^:dynamic ^Connection *conn* (lhc/connect))
+(defonce ^Connection conn (lhc/connect))
 
 
 (deftest t-publishing-using-default-exchange-and-default-message-attributes
-  (let [channel    (.createChannel *conn*)
+  (let [channel    (.createChannel conn)
         exchange   ""
         ;; yes, payload may be blank. This is an edge case Ruby amqp
         ;; gem did not support for a long time so I want to use it in the langohr
@@ -48,7 +48,7 @@
 ;;
 
 (deftest t-basic-cancel
-  (let [channel     (.createChannel *conn*)
+  (let [channel     (.createChannel conn)
         exchange    ""
         payload     ""
         queue       (.getQueue (lhq/declare channel "" :auto-delete true))
@@ -75,7 +75,7 @@
 ;;
 
 (deftest t-basic-get-with-automatic-ack
-  (let [channel    (.createChannel *conn*)
+  (let [channel    (.createChannel conn)
         exchange   ""
         payload    "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue1"
@@ -89,7 +89,7 @@
       (is (= (.. get-response getEnvelope getRoutingKey) queue)))))
 
 (deftest t-basic-get-with-explicit-ack
-  (let [channel    (.createChannel *conn*)
+  (let [channel    (.createChannel conn)
         exchange   ""
         payload    "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue2"
@@ -101,7 +101,7 @@
 
 
 (deftest t-basic-get-with-an-empty-queue
-  (let [channel    (.createChannel *conn*)
+  (let [channel    (.createChannel conn)
         queue      (.getQueue (lhq/declare channel "" :auto-delete true))]
     (is (nil? (lhb/get channel queue false)))))
 
@@ -112,7 +112,7 @@
 ;;
 
 (deftest t-using-non-global-basic-qos
-  (let [channel (.createChannel *conn*)]
+  (let [channel (.createChannel conn)]
     (lhb/qos channel 5)))
 
 
@@ -121,8 +121,8 @@
 ;;
 
 (deftest t-acknowledge-one-message
-  (let [producer-channel (.createChannel *conn*)
-        consumer-channel (.createChannel *conn*)
+  (let [producer-channel (.createChannel conn)
+        consumer-channel (.createChannel conn)
         queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue1" :auto-delete true))]
     (lhq/purge   producer-channel queue)
     (.start (Thread. ^Callable (fn []
@@ -137,8 +137,8 @@
     (lhq/purge   producer-channel queue)))
 
 (deftest t-acknowledge-multiple-messages
-  (let [producer-channel (.createChannel *conn*)
-        consumer-channel (.createChannel *conn*)
+  (let [producer-channel (.createChannel conn)
+        consumer-channel (.createChannel conn)
         queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue2" :auto-delete true))]
     (lhq/purge   producer-channel queue)
     (.start (Thread. ^Callable (fn []
@@ -161,7 +161,7 @@
 ;;
 
 (deftest t-nack-one-message-to-requeue-it
-  (let [channel (.createChannel *conn*)
+  (let [channel (.createChannel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue1" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
@@ -176,7 +176,7 @@
     (lhq/purge channel queue)))
 
 (deftest t-nack-multiple-messages-without-requeueing
-  (let [channel (.createChannel *conn*)
+  (let [channel (.createChannel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue2" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
@@ -200,7 +200,7 @@
 ;;
 
 (deftest t-reject-one-message-to-requeue-it
-  (let [channel (.createChannel *conn*)
+  (let [channel (.createChannel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue1" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
@@ -215,7 +215,7 @@
     (lhq/purge channel queue)))
 
 (deftest t-reject-one-message-without-requeueing
-  (let [channel (.createChannel *conn*)
+  (let [channel (.createChannel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue2" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
@@ -238,5 +238,5 @@
 ;;
 
 (deftest t-kind-of-deprecated-recovery-methods
-  (let [channel (.createChannel *conn*)]
+  (let [channel (.createChannel conn)]
     (lhb/recover-async channel true)))

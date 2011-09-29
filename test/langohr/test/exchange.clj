@@ -14,7 +14,7 @@
 ;; exchange.declare
 ;;
 
-(defonce ^:dynamic ^Connection conn (lhc/connect))
+(defonce conn (lhc/connect))
 
 
 (deftest t-declare-a-direct-exchange-with-default-attributes
