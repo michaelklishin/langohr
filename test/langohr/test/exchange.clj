@@ -2,7 +2,7 @@
 
 (ns langohr.test.exchange
   (:refer-clojure :exclude [declare])
-  (:import (com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk))
+  (:import (com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Queue$DeclareOk))
   (:use     [clojure.test])
   (:require [langohr.core     :as lhc]
             [langohr.exchange :as lhe]

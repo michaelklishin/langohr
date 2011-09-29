@@ -44,6 +44,18 @@
     (is (= (.getQueue declare-ok) queue-name))))
 
 
+;;
+;; Passive queue.declare
+;;
+
+(deftest t-passive-declare-a-non-durable-exclusive-auto-deleted-client-named-queue
+  (let  [channel    (lhc/create-channel conn)
+         queue-name "langohr.tests.queues.client-named.non-durable.exclusive.auto-deleted"
+         _          (lhq/declare channel queue-name :durable false, :exclusive true, :auto-delete true)
+         status     (lhq/status channel queue-name)]
+    (is (= 0 (status :message-count)))
+    (is (= 0 (status :consumer-count)))))
+
 
 ;;
 ;; queue.bind
@@ -53,19 +65,16 @@
   (let [channel  (lhc/create-channel conn)
         declare-ok (lhq/declare channel)
         queue    (.getQueue declare-ok)
-        exchange "amq.fanout"
-        bind-ok  (lhq/bind channel queue exchange)]
-    (is (instance? AMQP$Queue$BindOk bind-ok))))
+        exchange "amq.fanout"]
+    (lhq/bind channel queue exchange)))
 
 
 (deftest t-bind-a-client-named-queue-to-amq-fanout
   (let [channel  (lhc/create-channel conn)
         queue    "langohr.tests.queues.client-named.non-durable.exclusive.auto-deleted"
-        exchange "amq.fanout"
-        bind-ok  (do
-                   (lhq/declare channel queue)
-                   (lhq/bind    channel queue exchange))]
-    (is (instance? AMQP$Queue$BindOk bind-ok))))
+        exchange "amq.fanout"]
+    (lhq/declare channel queue)
+    (lhq/bind    channel queue exchange)))
 
 
 ;;
@@ -76,10 +85,9 @@
   (let [channel  (lhc/create-channel conn)
         declare-ok (lhq/declare channel)
         queue    (.getQueue declare-ok)
-        exchange "amq.fanout"
-        bind-ok    (lhq/bind   channel queue exchange :routing-key "abc")
-        unbind-ok  (lhq/unbind channel queue exchange "abc")]
-    (is (instance? AMQP$Queue$UnbindOk unbind-ok))))
+        exchange "amq.fanout"]
+    (lhq/bind   channel queue exchange :routing-key "abc")
+    (lhq/unbind channel queue exchange "abc")))
 
 
 

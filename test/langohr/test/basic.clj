@@ -2,7 +2,8 @@
 
 (ns langohr.test.basic
   (:refer-clojure :exclude [get declare])
-  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse)
+  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse
+                                AMQP$Queue$DeclareOk)
            (java.util UUID))
   (:use [clojure.test])
   (:require [langohr.core      :as lhc]

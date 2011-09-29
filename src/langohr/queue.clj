@@ -16,41 +16,48 @@
 ;; API
 ;;
 
-(defn ^AMQP$Queue$DeclareOk declare
+(defn declare
   "Declares a queue using queue.declare AMQP method"
-  ([^Channel channel]
+  (^AMQP$Queue$DeclareOk [^Channel channel]
      (.queueDeclare channel))
-  ([^Channel channel ^String queue]
+  (^AMQP$Queue$DeclareOk [^Channel channel ^String queue]
      (.queueDeclare channel queue false true true nil))
-  ([^Channel channel ^String queue &{:keys [durable exclusive auto-delete arguments] :or {durable false, exclusive true, auto-delete true}}]
+  (^AMQP$Queue$DeclareOk [^Channel channel ^String queue &{:keys [durable exclusive auto-delete arguments] :or {durable false, exclusive true, auto-delete true}}]
      (.queueDeclare channel queue durable exclusive auto-delete arguments)))
 
 
-(defn ^AMQP$Queue$BindOk bind
+(defn bind
   "Binds a queue to an exchange using queue.bind AMQP method"
-  ([^Channel channel ^String queue ^String exchange]
+  (^AMQP$Queue$BindOk [^Channel channel ^String queue ^String exchange]
      (.queueBind channel queue exchange ""))
-  ([^Channel channel ^String queue ^String exchange &{ :keys [routing-key arguments] :or { routing-key "", arguments nil } }]
+  (^AMQP$Queue$BindOk [^Channel channel ^String queue ^String exchange &{ :keys [routing-key arguments] :or { routing-key "", arguments nil } }]
      (.queueBind channel queue exchange routing-key arguments)))
 
 
-(defn ^AMQP$Queue$UnbindOk unbind
+(defn unbind
   "Unbinds a queue from an exchange using queue.bind AMQP method"
-  ([^Channel channel ^String queue ^String exchange ^String routing-key]
+  (^AMQP$Queue$UnbindOk [^Channel channel ^String queue ^String exchange ^String routing-key]
      (.queueUnbind channel queue exchange routing-key))
-  ([^Channel channel ^String queue ^String exchange ^String routing-key ^Map arguments]
+  (^AMQP$Queue$UnbindOk[^Channel channel ^String queue ^String exchange ^String routing-key ^Map arguments]
      (.queueUnbind channel queue exchange routing-key arguments)))
 
 
-(defn ^AMQP$Queue$DeleteOk delete
+(defn delete
   "Deletes a queue using queue.delete AMQP method"
-  ([^Channel channel ^String queue]
+  (^AMQP$Queue$DeleteOk [^Channel channel ^String queue]
      (.queueDelete channel queue))
-  ([^Channel channel ^String queue if-unused if-empty]
+  (^AMQP$Queue$DeleteOk[^Channel channel ^String queue if-unused if-empty]
      (.queueDelete channel queue if-unused if-empty)))
 
 
-(defn ^AMQP$Queue$PurgeOk purge
+(defn purge
   "Purges a queue using queue.purge AMQP method"
-  [^Channel channel ^String queue]
+  ^AMQP$Queue$PurgeOk [^Channel channel ^String queue]
   (.queuePurge channel queue))
+
+
+(defn status
+  ""
+  [^Channel channel ^String queue]
+  (let [declare-ok ^AMQP$Queue$DeclareOk (.queueDeclarePassive channel queue)]
+    { :message-count (.getMessageCount declare-ok), :consumer-count (.getConsumerCount declare-ok) }))
