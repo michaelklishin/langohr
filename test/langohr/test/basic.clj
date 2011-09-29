@@ -2,13 +2,15 @@
 
 (ns langohr.test.basic
   (:refer-clojure :exclude [get declare])
-  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse))
-  (:use [clojure.test]
-        [langohr.core      :as lhc]
-        [langohr.consumers :as lhcons]
-        [langohr.queue     :as lhq]
-        [langohr.basic     :as lhb]
-        [langohr.util      :as lhu]))
+  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse)
+           (java.util UUID))
+  (:use [clojure.test])
+  (:require [langohr.core      :as lhc]
+            [langohr.consumers :as lhcons]
+            [langohr.queue     :as lhq]
+            [langohr.exchange  :as lhe]
+            [langohr.basic     :as lhb]
+            [langohr.util      :as lhu]))
 
 ;;
 ;; basic.publish, basic.consume
@@ -231,6 +233,33 @@
       (is (= 2 delivery-tag2))
       (lhb/reject channel delivery-tag1 false))
     (lhq/purge channel queue)))
+
+
+;;
+;; basic.return
+;;
+
+(deftest t-handling-of-returned-mandatory-messages-with-a-listener-instance
+  (let [channel  (.createChannel conn)
+        exchange "langohr.tests.basic.return1"
+        latch    (java.util.concurrent.CountDownLatch. 1)
+        rl       (lhb/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
+                                        (.countDown latch)))]
+    (.setReturnListener channel rl)
+    (lhe/declare channel exchange "direct" :auto-delete true)
+    (lhb/publish channel exchange (str (UUID/randomUUID)) "return-me" :mandatory true)
+    (.await latch)))
+
+(deftest t-handling-of-returned-immediate-messages-with-a-listener-instance
+  (let [channel  (.createChannel conn)
+        queue    (.getQueue (lhq/declare channel))
+        latch    (java.util.concurrent.CountDownLatch. 1)
+        rl       (lhb/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
+                                        (.countDown latch)))]
+    (.setReturnListener channel rl)
+    (lhb/publish channel "" queue "return-me" :immediate true)
+    (.await latch)))
+
 
 
 ;;

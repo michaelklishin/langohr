@@ -10,7 +10,7 @@
 (ns langohr.basic
   (:refer-clojure :exclude [get])
   (:require [langohr util])
-  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse AMQP$Basic$RecoverOk)
+  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse AMQP$Basic$RecoverOk ReturnListener)
            (java.util Map)))
 
 
@@ -21,9 +21,10 @@
 (defn publish
   "Publishes a message using basic.publish AMQP method"
   [^Channel channel, ^String exchange, ^String routing-key, ^String payload,
-   &{:keys [content-type content-encoding headers
+   &{:keys [mandatory immediate content-type content-encoding headers
             persistent priority correlation-id reply-to expiration message-id
-            timestamp type user-id app-id cluster-id]}]
+            timestamp type user-id app-id cluster-id]
+     :or { mandatory false, immediate false }}]
   (let [payload-bytes      (.getBytes payload)
         properties-builder (AMQP$BasicProperties$Builder.)
         properties         (.build (doto properties-builder
@@ -41,7 +42,18 @@
                                      (.userId          user-id)
                                      (.appId           app-id)
                                      (.clusterId       cluster-id)))]
-    (.basicPublish channel exchange routing-key properties payload-bytes)))
+    (.basicPublish channel exchange routing-key mandatory immediate  properties payload-bytes)))
+
+
+(defn return-listener
+  "Adds new returned messages listener to a channel"
+  [^clojure.lang.IFn handler-fn]
+  (reify ReturnListener
+    (handleReturn [this, reply-code, reply-text, exchange, routing-key, properties, body]
+      (handler-fn reply-code, reply-text, exchange, routing-key, properties, (String. ^bytes body)))))
+
+
+
 
 
 (defn consume
