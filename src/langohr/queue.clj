@@ -26,6 +26,12 @@
      (.queueDeclare channel queue durable exclusive auto-delete arguments)))
 
 
+(defn declare-passive
+  "Declares a queue passively (checks that it is there) using queue.declare AMQP method"
+  [^Channel channel ^String queue]
+  (.queueDeclarePassive channel queue))
+
+
 (defn bind
   "Binds a queue to an exchange using queue.bind AMQP method"
   (^AMQP$Queue$BindOk [^Channel channel ^String queue ^String exchange]
