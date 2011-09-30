@@ -10,6 +10,14 @@
     (is (instance? com.rabbitmq.client.Connection conn))
     (is (open? conn))))
 
+
+(deftest t-connection-failure-due-to-misconfigured-port
+  (is (thrown? java.net.ConnectException (connect { :host "127.0.0.1" :port 2887 }))))
+
+(deftest t-connection-failure-due-to-unknown-host
+  (is (thrown? java.net.UnknownHostException (connect { :host "skdjhfkjshfglkashfklajshdf.local" :port 2887 }))))
+
+
 (deftest t-close-connection
   (let [conn (connect)]
     (is (open? conn))
