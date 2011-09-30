@@ -59,6 +59,13 @@
         nil))))
 
 
+(deftest t-queue-declaration-with-message-ttl
+  (let [channel  (lhc/create-channel conn)
+        queue    (.getQueue (lhq/declare channel "" :auto-delete true :arguments { "x-message-ttl" 1500 } ))]
+    (lhb/publish channel "" queue "")
+    (Thread/sleep 2000)
+    (is (nil? (lhb/get channel queue)))))
+
 
 ;;
 ;; Passive queue.declare
