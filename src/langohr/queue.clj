@@ -57,7 +57,7 @@
 
 
 (defn status
-  ""
+  "Returns a map with two keys: message-count and :consumer-count, for the given queue. Uses queue.declare AMQP method with the :passive attribute set."
   [^Channel channel ^String queue]
   (let [declare-ok ^AMQP$Queue$DeclareOk (.queueDeclarePassive channel queue)]
     { :message-count (.getMessageCount declare-ok), :consumer-count (.getConsumerCount declare-ok) }))
