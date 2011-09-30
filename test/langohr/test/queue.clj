@@ -97,22 +97,22 @@
 
 (deftest t-declare-and-immediately-delete-a-client-named-queue-with-default-attributes
   (let  [channel    (lhc/create-channel conn)
-         queue-name "langohr.tests.queues.client-named-with-default-attributes"
-         declare-ok (lhq/declare channel queue-name)]
+         queue-name "langohr.tests.queues.client-named-with-default-attributes"]
+    (lhq/declare channel queue-name)
     (lhq/delete channel queue-name)))
 
 
 (deftest t-declare-and-immediately-delete-a-client-named-queue-if-it-is-empty
   (let  [channel    (lhc/create-channel conn)
-         queue-name "langohr.tests.queues.client-named-with-default-attributes"
-         declare-ok (lhq/declare channel queue-name)]
+         queue-name "langohr.tests.queues.client-named-with-default-attributes"]
+    (lhq/declare channel queue-name)
     (lhq/delete channel queue-name false true)))
 
 
 (deftest t-declare-and-immediately-delete-a-client-named-queue-if-it-is-unused
   (let  [channel    (lhc/create-channel conn)
-         queue-name "langohr.tests.queues.client-named-with-default-attributes"
-         declare-ok (lhq/declare channel queue-name)]
+         queue-name "langohr.tests.queues.client-named-with-default-attributes"]
+    (lhq/declare channel queue-name)
     (lhq/delete channel queue-name true false)))
 
 
