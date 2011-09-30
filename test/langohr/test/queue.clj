@@ -2,7 +2,8 @@
 
 (ns langohr.test.queue
   (:refer-clojure :exclude [declare get])
-  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk))
+  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk)
+           (java.io IOException))
   (:use [clojure.test]
         [langohr.core  :as lhc]
         [langohr.queue :as lhq]
@@ -42,6 +43,21 @@
          queue-name "langohr.tests.queues.client-named.durable.non-exclusive.non-auto-deleted"
          declare-ok (lhq/declare channel queue-name :durable true, :exclusive false, :auto-delete false)]
     (is (= (.getQueue declare-ok) queue-name))))
+
+
+(deftest t-redeclare-an-auto-deleted-queue-with-different-attributes
+  (let [conn        (lhc/connect)
+        channel     (lhc/create-channel conn)
+        queue       "langohr.tests.queues.non-auto-deleted1"
+        shutdown-ln (lhc/shutdown-listener (fn [cause]
+                                             (println "Shutdown listener has fired")))]
+    (try
+      (.addShutdownListener channel shutdown-ln)
+      (lhq/declare channel queue :auto-delete true)
+      (lhq/declare channel queue :auto-delete false)
+      (catch IOException ioe ;; see http://www.rabbitmq.com/api-guide.html#shutdown
+        nil))))
+
 
 
 ;;
