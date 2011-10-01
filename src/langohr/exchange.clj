@@ -8,6 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.exchange
+  "Exchanges are the entities to which messages are sent. Exchanges match and distribute messages across queues."
   (:refer-clojure :exclude [declare])
   (:import (com.rabbitmq.client Channel AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Exchange$BindOk)))
 
@@ -16,7 +17,23 @@
 ;;
 
 (defn declare
-  "Declares an exchange using exchange.declare AMQP method"
+  "Declares an exchange using exchange.declare AMQP method.
+
+   By default creates non-autodelete non-durable exchange.
+
+   Default Exhange types:
+    - direct: 1:1 form of communication. Routing key defines how broker will direct message from producer to the consumer.
+    - fanout: 1:N message delivery pattern. No routing keys are involved. You bind a queue to exchange and messages sent to that exchange are delivered to all bound queues.
+    - topic: used for 1:n and n:m communication. In this case, routing key is defined as a pattern. For example \"langohr.#\" will match \"langohr.samples\" and \"langohr.smamples\" or \"#.samples\" will match \"langor.samples\" and \"shmangor.samples\".
+
+   Usage example:
+
+       (lhe/declare channel exchange \"direct\" :auto-delete false, :durable true)
+
+   Options
+     :auto-delete (default: false): If set when creating a new exchange, the exchange will be marked as durable. Durable exchanges remain active when a server restarts. Non-durable exchanges (transient exchanges) are purged if/when a server restarts.
+     :durable (default: false): indicates wether the exchange is durable. Information about Durable Exchanges is persisted and restored after server restart. Non-durable (transient) exchanges do not survive the server restart.
+     :internal (default: false): If set, the exchange may not be used directly by publishers, but only when bound to other exchanges. Internal exchanges are used to construct wiring that is not visible to applications."
   (^AMQP$Exchange$DeclareOk [^Channel channel ^String name ^String type]
      (.exchangeDeclare channel name type))
   (^AMQP$Exchange$DeclareOk [^Channel channel ^String name ^String type &{ :keys [durable auto-delete internal arguments] :or {durable false, auto-delete false, internal false} }]
@@ -24,7 +41,16 @@
 
 
 (defn delete
-  "Deletes an exchange using exchange.delete AMQP method"
+  "Deletes an exchange using exchange.delete AMQP method. When an exchange is deleted all queue bindings on the exchange are cancelled.
+
+  Options:
+    :if-unused If set, the server will only delete the exchange if it has no queue bindings. If the exchange has queue bindings the server does not delete it but raises a channel exception instead.
+
+  Usage example:
+
+     (lhe/delete channel exchange true)
+
+  "
   (^AMQP$Exchange$DeleteOk [^Channel channel ^String name]
      (.exchangeDelete channel name))
   (^AMQP$Exchange$DeleteOk [^Channel channel ^String name if-unused]
@@ -32,7 +58,11 @@
 
 
 (defn bind
-  "Binds a queue to an exchange using exchange.bind AMQP method (a RabbitMQ-specific extension)"
+  "Binds a queue to an exchange using exchange.bind AMQP method (a RabbitMQ-specific extension)
+
+  Options:
+    :routing-key (default: \"\"): Specifies the routing key for the binding. The routing key is used for routing messages depending on the exchange configuration. Not all exchanges use a routing key - refer to the specific exchange documentation.
+    :arguments (default: nil): A hash of optional arguments with the declaration. Headers exchange type uses these metadata attributes for routing matching. In addition, brokers may implement AMQP extensions using x-prefixed declaration arguments."
   (^AMQP$Exchange$BindOk [^Channel channel ^String destination ^String source]
      (.exchangeBind channel destination source ""))
   (^AMQP$Exchange$BindOk [^Channel channel ^String destination ^String source &{ :keys [routing-key arguments] :or { routing-key "", arguments nil } }]
