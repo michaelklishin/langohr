@@ -17,6 +17,7 @@
 
 (defonce conn (lhc/connect))
 
+;; direct
 
 (deftest t-declare-a-direct-exchange-with-default-attributes
   (let [channel    (lhc/create-channel conn)
@@ -36,7 +37,24 @@
     (lhe/declare channel exchange "direct" :auto-delete true, :durable false)))
 
 
+(deftest t-direct-exchange-routing-key-delivery
+    (let [conn (lhc/connect)
+          channel (lhc/create-channel conn)
+          exchange "langohr.tests.exchanges.direct4"
+          queue    (.getQueue (lhq/declare channel "" :auto-delete true))]
 
+      (lhe/declare channel exchange "direct")
+      (lhq/bind channel queue exchange :routing-key "abc")
+
+      (lhb/publish channel exchange "abc" "")
+      (lhb/publish channel exchange "xyz" "")
+
+      (Thread/sleep 200)
+
+      (is (= 1 (:message-count (lhq/status channel queue))))))
+
+
+;; fanout
 
 (deftest t-declare-a-fanout-exchange-with-default-attributes
   (let [channel    (lhc/create-channel conn)
@@ -56,7 +74,23 @@
     (lhe/declare channel exchange "fanout" :auto-delete true)))
 
 
+(deftest t-fanount-exchange-broadcast-delivery
+    (let [conn (lhc/connect)
+          channel (lhc/create-channel conn)
+          exchange "langohr.tests.exchanges.fanout4"
+          queue    (.getQueue (lhq/declare channel "" :auto-delete true))]
 
+      (lhe/declare channel exchange "fanout")
+      (lhq/bind channel queue exchange)
+
+      (lhb/publish channel exchange "abc" "")
+      (lhb/publish channel exchange "xyz" "")
+
+      (Thread/sleep 200)
+
+      (is (= 2 (:message-count (lhq/status channel queue))))))
+
+;; topic
 
 (deftest t-declare-a-topic-exchange-with-default-attributes
   (let [channel    (lhc/create-channel conn)
@@ -89,7 +123,22 @@
       (catch IOException ioe ;; see http://www.rabbitmq.com/api-guide.html#shutdown
         nil))))
 
+(deftest t-topic-exchange-wildcard-delivery
+    (let [conn (lhc/connect)
+          channel (lhc/create-channel conn)
+          exchange "langohr.tests.exchanges.topic5"
+          queue    (.getQueue (lhq/declare channel "" :auto-delete true))]
 
+      (lhe/declare channel exchange "topic")
+      (lhq/bind channel queue exchange :routing-key "log.*")
+
+      (lhb/publish channel exchange "accounts.signup" "")
+      (lhb/publish channel exchange "log.info" "")
+      (lhb/publish channel exchange "log.warn" "")
+
+      (Thread/sleep 200)
+
+      (is (= 2 (:message-count (lhq/status channel queue))))))
 
 ;;
 ;; exchange.delete
@@ -138,3 +187,28 @@
     (lhe/bind    channel destination source)
     (lhb/publish channel source "" "")
     (is (lhb/get channel queue))))
+
+;;
+;;  Headers exchange
+;;
+
+(deftest t-headers-exchange
+
+  (let [channel (lhc/create-channel conn)
+        exchange "langohr.tests.exchanges.headers2"
+        queue    (.getQueue (lhq/declare channel "" :auto-delete true))]
+
+    (lhe/declare channel exchange "headers")
+    (lhq/bind channel queue exchange :arguments { "x-match" "all" "arch" "x86_64" "os" "linux" })
+
+    (lhb/publish channel exchange "" "For linux/IA64"   :headers { "arch" "x86_64" "os" "linux" })
+    (lhb/publish channel exchange "" "For linux/x86"    :headers { "arch" "x86"  "os" "linux" })
+    (lhb/publish channel exchange "" "For any linux"    :headers { "os" "linux" })
+    (lhb/publish channel exchange "" "For OS X"         :headers { "os" "macosx" })
+    (lhb/publish channel exchange "" "For solaris/IA64" :headers { "os" "solaris" "arch" "x86_64" })
+
+    (Thread/sleep 200)
+
+    (is (= 1 (:message-count (lhq/status channel queue))))))
+
+
