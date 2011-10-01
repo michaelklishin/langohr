@@ -59,6 +59,27 @@
         nil))))
 
 
+(deftest t-queue-declaration-with-message-ttl
+  (let [channel  (lhc/create-channel conn)
+        queue    (.getQueue (lhq/declare channel "" :auto-delete true :arguments { "x-message-ttl" 1500 } ))]
+    (lhb/publish channel "" queue "")
+    (Thread/sleep 2000)
+    (is (nil? (lhb/get channel queue)))))
+
+
+(deftest t-queue-declaration-with-queue-ttl
+  (let [channel  (lhc/create-channel conn)
+        queue    "langohr.test.leased.queue"]
+    (lhq/declare channel queue :auto-delete true :exclusive false :arguments { "x-expires" 1500 } )
+    (lhq/declare-passive channel queue)
+    (lhb/publish channel "" queue "")
+    (Thread/sleep 1700)
+    (try
+      (lhq/declare-passive channel queue)
+      (catch IOException ioe
+        nil))))
+
+
 
 ;;
 ;; Passive queue.declare
