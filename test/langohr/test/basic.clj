@@ -2,7 +2,7 @@
 
 (ns langohr.test.basic
   (:refer-clojure :exclude [get declare])
-  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder QueueingConsumer GetResponse
+  (:import (com.rabbitmq.client Connection Channel AMQP AMQP$BasicProperties QueueingConsumer GetResponse
                                 AMQP$Queue$DeclareOk)
            (java.util UUID))
   (:use [clojure.test])
@@ -55,7 +55,7 @@
         exchange    ""
         payload     ""
         queue       (.getQueue (lhq/declare channel "" :auto-delete true))
-        tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")        
+        tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")
         counter     (atom 0)
         msg-handler (fn [delivery message-properties message-payload]
                       (print ".")
