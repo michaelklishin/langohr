@@ -8,6 +8,7 @@
   (:require [langohr.core     :as lhc]
             [langohr.exchange :as lhe]
             [langohr.queue    :as lhq]
+            [langohr.consumers :as lhcons]
             [langohr.basic    :as lhb]))
 
 
@@ -188,6 +189,7 @@
     (lhb/publish channel source "" "")
     (is (lhb/get channel queue))))
 
+
 ;;
 ;;  Headers exchange
 ;;
@@ -211,4 +213,25 @@
 
     (is (= 1 (:message-count (lhq/status channel queue))))))
 
+
+
+;;
+;; alternate exchanges support
+;;
+
+(deftest t-demonstrate-alternate-exchanges-support
+  (let [channel     (lhc/create-channel conn)
+        fe          "langohr.extensions.altexchanges.fanout1"
+        de          "langohr.extensions.altexchanges.direct1"
+        queue       (.getQueue (lhq/declare channel "" :auto-delete true))
+        latch       (java.util.concurrent.CountDownLatch. 1)
+        msg-handler (fn [delivery message-properties message-payload]
+                      (.countDown latch))]
+    (lhe/declare channel fe "fanout" :auto-delete true)
+    (lhe/declare channel de "direct" :auto-delete true :arguments { "alternate-exchange" fe })
+    (lhq/bind    channel queue fe)
+    (.start (Thread. #((lhcons/subscribe channel queue msg-handler :auto-ack true)) "subscriber"))
+    (.start (Thread. (fn []
+                       (lhb/publish channel de "" "1010" :mandatory true)) "publisher"))
+    (.await latch)))
 
