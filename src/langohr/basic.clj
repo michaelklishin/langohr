@@ -10,7 +10,7 @@
 (ns langohr.basic
   (:refer-clojure :exclude [get])
   (:require [langohr util])
-  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties Consumer GetResponse AMQP$Basic$RecoverOk ReturnListener)
+  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse AMQP$Basic$RecoverOk ReturnListener)
            (java.util Map)))
 
 
@@ -20,27 +20,28 @@
 
 (defn publish
   "Publishes a message using basic.publish AMQP method"
-  [^Channel channel, ^String exchange, ^String routing-key, ^String payload, ;
+  [^Channel channel, ^String exchange, ^String routing-key, ^String payload,
    &{:keys [mandatory immediate content-type content-encoding headers
             persistent priority correlation-id reply-to expiration message-id
             timestamp type user-id app-id cluster-id]
      :or { mandatory false, immediate false }}]
   (let [payload-bytes      (.getBytes payload)
-        properties         (new AMQP$BasicProperties
-                                     content-type
-                                     content-encoding
-                                     headers
-                                     (Integer/valueOf (if persistent 2 1))
-                                     (if priority (Integer/valueOf ^Long priority) nil)
-                                     correlation-id
-                                     reply-to
-                                     expiration
-                                     message-id
-                                     timestamp
-                                     type
-                                     user-id
-                                     app-id
-                                     cluster-id)]
+        properties-builder (AMQP$BasicProperties$Builder.)
+        properties         (.build (doto properties-builder
+                                     (.contentType     content-type)
+                                     (.contentEncoding content-encoding)
+                                     (.headers         headers)
+                                     (.deliveryMode    (Integer/valueOf (if persistent 2 1)))
+                                     (.priority        (if priority (Integer/valueOf ^Long priority) nil))
+                                     (.correlationId   correlation-id)
+                                     (.replyTo         reply-to)
+                                     (.expiration      expiration)
+                                     (.messageId       message-id)
+                                     (.timestamp       timestamp)
+                                     (.type            type)
+                                     (.userId          user-id)
+                                     (.appId           app-id)
+                                     (.clusterId       cluster-id)))]
     (.basicPublish channel exchange routing-key mandatory immediate  properties payload-bytes)))
 
 
