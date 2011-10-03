@@ -44,11 +44,15 @@ see here, really.
 CI is hosted by [travis-ci.org](http://travis-ci.org)
 
 
-## Usage
+## The Road to 1.0
 
-Since these are veryearly days of the library, the API is not really fleshed out yet and it is likely to be *completely unusable* to anyone
-other than the author.
+There is a few remaining items before Langohr 1.0 will be released. They are
 
+ * Test coverage for all of the RabbitMQ extensions to AMQP 0.9.1, to serve as examples and help fleshing out the API.
+ * Documentation guides.
+ * Test suite refactoring.
+
+We expect 1.0 to be released in the 4th quater of 2011.
 
 
 ## License
