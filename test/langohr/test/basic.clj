@@ -44,6 +44,17 @@
     (.await latch)))
 
 
+(deftest t-demonstrate-sender-selected-distribution-extension-support
+  (let [channel     (lhc/create-channel conn)
+        queue1      (.getQueue (lhq/declare channel "" :auto-delete true))
+        queue2      (.getQueue (lhq/declare channel "" :auto-delete true))
+        queue3      (.getQueue (lhq/declare channel "" :auto-delete true))]
+    (lhb/publish channel "" queue1 "1010" :headers { "CC" [queue2], "BCC" [queue3] })
+    (is (lhb/get channel queue1))
+    (is (lhb/get channel queue2))
+    (is (lhb/get channel queue3))))
+
+
 
 
 ;;
