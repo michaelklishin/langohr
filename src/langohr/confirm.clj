@@ -27,7 +27,7 @@
 
 (defn add-listener
   [^Channel channel, ^ConfirmListener cl]
-  (.setConfirmListener channel cl)
+  (.addConfirmListener channel cl)
   cl)
 
 
@@ -37,5 +37,5 @@
   ([^Channel channel, ^clojure.lang.IFn ack-handler, ^clojure.lang.IFn nack-handler]
      (let [select-ok (.confirmSelect channel)
            cl        (listener ack-handler nack-handler)]
-       (.setConfirmListener channel cl)
+       (.addConfirmListener channel cl)
        select-ok)))

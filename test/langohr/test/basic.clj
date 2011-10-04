@@ -257,7 +257,7 @@
         latch    (java.util.concurrent.CountDownLatch. 1)
         rl       (lhb/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
                                         (.countDown latch)))]
-    (.setReturnListener channel rl)
+    (.addReturnListener channel rl)
     (lhe/declare channel exchange "direct" :auto-delete true)
     (lhb/publish channel exchange (str (UUID/randomUUID)) "return-me" :mandatory true)
     (.await latch)))
@@ -268,7 +268,7 @@
         latch    (java.util.concurrent.CountDownLatch. 1)
         rl       (lhb/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
                                         (.countDown latch)))]
-    (.setReturnListener channel rl)
+    (.addReturnListener channel rl)
     (lhb/publish channel "" queue "return-me" :immediate true)
     (.await latch)))
 
