@@ -87,7 +87,8 @@
 
 (defn create-connection-factory
   "Creates connection factory from given attributes"
-  ^ConnectionFactory [{ :keys [host port username password vhost] :or {username *default-username*, password *default-password*, vhost *default-vhost*, host *default-host*, port *default-port* }}]
+  ^ConnectionFactory [{ :keys [host port username password vhost]
+                        :or   {username *default-username*, password *default-password*, vhost *default-vhost*, host *default-host*, port *default-port* }}]
   (doto (ConnectionFactory.)
     (.setUsername    username)
     (.setPassword    password)

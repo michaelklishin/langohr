@@ -6,7 +6,7 @@
 
 (deftest t-open-a-channel
   (let [conn (lhcore/connect)
-        ch   (.createChannel conn)]
+        ch   (lhch/open conn)]
     (is (instance? com.rabbitmq.client.Channel ch))
     (is (lhcore/open? ch))))
 
@@ -21,7 +21,7 @@
 
 (deftest t-close-a-channel-using-langohr-core-close
   (let [conn (lhcore/connect)
-        ch   (.createChannel conn)]
+        ch   (lhch/open conn)]
     (is (lhcore/open? ch))
     (lhcore/close ch)
     (is (not (lhcore/open? ch)))))
@@ -30,7 +30,7 @@
 
 (deftest t-close-a-channel-using-langohr-channel-close
   (let [conn (lhcore/connect)
-        ch   (.createChannel conn)]
+        ch   (lhch/open conn)]
     (is (lhcore/open? ch))
     (lhch/close ch)
     (is (not (lhcore/open? ch)))))
@@ -38,7 +38,7 @@
 
 (deftest t-close-a-channel-using-langohr-channel-close-with-provided-message
   (let [conn (lhcore/connect)
-        ch   (.createChannel conn)]
+        ch   (lhch/open conn)]
     (is (lhcore/open? ch))
     (lhch/close ch 200 "Bye-bye")
     (is (not (lhcore/open? ch)))))
@@ -47,7 +47,7 @@
 
 (deftest t-toggle-flow-control
   (let [conn (lhcore/connect)
-        ch   (.createChannel conn)]
+        ch   (lhch/open conn)]
     (is (lhch/flow? ch))
     (lhch/flow ch false)
     (lhch/flow ch true)

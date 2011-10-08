@@ -63,7 +63,7 @@
   (let [channel  (lhc/create-channel conn)
         queue    (.getQueue (lhq/declare channel "" :auto-delete true :arguments { "x-message-ttl" 1500 } ))]
     (lhb/publish channel "" queue "")
-    (Thread/sleep 2000)
+    (Thread/sleep 1700)
     (is (nil? (lhb/get channel queue)))))
 
 
@@ -135,8 +135,11 @@
 (deftest t-declare-and-immediately-delete-a-client-named-queue-with-default-attributes
   (let  [channel    (lhc/create-channel conn)
          queue-name "langohr.tests.queues.client-named-with-default-attributes"]
-    (lhq/declare channel queue-name)
-    (lhq/delete channel queue-name)))
+    (lhq/declare         channel queue-name)
+    (lhq/declare-passive channel queue-name)
+    (lhq/delete          channel queue-name)
+    (is (thrown? java.io.IOException
+                 (lhq/declare-passive channel queue-name)))))
 
 
 (deftest t-declare-and-immediately-delete-a-client-named-queue-if-it-is-empty
@@ -158,21 +161,22 @@
 ;;
 
 (deftest t-purge-a-queue-without-messages
-  (let  [channel    (lhc/create-channel conn)
-         queue-name "langohr.tests.queues.client-named-with-default-attributes"
-         declare-ok (lhq/declare channel queue-name)]
-    (is (= (.getMessageCount declare-ok) 0))
-    (lhq/purge channel queue-name)
-    (is (= (.getMessageCount declare-ok) 0))))
+  (let  [channel (lhc/create-channel conn)
+         queue   "langohr.tests.queues.client-named-with-default-attributes"]
+    (lhq/declare channel queue)
+    (is (= 0 (:message-count (lhq/status channel queue))))
+    (lhq/purge channel queue)
+    (is (= 0 (:message-count (lhq/status channel queue))))))
 
 (deftest t-purge-a-queue-that-has-messages-in-it
-  (let  [channel    (lhc/create-channel conn)
-         queue-name "langohr.tests.queues.client-named-with-default-attributes"
-         declare-ok (lhq/declare channel queue-name)
-         n                                30]
+  (let  [channel (lhc/create-channel conn)
+         queue   "langohr.tests.queues.client-named-with-default-attributes"
+         n       30]
+    (lhq/declare channel queue)
+    (is (= 0 (:message-count (lhq/status channel queue))))
     (doseq [i (range n)]
-      (lhb/publish channel "" queue-name "Hi"))
+      (lhb/publish channel "" queue "Hi"))
     (Thread/sleep 200)
-    (is (= (.getMessageCount (lhq/declare channel queue-name)) n))
-    (lhq/purge channel queue-name)
-    (is (= (.getMessageCount (lhq/declare channel queue-name)) 0))))
+    (is (= n (:message-count (lhq/status channel queue))))
+    (lhq/purge channel queue)
+    (is (= 0 (:message-count (lhq/status channel queue))))))

@@ -18,9 +18,7 @@
 (defn open
   "Opens a new channel on given connection using channel.open AMQP method"
   (^Channel [^Connection connection]
-            (.createChannel connection))
-  (^Channel [^Connection connection ^long channel-id]
-            (.createChannel connection channel-id)))
+            (.createChannel ^Connection connection)))
 
 
 (defn close
