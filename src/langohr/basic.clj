@@ -10,7 +10,7 @@
 (ns langohr.basic
   (:refer-clojure :exclude [get])
   (:require [langohr util])
-  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse AMQP$Basic$RecoverOk ReturnListener)
+  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener)
            (java.util Map)))
 
 
@@ -108,10 +108,10 @@
 
 
 (defn recover
-  (^AMQP$Basic$RecoverOk [^Channel channel]
-                         (.basicRecover channel))
-  (^AMQP$Basic$RecoverOk [^Channel channel, ^Boolean requeue]
-                         (.basicRecover channel requeue)))
+  ([^Channel channel]
+     (.basicRecover channel))
+  ([^Channel channel, ^Boolean requeue]
+     (.basicRecover channel requeue)))
 
 (defn recover-async
   [^Channel channel, ^Boolean requeue]
