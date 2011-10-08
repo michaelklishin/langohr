@@ -46,11 +46,11 @@ CI is hosted by [travis-ci.org](http://travis-ci.org)
 
 ## The Road to 1.0
 
-There is a few remaining items before Langohr 1.0 will be released. They are
+Langohr is slowly approaching 1.0 release. A few remaining items before the release are
 
- * Test coverage for all of the RabbitMQ extensions to AMQP 0.9.1, to serve as examples and help fleshing out the API.
  * Documentation guides.
- * Test suite refactoring.
+ * Test suite cleanup.
+ * Some stress tests to set baseline performance expectations.
 
 We expect 1.0 to be released in the 4th quater of 2011.
 
