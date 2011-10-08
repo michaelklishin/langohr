@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.tx
-  (:import (com.rabbitmq.client Channel AMQP$Tx$SelectOk)))
+  (:import (com.rabbitmq.client Channel)))
 
 
 ;;
