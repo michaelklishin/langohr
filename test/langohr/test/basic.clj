@@ -69,7 +69,6 @@
         tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")        
         counter     (atom 0)
         msg-handler (fn [delivery message-properties message-payload]
-                      (print ".")
                       (swap! counter inc))]
     (.start (Thread. #((lhcons/subscribe channel queue msg-handler :consumer-tag tag, :auto-ack true)) "t-basic-cancel/consumer"))
     (lhb/publish channel exchange queue payload)
@@ -80,6 +79,7 @@
       (lhb/publish channel exchange queue payload))
     (Thread/sleep 200)
     (is (= @counter 1))))
+
 
 
 

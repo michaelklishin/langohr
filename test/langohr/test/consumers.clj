@@ -37,6 +37,17 @@
     (.await latch)))
 
 
+(deftest t-cancel-notification-handler
+  (let [channel  (.createChannel *conn*)
+        queue    (.getQueue (lhq/declare channel))
+        latch    (java.util.concurrent.CountDownLatch. 1)
+        consumer (lhcons/create-default channel :cancel-fn (fn [consumer_tag]
+                                                             (.countDown latch)))]
+    (lhb/consume channel queue consumer)
+    (lhq/delete channel queue)
+    (.await latch)))
+
+
 (deftest t-delivery-handler
   (let [channel    (.createChannel *conn*)
         exchange   ""
