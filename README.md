@@ -32,8 +32,26 @@ Langohr is built from the ground up for Clojure 1.3 and up.
 
 ## This is a Work In Progress
 
-Langohr is very much a work in progress and until tutorials and documentation guides are written, there is nothing to
+Langohr is a work in progress and until 1.0 is released with documentation and tutorials, there is nothing to
 see here, really.
+
+
+## Artifacts
+
+Snapshot artifacts are [released to Clojars](https://clojars.org/com.novemberain/langohr) every few days.
+
+With Leiningen:
+
+    [com.novemberain/langohr "1.0.0-SNAPSHOT"]
+
+
+With Maven:
+
+    <dependency>
+      <groupId>com.novemberain</groupId>
+      <artifactId>langohr</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
 
 
 ## Continuous Integration
