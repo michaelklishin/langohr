@@ -30,6 +30,11 @@ Here is what Langohr *does not* try to be:
 Langohr is built from the ground up for Clojure 1.3 and up.
 
 
+## Supported RabbitMQ versions
+
+Langohr depends on RabbitMQ Java client 2.6.x and is known to work with RabbitMQ versions 2.5.1 and later.
+
+
 ## This is a Work In Progress
 
 Langohr is a work in progress and until 1.0 is released with documentation and tutorials, there is nothing to
