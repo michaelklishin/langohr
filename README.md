@@ -1,4 +1,4 @@
-# What is Langohr
+# Langohr, a feature-rich Clojure RabbitMQ client that embraces [AMQP 0.9.1 Model](http://bitly.com/amqp-model-explained)
 
 Langohr is a Clojure wrapper around the RabbitMQ Java client that embraces [AMQP 0.9.1 Model](http://bitly.com/amqp-model-explained)
 and does not try to hide it behind many layers of DSLs. It is experimental only in the sense that API is not completely
