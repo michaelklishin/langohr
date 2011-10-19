@@ -15,11 +15,11 @@
 ;; Defaults
 ;;
 
-(def ^:dynamic *default-username* "guest")
-(def ^:dynamic *default-password* "guest")
-(def ^:dynamic *default-vhost*    "/")
-(def ^:dynamic *default-host*     "localhost")
-(def ^:dynamic *default-port*     5672)
+(def ^{ :dynamic true :doc "Default username that langohr.core/connect will use." } *default-username* "guest")
+(def ^{ :dynamic true :doc "Default password that langohr.core/connect will use." } *default-password* "guest")
+(def ^{ :dynamic true :doc "Default vhost that langohr.core/connect will use."    } *default-vhost*    "/")
+(def ^{ :dynamic true :doc "Default host that langohr.core/connect will use."     } *default-host*     "localhost")
+(def ^{ :dynamic true :doc "Default port that langohr.core/connect will use."     } *default-port*     5672)
 
 
 ;;
@@ -56,7 +56,7 @@
 
 (declare create-connection-factory)
 (defn connect
-  "Creates and returns a new connection to RabbitMQ"
+  "Creates and returns a new connection to RabbitMQ."
   ;; defaults
   (^Connection []
                (let [conn-factory (ConnectionFactory.)]
@@ -74,7 +74,7 @@
 
 
 (defn shutdown-listener
-  "Adds new shutdown signal listener to a channel"
+  "Adds new shutdown signal listener that delegates to given function"
   [^clojure.lang.IFn handler-fn]
   (reify ShutdownListener
     (shutdownCompleted [this cause]
@@ -85,7 +85,7 @@
 ;; Implementation
 ;;
 
-(defn create-connection-factory
+(defn- create-connection-factory
   "Creates connection factory from given attributes"
   ^ConnectionFactory [{ :keys [host port username password vhost]
                         :or   {username *default-username*, password *default-password*, vhost *default-vhost*, host *default-host*, port *default-port* }}]
