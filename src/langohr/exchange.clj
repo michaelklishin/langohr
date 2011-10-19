@@ -19,9 +19,10 @@
 (defn declare
   "Declares an exchange using exchange.declare AMQP method.
 
-   By default creates non-autodelete non-durable exchange.
+   By default declares non-autodeleted non-durable exchanges.
 
-   Default Exhange types:
+   Core exhange types:
+
     - direct: 1:1 form of communication. Routing key defines how broker will direct message from producer to the consumer.
     - fanout: 1:N message delivery pattern. No routing keys are involved. You bind a queue to exchange and messages sent to that exchange are delivered to all bound queues.
     - topic: used for 1:n and n:m communication. In this case, routing key is defined as a pattern. For example \"langohr.#\" will match \"langohr.samples\" and \"langohr.smamples\" or \"#.samples\" will match \"langor.samples\" and \"shmangor.samples\".
