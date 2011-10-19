@@ -73,7 +73,7 @@
   "Fetches a message from a queue using basic.get AMQP method"
   (^GetResponse [^Channel channel, ^String queue]
                 (.basicGet channel queue true))
-  (^GetResponse [^Channel channel, ^String queue, auto-ack]
+  (^GetResponse [^Channel channel, ^String queue, ^Boolean auto-ack]
                 (.basicGet channel queue auto-ack)))
 
 
@@ -82,7 +82,7 @@
   "Sets channel or connection prefetch level using basic.qos AMQP method"
   ([^Channel channel ^long prefetch-count]
      (.basicQos channel prefetch-count))
-  ([^Channel channel ^long prefetch-size ^long prefetch-count global]
+  ([^Channel channel ^long prefetch-size ^long prefetch-count ^Boolean global]
      (.basicQos channel prefetch-size prefetch-count global)))
 
 
@@ -97,17 +97,18 @@
   "Rejects (and, optionally, requeues) a messages using basic.reject AMQP method"
   ([^Channel channel ^long delivery-tag]
      (.basicAck channel delivery-tag false))
-  ([^Channel channel ^long delivery-tag requeue]
+  ([^Channel channel ^long delivery-tag ^Boolean requeue]
      (.basicAck channel delivery-tag requeue)))
 
 
 (defn nack
   "Negative acknowledgement of one or more messages using basic.nack AMQP methods (a RabbitMQ extension to AMQP 0.9.1"
-  [^Channel channel ^long delivery-tag multiple requeue]
+  [^Channel channel ^long delivery-tag multiple ^Boolean requeue]
   (.basicNack channel delivery-tag multiple requeue))
 
 
 (defn recover
+  "Notifies RabbitMQ that it needs to redeliver unacknowledged messages using basic.recover AMQP method"
   ([^Channel channel]
      (.basicRecover channel))
   ([^Channel channel, ^Boolean requeue]
