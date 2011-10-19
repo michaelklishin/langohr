@@ -18,29 +18,30 @@
 (defn open
   "Opens a new channel on given connection using channel.open AMQP method"
   (^Channel [^Connection connection]
-            (.createChannel ^Connection connection)))
+            (.createChannel connection)))
 
 
 (defn close
   "Closes given channel using channel.close AMQP method"
-  ([channel]
-     (.close ^Channel channel))
-  ([channel, ^long code, ^String message]
-     (.close ^Channel channel, code, message)))
+  ([^Channel channel]
+     (.close channel))
+  ([^Channel channel, ^long code, ^String message]
+     (.close channel, code, message)))
 
 
 (defn open?
-  [channel]
-  (.isOpen ^Channel channel))
+  "Checks if channel is open. Consider using langohr.core/open? instead."
+  [^Channel channel]
+  (.isOpen channel))
 
 
 (defn flow?
   "Returns true if flow is active on given channel. Uses channel.flow AMQP method."
-  ^Boolean [channel]
-  (.getActive (.getFlow ^Channel channel)))
+  (^Boolean [^Channel channel]
+            (.getActive (.getFlow channel))))
 
 
 (defn flow
   "Enables or disables channel flow using channel.flow AMQP method"
-  ^AMQP$Channel$FlowOk [channel ^Boolean on]
-  (.flow ^Channel channel on))
+  (^AMQP$Channel$FlowOk [^Channel channel ^Boolean on]
+                        (.flow channel on)))
