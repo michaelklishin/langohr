@@ -20,6 +20,7 @@
 ;;
 
 (defn create-default
+  "Instantiates and returns a new consumer that handles various consumer life cycle events. See also langohr.basic/consume."
   ^Consumer [^Channel channel &{ :keys [consume-ok-fn cancel-fn cancel-ok-fn shutdown-signal-fn recover-ok-fn handle-delivery-fn] }]
   (proxy [DefaultConsumer] [^Channel channel]
     (handleConsumeOk [^String consumer-tag]
