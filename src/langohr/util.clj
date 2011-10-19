@@ -16,5 +16,5 @@
 ;;
 
 (defn generate-consumer-tag
-  [base]
+  [^String base]
   (str base "-" (UUID/randomUUID)))
