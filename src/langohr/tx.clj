@@ -16,6 +16,7 @@
 ;;
 
 (defn select
+  "Activates transactions on given channel. Please note that transactions only cover publishing and acknowledgements."
   [^Channel channel]
   (.txSelect channel))
 
