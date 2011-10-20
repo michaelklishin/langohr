@@ -37,8 +37,8 @@ Langohr depends on RabbitMQ Java client 2.6.x and is known to work with RabbitMQ
 
 ## This is a Work In Progress
 
-Langohr is a work in progress and until 1.0 is released with documentation and tutorials, there is nothing to
-see here, really.
+While the API is largely stabilized at this point, Langohr is a work in progress. Documentation and tutorials site is still not published, not every
+idea we have is implemented. Keep that in mind.
 
 
 ## Artifacts
