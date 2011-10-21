@@ -12,11 +12,12 @@
         [langohr.basic :only [consume]]
         [clojure.tools.cli]))
 
+(def ^:dynamic *langohr-settings*)
 (declare message-handler)
 
 (defn consume-one
   [queue]
-  (let [conn         (connect { :username "langohr", :password "langohr", :vhost "langohr.dev" })
+  (let [conn         (connect { :username (:username *langohr-settings*) :password (:password *langohr-settings*) :vhost (:vhost *langohr-settings*) })
         channel      (.createChannel conn)
         consumer-tag (.toString (new BigInteger 130 (SecureRandom.)) 32)
         consumer     (lhcons/create-default channel :handle-delivery-fn message-handler)
