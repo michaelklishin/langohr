@@ -11,7 +11,7 @@
   (:refer-clojure :exclude [get])
   (:require [langohr util])
   (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener)
-           (java.util Map)))
+           (java.util Map Date)))
 
 
 ;;
@@ -19,11 +19,44 @@
 ;;
 
 (defn publish
-  "Publishes a message using basic.publish AMQP method"
-  [^Channel channel, ^String exchange, ^String routing-key, ^String payload,
-   &{:keys [mandatory immediate content-type content-encoding headers
-            persistent priority correlation-id reply-to expiration message-id
-            timestamp type user-id app-id cluster-id]
+  "Publishes a message using basic.publish AMQP method.
+
+  This method publishes a message to a specific exchange. The message will be routed to queues as defined by the exchange configuration and distributed to any active consumers when the transaction, if any, is committed.
+
+  ^String :exchange - name of the exchange to publish to. Can be empty, which means default exchange.
+  ^String :routing-key - the routing key for the message. Used for ourting messages depending on exchange configuration.
+
+  Options:
+  ^Boolean :mandatory, default false - specifies reaction of server if the message can't be routed to a queue. True when requesting a mandatory publish
+  ^Boolean :immediate, default false - specifies reaction of server if the message can't be routed to a queue consumer immediately. True when requesting an immediate publish.
+
+
+  Basic properties:
+
+    ^String :content content-type - MIME Content type
+    ^String :content-encoding - MIME Content encoding
+    ^Map :headers - headers that will be passed to subscribers, given in Map format.
+    ^Integer :persistent - indicates delivery mode for the message. Non-persistent 1, persistent - 2.
+    ^Integer :priority - message priority, number from 0 to 9
+    ^String :correlation-id - application correlation identifier. Useful for cases when it's required to match request with the response. Usually it's a unique value.
+    ^String :reply-to - name of the callback queue. RabbitMQ spec says: address to reply to.
+    ^String :expiration - Docs TBD
+    ^String :message-id - application Message identifier
+    ^Date :timestamp - message timestamp
+    ^String :type - message type name
+    ^String :user-id - creating user ID
+    ^String :app-id - creating application ID
+    ^String :cluster-id - Docs TBD
+
+  EXAMPLE:
+
+      (lhb/publish channel exchange queue payload :priority 8, :message-id msg-id, :content-type content-type, :headers { \"see you soon\" \"à bientôt\" })
+
+  "
+  [^Channel channel, ^String exchange, ^String routing-key, ^String payload
+   &{:keys [^Boolean mandatory ^Boolean immediate ^String content-type ^String ^String content-encoding ^Map headers
+            ^Boolean persistent ^Integer priority ^String correlation-id ^String reply-to ^String expiration ^String message-id
+            ^Date timestamp ^String type ^String user-id ^String app-id ^String cluster-id]
      :or { mandatory false, immediate false }}]
   (let [payload-bytes      (.getBytes payload)
         properties-builder (AMQP$BasicProperties$Builder.)
@@ -46,7 +79,20 @@
 
 
 (defn return-listener
-  "Adds new returned messages listener to a channel"
+  "Creates new return listener. Usually used in order to be notified of failed deliveries when basic-publish is called with :mandatory or :immediate flags set, but
+   message coudn't be delivered.
+
+   If the client has not configured a return listener for a particular channel, then the associated returned message will be silently dropped.
+
+   ^IFn :handler-fn - callback/handler funciton, with :reply-code, :reply-text, :exchange, :routing-key, :properties and :body set.
+
+
+   EXAMPLE:
+      (let [listener (langohr.basic/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
+                                                      (println reply-code, reply-text, exchange, routing-key, properties, body))) ]
+        (.addReturnListener channel listener))
+
+  "
   [^clojure.lang.IFn handler-fn]
   (reify ReturnListener
     (handleReturn [this, reply-code, reply-text, exchange, routing-key, properties, body]
@@ -57,7 +103,21 @@
 
 
 (defn consume
-  "Adds new consumer to a queue using basic.consume AMQP method"
+  "Adds new consumer to a queue using basic.consume AMQP method.
+
+   Called with default parameters, starts non-nolocal, non-exclusive consumer with explicit acknowledgement and server-generated consumer tag.
+
+   ^String queue - the name of the queue
+   ^Consumer consumer - callback to receive notifications and messages from a queue by subscription. For more information about consumers, check out langohr.consumers ns.
+
+   Options:
+
+     ^String :consumer-tag
+     ^Boolean :auto-ack (default false) - true if the server should consider messages acknowledged once delivered, false if server should expect explicit acknowledgements.
+     ^Boolean :exclusive (default false) - true if this is an exclusive consumer (no other consumer can consume given queue)
+     ^Boolean :no-local (default false) - flag set to true unless server local buffering is required.
+
+"
   (^String [^Channel channel, ^String queue, ^Consumer consumer, &{ :keys [consumer-tag auto-ack exclusive arguments no-local]
                                                                    :or { consumer-tag "", auto-ack false, exclusive false, no-local false } }]
            (.basicConsume ^Channel channel ^String queue ^Boolean auto-ack ^String consumer-tag ^Boolean no-local ^Boolean exclusive ^Map arguments ^Consumer consumer)))
