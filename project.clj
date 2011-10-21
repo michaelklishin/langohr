@@ -9,7 +9,9 @@
                   :snapshots false
                   :releases {:checksum :fail :update :always}
                   }}
-  :dependencies [[org.clojure/clojure "1.3.0"]
-                 [com.rabbitmq/amqp-client "2.6.1"]]
+  :dependencies [[org.clojure/clojure       "1.3.0"]
+                 [com.rabbitmq/amqp-client  "2.6.1"]]
+
+  :dev-dependencies [[org.clojure/tools.cli "0.1.0"]]
   :warn-on-reflection true
   :jvm-opts ["-Xmx512m"])
