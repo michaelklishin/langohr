@@ -66,7 +66,7 @@
         exchange    ""
         payload     ""
         queue       (.getQueue (lhq/declare channel "" :auto-delete true))
-        tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")        
+        tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")
         counter     (atom 0)
         msg-handler (fn [delivery message-properties message-payload]
                       (swap! counter inc))]
@@ -256,6 +256,7 @@
         exchange "langohr.tests.basic.return1"
         latch    (java.util.concurrent.CountDownLatch. 1)
         rl       (lhb/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
+                                        (is (= body "return-me"))
                                         (.countDown latch)))]
     (.addReturnListener channel rl)
     (lhe/declare channel exchange "direct" :auto-delete true)
@@ -267,6 +268,7 @@
         queue    (.getQueue (lhq/declare channel))
         latch    (java.util.concurrent.CountDownLatch. 1)
         rl       (lhb/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
+                                        (is (= body "return-me"))
                                         (.countDown latch)))]
     (.addReturnListener channel rl)
     (lhb/publish channel "" queue "return-me" :immediate true)
