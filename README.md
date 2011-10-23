@@ -43,7 +43,7 @@ idea we have is implemented. Keep that in mind.
 
 ## Artifacts
 
-Snapshot artifacts are [released to Clojars](https://clojars.org/com.novemberain/langohr) every few days.
+Snapshot artifacts are [released to Clojars](https://clojars.org/com.novemberain/langohr) every day.
 
 With Leiningen:
 
