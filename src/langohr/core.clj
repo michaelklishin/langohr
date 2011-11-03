@@ -15,12 +15,12 @@
 ;; Defaults
 ;;
 
-(def ^{ :dynamic true :doc "Default username that langohr.core/connect will use." } *default-username* "guest")
-(def ^{ :dynamic true :doc "Default password that langohr.core/connect will use." } *default-password* "guest")
-(def ^{ :dynamic true :doc "Default vhost that langohr.core/connect will use."    } *default-vhost*    "/")
-(def ^{ :dynamic true :doc "Default host that langohr.core/connect will use."     } *default-host*     "localhost")
-(def ^{ :dynamic true :doc "Default port that langohr.core/connect will use."     } *default-port*     5672)
-
+(def ^{:dynamic true :doc "Default connection settings."} *default-config*
+  {:username "guest"
+   :password "guest"
+   :vhost     "/"
+   :host      "localhost"
+   :port      5672})
 
 ;;
 ;; Protocols
@@ -85,13 +85,30 @@
 ;; Implementation
 ;;
 
+(defn- env-config [uri]
+  (if uri
+    (let [uri (java.net.URI. uri)
+          [username password] (if (.getUserInfo uri)
+                                (.split (.getUserInfo uri) ":"))
+          uri-config {:host     (.getHost uri)
+                      :port     (.getPort uri)
+                      :vhost    (.getPath uri)
+                      :username username
+                      :password password}]
+      (into *default-config* (filter val uri-config)))
+    *default-config*))
+
+(defn- get-config [config]
+  (merge (env-config (:uri config (System/getenv "RABBITMQ_URL")))
+         config))
+
 (defn- create-connection-factory
   "Creates connection factory from given attributes"
-  ^ConnectionFactory [{ :keys [host port username password vhost]
-                        :or   {username *default-username*, password *default-password*, vhost *default-vhost*, host *default-host*, port *default-port* }}]
-  (doto (ConnectionFactory.)
-    (.setUsername    username)
-    (.setPassword    password)
-    (.setVirtualHost vhost)
-    (.setHost        host)
-    (.setPort        port)))
+  ^ConnectionFactory [config]
+  (let [{:keys [host port username password vhost]} (get-config config)]
+    (doto (ConnectionFactory.)
+      (.setUsername    username)
+      (.setPassword    password)
+      (.setVirtualHost vhost)
+      (.setHost        host)
+      (.setPort        port))))
