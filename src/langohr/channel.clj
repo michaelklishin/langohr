@@ -15,10 +15,10 @@
 ;; API
 ;;
 
-(defn open
+(defn ^Channel open
   "Opens a new channel on given connection using channel.open AMQP method"
-  (^Channel [^Connection connection]
-            (.createChannel connection)))
+  [^Connection connection]
+  (.createChannel connection))
 
 
 (defn close
@@ -35,13 +35,13 @@
   (.isOpen channel))
 
 
-(defn flow?
+(defn ^Boolean flow?
   "Returns true if flow is active on given channel. Uses channel.flow AMQP method."
-  (^Boolean [^Channel channel]
-            (.getActive (.getFlow channel))))
+  ([^Channel channel]
+     (.getActive (.getFlow channel))))
 
 
-(defn flow
+(defn ^AMQP$Channel$FlowOk flow
   "Enables or disables channel flow using channel.flow AMQP method"
-  (^AMQP$Channel$FlowOk [^Channel channel ^Boolean on]
-                        (.flow channel on)))
+  ([^Channel channel ^Boolean on]
+     (.flow channel on)))

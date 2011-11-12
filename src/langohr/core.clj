@@ -55,21 +55,21 @@
 ;;
 
 (declare create-connection-factory)
-(defn connect
+(defn ^Connection connect
   "Creates and returns a new connection to RabbitMQ."
   ;; defaults
-  (^Connection []
-               (let [conn-factory (ConnectionFactory.)]
-                 (.newConnection conn-factory)))
+  ([]
+     (let [conn-factory (ConnectionFactory.)]
+       (.newConnection conn-factory)))
   ;; settings
-  (^Connection [settings]
-               (let [^ConnectionFactory conn-factory (create-connection-factory settings)]
-                 (.newConnection conn-factory))))
+  ([settings]
+     (let [^ConnectionFactory conn-factory (create-connection-factory settings)]
+       (.newConnection conn-factory))))
 
 
-(defn create-channel
+(defn ^Channel create-channel
   "Delegates to langohr.channel/open, kept for backwards compatibility"
-  ^Channel [& args]
+  [& args]
   (apply langohr.channel/open args))
 
 
@@ -102,9 +102,9 @@
   (merge (env-config (:uri config (System/getenv "RABBITMQ_URL")))
          config))
 
-(defn- create-connection-factory
+(defn- ^ConnectionFactory create-connection-factory
   "Creates connection factory from given attributes"
-  ^ConnectionFactory [config]
+  [config]
   (let [{:keys [host port username password vhost]} (get-config config)]
     (doto (ConnectionFactory.)
       (.setUsername    username)
