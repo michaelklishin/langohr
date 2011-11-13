@@ -12,6 +12,6 @@
   :dependencies [[org.clojure/clojure       "1.3.0"]
                  [com.rabbitmq/amqp-client  "2.6.1"]]
 
-  :dev-dependencies [[org.clojure/tools.cli "0.1.0"]]
+  :dev-dependencies [[org.clojure/tools.cli "0.2.1"]]
   :warn-on-reflection true
   :jvm-opts ["-Xmx512m"])
