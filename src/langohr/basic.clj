@@ -102,7 +102,7 @@
 
 
 
-(defn consume
+(defn ^String consume
   "Adds new consumer to a queue using basic.consume AMQP method.
 
    Called with default parameters, starts non-nolocal, non-exclusive consumer with explicit acknowledgement and server-generated consumer tag.
@@ -118,9 +118,9 @@
      ^Boolean :no-local (default false) - flag set to true unless server local buffering is required.
 
 "
-  (^String [^Channel channel, ^String queue, ^Consumer consumer, &{ :keys [consumer-tag auto-ack exclusive arguments no-local]
-                                                                   :or { consumer-tag "", auto-ack false, exclusive false, no-local false } }]
-           (.basicConsume ^Channel channel ^String queue ^Boolean auto-ack ^String consumer-tag ^Boolean no-local ^Boolean exclusive ^Map arguments ^Consumer consumer)))
+  [^Channel channel, ^String queue, ^Consumer consumer, &{ :keys [consumer-tag auto-ack exclusive arguments no-local]
+                                                          :or { consumer-tag "", auto-ack false, exclusive false, no-local false } }]
+  (.basicConsume ^Channel channel ^String queue ^Boolean auto-ack ^String consumer-tag ^Boolean no-local ^Boolean exclusive ^Map arguments ^Consumer consumer))
 
 
 (defn cancel
@@ -129,12 +129,12 @@
   (.basicCancel ^Channel channel ^String consumer-tag))
 
 
-(defn get
+(defn ^GetResponse get
   "Fetches a message from a queue using basic.get AMQP method"
-  (^GetResponse [^Channel channel, ^String queue]
-                (.basicGet channel queue true))
-  (^GetResponse [^Channel channel, ^String queue, ^Boolean auto-ack]
-                (.basicGet channel queue auto-ack)))
+  ([^Channel channel, ^String queue]
+     (.basicGet channel queue true))
+  ([^Channel channel, ^String queue, ^Boolean auto-ack]
+     (.basicGet channel queue auto-ack)))
 
 
 
