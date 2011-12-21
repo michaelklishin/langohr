@@ -10,7 +10,7 @@
                   :releases {:checksum :fail :update :always}
                   }}
   :dependencies [[org.clojure/clojure       "1.3.0"]
-                 [com.rabbitmq/amqp-client  "2.7.0"]]
+                 [com.rabbitmq/amqp-client  "2.7.1"]]
 
   :dev-dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]]
   :warn-on-reflection true
