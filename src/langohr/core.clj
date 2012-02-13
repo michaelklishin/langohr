@@ -107,7 +107,7 @@
   [config]
   (let [{:keys [host port username password vhost requested-heartbeat connection-timeout] :or {
                                                                                                requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
-                                                                                               connection-timeout  10
+                                                                                               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT
                                                                                                } } (get-config config)]
     (doto (ConnectionFactory.)
       (.setUsername           username)
