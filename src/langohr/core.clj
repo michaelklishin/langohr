@@ -105,10 +105,15 @@
 (defn- ^ConnectionFactory create-connection-factory
   "Creates connection factory from given attributes"
   [config]
-  (let [{:keys [host port username password vhost]} (get-config config)]
+  (let [{:keys [host port username password vhost requested-heartbeat connection-timeout] :or {
+                                                                                               requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
+                                                                                               connection-timeout  10
+                                                                                               } } (get-config config)]
     (doto (ConnectionFactory.)
-      (.setUsername    username)
-      (.setPassword    password)
-      (.setVirtualHost vhost)
-      (.setHost        host)
-      (.setPort        port))))
+      (.setUsername           username)
+      (.setPassword           password)
+      (.setVirtualHost        vhost)
+      (.setHost               host)
+      (.setPort               port)
+      (.setRequestedHeartbeat requested-heartbeat)
+      (.setConnectionTimeout  connection-timeout))))

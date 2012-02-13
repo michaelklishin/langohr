@@ -10,6 +10,17 @@
     (is (instance? com.rabbitmq.client.Connection conn))
     (is (open? conn))))
 
+(deftest t-connection-with-overriden-parameters
+  ;; see ./bin/ci/before_script.sh
+  (let [conn (connect {
+                       :host "127.0.0.1" :port 5672
+                       :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
+                       :requested-heartbeat 3 :connection-timeout 5 })]
+    (is (open? conn))
+    (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
+    (is (= 5672        (.getPort conn)))
+    (is (= 3           (.getHeartbeat conn)))))
+
 
 (deftest t-connection-failure-due-to-misconfigured-port
   (is (thrown? java.net.ConnectException (connect { :host "127.0.0.1" :port 2887 }))))
