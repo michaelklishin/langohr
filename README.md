@@ -25,14 +25,18 @@ Here is what Langohr *does not* try to be:
  * A port of Ruby amqp gem to Clojure
 
 
-## Supported Clojure versions
 
-Langohr is built from the ground up for Clojure 1.3 and up.
+## Documentation & Examples
+
+We are working on documentation guides & examples site for the 1.0 release. In the meantime, please refer to the [test suite](https://github.com/michaelklishin/langohr/tree/master/test/langohr/test) for code examples.
 
 
-## Supported RabbitMQ versions
 
-Langohr depends on RabbitMQ Java client 2.7.x and thus should work with RabbitMQ versions 2.0 and later.
+## Community
+
+[Langohr has a mailing list](https://groups.google.com/forum/#!forum/clojure-rabbitmq). Feel free to join it and ask any questions you may have.
+
+To subscribe for announcements of releases, important changes and so on, please follow [@ClojureWerkz](https://twitter.com/#!/clojurewerkz) on Twitter.
 
 
 ## This is a Work In Progress
@@ -43,7 +47,20 @@ idea we have is implemented. Keep that in mind.
 
 ## Artifacts
 
-Snapshot artifacts are [released to Clojars](https://clojars.org/com.novemberain/langohr) every day.
+With Leiningen:
+
+    [com.novemberain/langohr "1.0.0-beta1"]
+
+
+With Maven:
+
+    <dependency>
+      <groupId>com.novemberain</groupId>
+      <artifactId>langohr</artifactId>
+      <version>1.0.0-beta1</version>
+    </dependency>
+
+If you feel comfortable using snapshots:
 
 With Leiningen:
 
@@ -57,6 +74,19 @@ With Maven:
       <artifactId>langohr</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+
+Snapshot artifacts are [released to Clojars](https://clojars.org/com.novemberain/langohr) every day.
+
+
+## Supported Clojure versions
+
+Langohr is built from the ground up for Clojure 1.3 and up.
+
+
+## Supported RabbitMQ versions
+
+Langohr depends on RabbitMQ Java client 2.7.x and thus should work with RabbitMQ versions 2.0 and later.
+
 
 
 ## Continuous Integration
@@ -75,11 +105,11 @@ Langohr is slowly approaching 1.0 release. A few remaining items before the rele
  * Test suite cleanup.
  * Some stress tests to set baseline performance expectations.
 
-We expect 1.0 to be released in the 4th quater of 2011.
+We expect 1.0 to be released in 2012 (but not before documentation site is ready).
 
 
 ## License
 
-Copyright (C) 2011 Michael S. Klishin
+Copyright (C) 2011-2012 Michael S. Klishin
 
 Distributed under the Eclipse Public License, the same as Clojure.
