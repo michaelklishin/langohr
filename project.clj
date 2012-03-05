@@ -1,6 +1,4 @@
-;; See https://github.com/technomancy/leiningen/blob/stable/sample.project.clj
-;; to learn more about available options.
-(defproject com.novemberain/langohr "1.0.0-SNAPSHOT"
+(defproject com.novemberain/langohr "1.0.0-beta1"
   :description "An experimental Clojure layer on top of the RabbitMQ Java client"
   :url         "https://github.com/michaelklishin/langohr"
   :license     { :name "Eclipse Public License" }
