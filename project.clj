@@ -1,4 +1,4 @@
-(defproject com.novemberain/langohr "1.0.0-beta1"
+(defproject com.novemberain/langohr "1.0.0-SNAPSHOT"
   :description "An experimental Clojure layer on top of the RabbitMQ Java client"
   :url         "https://github.com/michaelklishin/langohr"
   :license     { :name "Eclipse Public License" }
