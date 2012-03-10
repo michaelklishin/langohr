@@ -88,15 +88,6 @@ Langohr is built from the ground up for Clojure 1.3 and up.
 Langohr depends on RabbitMQ Java client 2.7.x and thus should work with RabbitMQ versions 2.0 and later.
 
 
-
-## Continuous Integration
-
-[![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/langohr.png)](http://travis-ci.org/michaelklishin/langohr)
-
-
-CI is hosted by [travis-ci.org](http://travis-ci.org)
-
-
 ## The Road to 1.0
 
 Langohr is slowly approaching 1.0 release. A few remaining items before the release are
@@ -106,6 +97,25 @@ Langohr is slowly approaching 1.0 release. A few remaining items before the rele
  * Some stress tests to set baseline performance expectations.
 
 We expect 1.0 to be released in 2012 (but not before documentation site is ready).
+
+
+## Continuous Integration
+
+[![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/langohr.png)](http://travis-ci.org/michaelklishin/langohr)
+
+
+CI is hosted by [travis-ci.org](http://travis-ci.org)
+
+
+## Development
+
+Langohr uses [Leiningen 2](https://github.com/technomancy/leiningen/blob/master/doc/TUTORIAL.md). Make
+sure you have it installed and then run tests against Clojure 1.3.0 and 1.4.0[-beta4] using
+
+    lein2 with-profile test:1.4 test
+
+Then create a branch and make your changes on it. Once you are done with your changes and all
+tests pass, submit a pull request on Github.
 
 
 ## License
