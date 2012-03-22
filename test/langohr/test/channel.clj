@@ -1,6 +1,6 @@
 (ns langohr.test.channel
-  (:import (com.rabbitmq.client Connection Channel))
-  (:use [clojure.test])
+  (:import [com.rabbitmq.client Connection Channel])
+  (:use clojure.test)
   (:require [langohr.core    :as lhcore]
             [langohr.channel :as lhch]))
 

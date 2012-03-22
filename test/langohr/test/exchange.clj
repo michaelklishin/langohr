@@ -1,10 +1,8 @@
-(set! *warn-on-reflection* true)
-
 (ns langohr.test.exchange
   (:refer-clojure :exclude [declare])
-  (:import (com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Queue$DeclareOk ShutdownSignalException)
-           (java.io IOException))
-  (:use     [clojure.test])
+  (:import [com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Queue$DeclareOk ShutdownSignalException]
+           java.io.IOException)
+  (:use     clojure.test)
   (:require [langohr.core     :as lhc]
             [langohr.exchange :as lhe]
             [langohr.queue    :as lhq]

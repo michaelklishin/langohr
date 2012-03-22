@@ -1,10 +1,10 @@
 (ns langohr.test.confirm
-  (:import (com.rabbitmq.client Connection AMQP$Queue$DeclareOk AMQP$Confirm$SelectOk))
-  (:require [langohr.confirm]
+  (:import [com.rabbitmq.client Connection AMQP$Queue$DeclareOk AMQP$Confirm$SelectOk])
+  (:require langohr.confirm
             [langohr.core  :as lhc]
             [langohr.basic :as lhb]
             [langohr.queue :as lhq])
-  (:use [clojure.test]))
+  (:use clojure.test))
 
 (defonce ^Connection conn (lhc/connect))
 

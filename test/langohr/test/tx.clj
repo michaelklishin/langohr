@@ -1,8 +1,8 @@
 (ns langohr.test.tx
-  (:import (com.rabbitmq.client Connection AMQP$Tx$SelectOk AMQP$Tx$CommitOk AMQP$Tx$RollbackOk))
-  (:require [langohr.tx]
+  (:import [com.rabbitmq.client Connection AMQP$Tx$SelectOk AMQP$Tx$CommitOk AMQP$Tx$RollbackOk])
+  (:require langohr.tx
             [langohr.core :as lhc])
-  (:use [clojure.test]))
+  (:use clojure.test))
 
 (defonce ^Connection conn (lhc/connect))
 
