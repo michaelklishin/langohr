@@ -110,7 +110,7 @@ CI is hosted by [travis-ci.org](http://travis-ci.org)
 ## Development
 
 Langohr uses [Leiningen 2](https://github.com/technomancy/leiningen/blob/master/doc/TUTORIAL.md). Make
-sure you have it installed and then run tests against Clojure 1.3.0 and 1.4.0[-beta4] using
+sure you have it installed and then run tests against Clojure 1.3.0 and 1.4.0[-beta5] using
 
     lein2 all test
 
