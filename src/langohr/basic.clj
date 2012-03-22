@@ -9,9 +9,9 @@
 
 (ns langohr.basic
   (:refer-clojure :exclude [get])
-  (:require [langohr util])
-  (:import (com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener)
-           (java.util Map Date)))
+  (:require langohr.util)
+  (:import [com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener]
+           [java.util Map Date]))
 
 
 ;;

@@ -9,7 +9,7 @@
 
 (ns langohr.consumers
   (:refer-clojure :exclude [get])
-  (:import (com.rabbitmq.client Channel Consumer DefaultConsumer QueueingConsumer ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery))
+  (:import [com.rabbitmq.client Channel Consumer DefaultConsumer QueueingConsumer ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery])
   (:use [langohr.basic :as lhb]))
 
 

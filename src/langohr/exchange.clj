@@ -10,7 +10,7 @@
 (ns langohr.exchange
   "Exchanges are the entities to which messages are sent. Exchanges match and distribute messages across queues."
   (:refer-clojure :exclude [declare])
-  (:import (com.rabbitmq.client Channel AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Exchange$BindOk)))
+  (:import [com.rabbitmq.client Channel AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Exchange$BindOk]))
 
 ;;
 ;; API

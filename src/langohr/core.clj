@@ -8,8 +8,8 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.core
-  (:import (com.rabbitmq.client ConnectionFactory Connection Channel ShutdownListener))
-  (:require [langohr.channel]))
+  (:import [com.rabbitmq.client ConnectionFactory Connection Channel ShutdownListener])
+  (:require langohr.channel))
 
 ;;
 ;; Defaults

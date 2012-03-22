@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.confirm
-  (:import (com.rabbitmq.client Channel AMQP$Confirm$SelectOk ConfirmListener)))
+  (:import [com.rabbitmq.client Channel AMQP$Confirm$SelectOk ConfirmListener]))
 
 
 ;;

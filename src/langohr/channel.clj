@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.channel
-  (:import (com.rabbitmq.client ConnectionFactory Connection Channel AMQP$Channel$FlowOk)))
+  (:import [com.rabbitmq.client ConnectionFactory Connection Channel AMQP$Channel$FlowOk]))
 
 
 ;;

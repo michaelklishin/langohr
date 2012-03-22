@@ -9,8 +9,8 @@
 
 (ns langohr.queue
   (:refer-clojure :exclude [declare])
-  (:import (com.rabbitmq.client Channel AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk AMQP$Queue$DeleteOk AMQP$Queue$PurgeOk)
-           (java.util Map)))
+  (:import [com.rabbitmq.client Channel AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk AMQP$Queue$DeleteOk AMQP$Queue$PurgeOk]
+           java.util.Map))
 
 ;;
 ;; API
