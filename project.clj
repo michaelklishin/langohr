@@ -3,7 +3,7 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"}
   :dependencies [[org.clojure/clojure "1.3.0"]
-                 [com.rabbitmq/amqp-client "2.7.1"]]
+                 [com.rabbitmq/amqp-client "2.8.1"]]
   :profiles {:dev { :dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]] }
              :1.4 { :dependencies [[org.clojure/clojure "1.4.0-beta5"]] }}
   :url "https://github.com/michaelklishin/langohr"
