@@ -5,7 +5,7 @@
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [com.rabbitmq/amqp-client "2.8.1"]]
   :profiles {:dev { :dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]] }
-             :1.4 { :dependencies [[org.clojure/clojure "1.4.0-beta5"]] }}
+             :1.4 { :dependencies [[org.clojure/clojure "1.4.0-beta6"]] }}
   :url "https://github.com/michaelklishin/langohr"
   :repositories {"sonatype" {:url
                   "http://oss.sonatype.org/content/repositories/releases",

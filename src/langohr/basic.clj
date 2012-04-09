@@ -118,8 +118,8 @@
      ^Boolean :no-local (default false) - flag set to true unless server local buffering is required.
 
 "
-  [^Channel channel, ^String queue, ^Consumer consumer, &{ :keys [consumer-tag auto-ack exclusive arguments no-local]
-                                                          :or { consumer-tag "", auto-ack false, exclusive false, no-local false } }]
+  [^Channel channel ^String queue ^Consumer consumer &{ :keys [consumer-tag auto-ack exclusive arguments no-local]
+                                                       :or { consumer-tag "" auto-ack false exclusive false no-local false } }]
   (.basicConsume ^Channel channel ^String queue ^Boolean auto-ack ^String consumer-tag ^Boolean no-local ^Boolean exclusive ^Map arguments ^Consumer consumer))
 
 
@@ -131,9 +131,9 @@
 
 (defn ^GetResponse get
   "Fetches a message from a queue using basic.get AMQP method"
-  ([^Channel channel, ^String queue]
+  ([^Channel channel ^String queue]
      (.basicGet channel queue true))
-  ([^Channel channel, ^String queue, ^Boolean auto-ack]
+  ([^Channel channel ^String queue ^Boolean auto-ack]
      (.basicGet channel queue auto-ack)))
 
 
@@ -171,9 +171,9 @@
   "Notifies RabbitMQ that it needs to redeliver unacknowledged messages using basic.recover AMQP method"
   ([^Channel channel]
      (.basicRecover channel))
-  ([^Channel channel, ^Boolean requeue]
+  ([^Channel channel ^Boolean requeue]
      (.basicRecover channel requeue)))
 
 (defn recover-async
-  [^Channel channel, ^Boolean requeue]
+  [^Channel channel ^Boolean requeue]
   (.basicRecoverAsync channel requeue))

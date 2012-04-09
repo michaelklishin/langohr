@@ -25,8 +25,8 @@
   "Closes given channel using channel.close AMQP method"
   ([^Channel channel]
      (.close channel))
-  ([^Channel channel, ^long code, ^String message]
-     (.close channel, code, message)))
+  ([^Channel channel ^long code ^String message]
+     (.close channel code message)))
 
 
 (defn open?

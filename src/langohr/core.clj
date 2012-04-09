@@ -31,9 +31,8 @@
 
 (extend-protocol Closeable
   com.rabbitmq.client.Connection
-  (close [this] (.close this)))
+  (close [this] (.close this))
 
-(extend-protocol Closeable
   com.rabbitmq.client.Channel
   (close [this] (.close this)))
 
@@ -43,9 +42,8 @@
 
 (extend-protocol Openable
   com.rabbitmq.client.Connection
-  (open? [this] (.isOpen this)))
+  (open? [this] (.isOpen this))
 
-(extend-protocol Openable
   com.rabbitmq.client.Channel
   (open? [this] (.isOpen this)))
 
@@ -59,12 +57,10 @@
   "Creates and returns a new connection to RabbitMQ."
   ;; defaults
   ([]
-     (let [conn-factory (ConnectionFactory.)]
-       (.newConnection conn-factory)))
+     (.newConnection (ConnectionFactory.)))
   ;; settings
   ([settings]
-     (let [^ConnectionFactory conn-factory (create-connection-factory settings)]
-       (.newConnection conn-factory))))
+     (.newConnection ^ConnectionFactory (create-connection-factory settings))))
 
 
 (defn ^Channel create-channel
@@ -75,10 +71,10 @@
 
 (defn shutdown-listener
   "Adds new shutdown signal listener that delegates to given function"
-  [^clojure.lang.IFn handler-fn]
+  [^clojure.lang.IFn f]
   (reify ShutdownListener
     (shutdownCompleted [this cause]
-      (handler-fn cause))))
+      (f cause))))
 
 
 ;;
@@ -105,10 +101,10 @@
 (defn- ^ConnectionFactory create-connection-factory
   "Creates connection factory from given attributes"
   [config]
-  (let [{:keys [host port username password vhost requested-heartbeat connection-timeout] :or {
-                                                                                               requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
-                                                                                               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT
-                                                                                               } } (get-config config)]
+  (let [{:keys [host port username password vhost
+                requested-heartbeat connection-timeout]
+         :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
+              connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT} } (get-config config)]
     (doto (ConnectionFactory.)
       (.setUsername           username)
       (.setPassword           password)
