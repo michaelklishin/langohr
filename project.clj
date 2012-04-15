@@ -7,10 +7,10 @@
   :profiles {:dev { :dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]] }
              :1.4 { :dependencies [[org.clojure/clojure "1.4.0"]] }}
   :url "https://github.com/michaelklishin/langohr"
-  :repositories {"sonatype" {:url
-                  "http://oss.sonatype.org/content/repositories/releases",
-                  :snapshots false,
-                             :releases {:checksum :fail, :update :always}}}
+  :repositories {"clojure-releases" "http://build.clojure.org/releases"
+                 "sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
+                             :snapshots false,
+                             :releases {:checksum :fail :update :always}}}
   :aliases { "all" ["with-profile" "dev:dev,1.4"] }
   :warn-on-reflection true
   :jvm-opts ["-Xmx512m"])
