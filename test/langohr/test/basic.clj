@@ -36,7 +36,7 @@
         latch        (java.util.concurrent.CountDownLatch. n)
         msg-handler   (fn [delivery message-properties message-payload]
                         (.countDown latch))]
-    (.start (Thread. #((lhcons/subscribe channel queue msg-handler :consumer-tag tag, :auto-ack true)) "t-publishing-using-default-exchange-and-default-message-attributes/consumer"))
+    (.start (Thread. #((lhcons/subscribe channel queue msg-handler :consumer-tag tag :auto-ack true)) "t-publishing-using-default-exchange-and-default-message-attributes/consumer"))
     (.start (Thread. (fn []
                        (dotimes [i n]
                          (lhb/publish channel exchange queue payload :priority 8, :message-id msg-id, :content-type content-type, :headers { "see you soon" "à bientôt" }))) "publisher"))
