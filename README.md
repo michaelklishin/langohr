@@ -41,7 +41,8 @@ To subscribe for announcements of releases, important changes and so on, please 
 
 ## This is a Work In Progress
 
-While the API is largely stabilized at this point, Langohr is a work in progress. Documentation and tutorials site is still not published, not every
+While the API is largely stabilized at this point, Langohr is a work in progress. Breaking API changes are not out of the question because
+it is much less painful to do them when the library is still young. Documentation and tutorials site is still not published, not every
 idea we have is implemented. Keep that in mind.
 
 
@@ -49,7 +50,7 @@ idea we have is implemented. Keep that in mind.
 
 With Leiningen:
 
-    [com.novemberain/langohr "1.0.0-beta1"]
+    [com.novemberain/langohr "1.0.0-beta2"]
 
 
 With Maven:
@@ -57,7 +58,7 @@ With Maven:
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>langohr</artifactId>
-      <version>1.0.0-beta1</version>
+      <version>1.0.0-beta2</version>
     </dependency>
 
 If you feel comfortable using snapshots:
