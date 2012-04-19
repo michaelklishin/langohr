@@ -9,8 +9,9 @@
 
 (ns langohr.consumers
   (:refer-clojure :exclude [get])
-  (:import [com.rabbitmq.client Channel Consumer DefaultConsumer QueueingConsumer ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery])
-  (:use [langohr.basic :as lhb]))
+  (:import [com.rabbitmq.client Channel Consumer DefaultConsumer QueueingConsumer QueueingConsumer$Delivery ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery])
+  (:require [langohr.basic :as lhb])
+  (:use langohr.conversion))
 
 
 
@@ -52,14 +53,13 @@
 
 (defn subscribe
   "Adds new blocking consumer to a queue using basic.consume AMQP method"
-  [^Channel channel ^String queue ^clojure.lang.IFn message-handler & { :keys [consumer-tag auto-ack exclusive no-local arguments]
-                                                                          :or { consumer-tag "" auto-ack false exclusive false no-local false } }]
+  [^Channel channel ^String queue f &{:keys [consumer-tag auto-ack exclusive no-local arguments]
+                                      :or { consumer-tag "" auto-ack false exclusive false no-local false}}]
   (let [queueing-consumer (QueueingConsumer. channel)]
-    (do
-      (lhb/consume channel queue queueing-consumer :consumer-tag consumer-tag :auto-ack auto-ack :exclusive exclusive :arguments arguments :no-local no-local)
-      (while true
-        (try
-          (let [delivery (.nextDelivery queueing-consumer)]
-            (message-handler delivery (.getProperties delivery) (.getBody delivery)))
-          (catch InterruptedException e
-            nil))))))
+    (lhb/consume channel queue queueing-consumer :consumer-tag consumer-tag :auto-ack auto-ack :exclusive exclusive :arguments arguments :no-local no-local)
+    (while true
+      (try
+        (let [^QueueingConsumer$Delivery delivery (.nextDelivery queueing-consumer)]
+          (f channel (to-message-metadata delivery) (.getBody delivery)))
+        (catch InterruptedException e
+          nil)))))
