@@ -23,12 +23,20 @@
         exchange   "langohr.tests.exchanges.direct1"]
     (lhe/declare channel exchange "direct")))
 
+(deftest t-declare-a-direct-exchange-with-default-attributes-shortcut
+  (let [channel    (lhc/create-channel conn)
+        exchange   "langohr.tests.exchanges.direct1"]
+    (lhe/direct channel exchange)))
 
 (deftest t-declare-a-durable-direct-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct2"]
     (lhe/declare channel exchange "direct" :auto-delete false, :durable true)))
 
+(deftest t-declare-a-durable-direct-exchange-shortcut
+  (let [channel    (lhc/create-channel conn)
+        exchange   "langohr.tests.exchanges.direct2"]
+    (lhe/direct channel exchange :auto-delete false, :durable true)))
 
 (deftest t-declare-an-auto-deleted-direct-exchange
   (let [channel    (lhc/create-channel conn)
@@ -60,12 +68,20 @@
         exchange   "langohr.tests.exchanges.fanout1"]
     (lhe/declare channel exchange "fanout")))
 
+(deftest t-declare-a-fanout-exchange-with-default-attributes-shortcut
+  (let [channel    (lhc/create-channel conn)
+        exchange   "langohr.tests.exchanges.fanout1"]
+    (lhe/fanout channel exchange)))
 
 (deftest t-declare-a-durable-fanout-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.fanout2"]
     (lhe/declare channel exchange "fanout" :durable true)))
 
+(deftest t-declare-a-durable-fanout-exchange-shortcut
+  (let [channel    (lhc/create-channel conn)
+        exchange   "langohr.tests.exchanges.fanout2"]
+    (lhe/fanout channel exchange :durable true)))
 
 (deftest t-declare-an-auto-deleted-fanout-exchange
   (let [channel    (lhc/create-channel conn)
@@ -96,12 +112,20 @@
         exchange   "langohr.tests.exchanges.topic1"]
     (lhe/declare channel exchange "topic")))
 
+(deftest t-declare-a-topic-exchange-with-default-attributes-shortcut
+  (let [channel    (lhc/create-channel conn)
+        exchange   "langohr.tests.exchanges.topic1"]
+    (lhe/topic channel exchange)))
 
 (deftest t-declare-a-durable-topic-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.topic2"]
     (lhe/declare channel exchange "topic" :durable true)))
 
+(deftest t-declare-a-durable-topic-exchange-shortcut
+  (let [channel    (lhc/create-channel conn)
+        exchange   "langohr.tests.exchanges.topic2"]
+    (lhe/declare channel exchange "topic" :durable true)))
 
 (deftest t-declare-an-auto-deleted-topic-exchange
   (let [channel    (lhc/create-channel conn)
