@@ -17,12 +17,29 @@
 ;;
 
 (defn ^AMQP$Queue$DeclareOk declare
-  "Declares a queue using queue.declare AMQP method"
+  "Actively declare a server-named or named queue using queue.declare AMQP method.
+
+   Usage example:
+
+       ;; declare server-named, exclusive, autodelete, non-durable queue.
+       (lhq/declare channel) ;; will yield a name like: 'amq.gen-QtE7OdDDjlHcxNGWuSoUb3'
+
+       ;; creates named non-durable, exclusive, autodelete queue
+       (lhq/declare channel queue-name :durable false :exclusive true :auto-delete true)
+
+   Options
+
+    :durable (default: false): indicates wether the queue is durable. Durable queue will survive server restart. Durable queues do not neccessarily hold persistent messages. Using persistent messages with transient queues is allowed, but will not save messages between restarts.
+    :exclusive (default: false): when set to true, indicates that the queue is exclusive. No other subscriber can consume form that queue. Exclusive always implies auto-delete, as messages are delivered to the single consumer. When set to false, allows multiple consumers.
+    :auto-delete (default: true): when set to true, queue will be purged as soon as last consumer stops is finished using it. If consumer never got attached to the queue, it won't get deleted.
+
+    :arguments: other properties for the Queue.
+  "
   ([^Channel channel]
      (.queueDeclare channel))
   ([^Channel channel ^String queue]
      (.queueDeclare channel queue false true true nil))
-  ([^Channel channel ^String queue &{:keys [durable exclusive auto-delete arguments] :or {durable false, exclusive true, auto-delete true}}]
+  ([^Channel channel ^String queue &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false, exclusive true, auto-delete true}}]
      (.queueDeclare channel queue durable exclusive auto-delete arguments)))
 
 

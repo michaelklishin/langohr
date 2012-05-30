@@ -100,6 +100,13 @@ Langohr is slowly approaching 1.0 release. A few remaining items before the rele
 We expect 1.0 to be released in 2012 (but not before documentation site is ready).
 
 
+## Langohr Is a ClojureWerkz Project
+
+Langohr is part of the group of libraries known as [ClojureWerkz](http://clojurewerkz.org), together with
+[Monger](https://github.com/michaelklishin/monger), [Neocons](https://github.com/michaelklishin/neocons), [Elastisch](https://github.com/clojurewerkz/elastisch), [Quartzite](https://github.com/michaelklishin/quartzite) and several others.
+
+
+
 ## Continuous Integration
 
 [![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/langohr.png)](http://travis-ci.org/michaelklishin/langohr)

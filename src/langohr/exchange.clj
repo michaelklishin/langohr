@@ -40,6 +40,20 @@
   ([^Channel channel ^String name ^String type &{ :keys [durable auto-delete internal arguments] :or {durable false, auto-delete false, internal false} }]
      (.exchangeDeclare channel name type durable auto-delete internal arguments)))
 
+(defn ^AMQP$Exchange$DeclareOk direct
+  "Shortcut method for declaring direct exchange by using exchange.declare AMQP method"
+  [^Channel channel ^String name & opts]
+  (apply declare channel name "direct" opts))
+
+(defn ^AMQP$Exchange$DeclareOk fanout
+  "Shortcut method for declaring fanout exchange by using exchange.declare AMQP method"
+  [^Channel channel ^String name & opts]
+  (apply declare channel name "fanout" opts))
+
+(defn ^AMQP$Exchange$DeclareOk topic
+  "Shortcut method for declaring topic exchange by using exchange.declare AMQP method"
+  [^Channel channel ^String name & opts]
+  (apply declare channel name "topic" opts))
 
 (defn ^AMQP$Exchange$DeleteOk delete
   "Deletes an exchange using exchange.delete AMQP method. When an exchange is deleted all queue bindings on the exchange are cancelled.
