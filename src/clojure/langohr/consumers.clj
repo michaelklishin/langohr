@@ -50,17 +50,10 @@
         (let [delivery (QueueingConsumer$Delivery. envelope properties body)]
           (handle-delivery-fn delivery properties body))))))
 
-(defn subscribe-consumer
-  "Adds new blocking consumer to a queue using basic.consume AMQP method"
-  [^Channel channel ^String queue ^QueueingConsumer queueing-consumer &{:keys [consumer-tag auto-ack exclusive no-local arguments]
-                                                                        :or { consumer-tag "" auto-ack false exclusive false no-local false}
-                                                                        :as options}]
-  (apply lhb/consume channel queue queueing-consumer (flatten (vec options))))
-
 (defn subscribe
   "Adds new blocking default consumer to a queue using basic.consume AMQP method"
   [^Channel channel ^String queue f & options]
   (let [queueing-consumer (create-default channel
                                           :handle-delivery-fn (fn [delivery properties body]
                                                                 (f channel (to-message-metadata delivery) body)))]
-    (apply subscribe-consumer channel queue queueing-consumer options)))
+    (apply lhb/consume channel queue queueing-consumer (flatten (vec options)))))
