@@ -41,7 +41,7 @@
                         (is (:message-id metadata))
                         (is (:priority metadata))
                         (.countDown latch))]
-    (.start (Thread. #((lhcons/subscribe channel queue msg-handler :consumer-tag tag :auto-ack true)) "t-publishing-using-default-exchange-and-default-message-attributes/consumer"))
+    (.start (Thread. #(lhcons/subscribe channel queue msg-handler :consumer-tag tag :auto-ack true) "t-publishing-using-default-exchange-and-default-message-attributes/consumer"))
     (.start (Thread. (fn []
                        (dotimes [i n]
                          (lhb/publish channel exchange queue payload
@@ -74,11 +74,11 @@
         exchange    ""
         payload     ""
         queue       (.getQueue (lhq/declare channel "" :auto-delete true))
-        tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")
+        tag         (lhu/generate-consumer-tag "langohr.basic/consume-tests")
         counter     (atom 0)
         msg-handler (fn [ch metadata payload]
                       (swap! counter inc))]
-    (.start (Thread. #((lhcons/subscribe channel queue msg-handler :consumer-tag tag, :auto-ack true)) "t-basic-cancel/consumer"))
+    (.start (Thread. #(lhcons/subscribe channel queue msg-handler :consumer-tag tag, :auto-ack true) "t-basic-cancel/consumer"))
     (lhb/publish channel exchange queue payload)
     (Thread/sleep 200)
     (is (= @counter 1))

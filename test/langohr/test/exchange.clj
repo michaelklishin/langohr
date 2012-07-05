@@ -252,7 +252,7 @@
     (lhe/declare channel fe "fanout" :auto-delete true)
     (lhe/declare channel de "direct" :auto-delete true :arguments {"alternate-exchange" fe})
     (lhq/bind    channel queue fe)
-    (.start (Thread. #((lhcons/subscribe channel queue msg-handler :auto-ack true)) "subscriber"))
+    (.start (Thread. #(lhcons/subscribe channel queue msg-handler :auto-ack true) "subscriber"))
     (.start (Thread. (fn []
                        (lhb/publish channel de "" "1010" :mandatory true)) "publisher"))
     (.await latch)))
