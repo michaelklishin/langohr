@@ -7,6 +7,8 @@
   :profiles {:dev { :dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]] }
              :1.4 { :dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.0-master-SNAPSHOT"]]}}
+  :source-paths      ["src/clojure"]
+  :java-source-paths ["src/java"]  
   :url "https://github.com/michaelklishin/langohr"
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false

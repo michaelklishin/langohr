@@ -1,4 +1,4 @@
-;; Copyright (c) 2011 Michael S. Klishin
+;; Copyright (c) 2011-2012 Michael S. Klishin
 ;;
 ;; The use and distribution terms for this software are covered by the
 ;; Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
@@ -53,11 +53,11 @@
       (lhb/publish channel exchange queue payload :priority 8, :message-id msg-id, :content-type content-type, :headers { \"see you soon\" \"à bientôt\" })
 
   "
-  [^Channel channel, ^String exchange, ^String routing-key, ^String payload
+  [^Channel channel ^String exchange ^String routing-key ^String payload
    &{:keys [^Boolean mandatory ^Boolean immediate ^String content-type ^String ^String content-encoding ^Map headers
             ^Boolean persistent ^Integer priority ^String correlation-id ^String reply-to ^String expiration ^String message-id
             ^Date timestamp ^String type ^String user-id ^String app-id ^String cluster-id]
-     :or { mandatory false, immediate false }}]
+     :or { mandatory false immediate false }}]
   (let [payload-bytes      (.getBytes payload)
         properties-builder (AMQP$BasicProperties$Builder.)
         properties         (.build (doto properties-builder
@@ -95,8 +95,8 @@
   "
   [^clojure.lang.IFn handler-fn]
   (reify ReturnListener
-    (handleReturn [this, reply-code, reply-text, exchange, routing-key, properties, body]
-      (handler-fn reply-code, reply-text, exchange, routing-key, properties, (String. ^bytes body)))))
+    (handleReturn [this reply-code reply-text exchange routing-key properties body]
+      (handler-fn reply-code reply-text exchange routing-key properties (String. ^bytes body)))))
 
 
 
@@ -125,7 +125,7 @@
 
 (defn cancel
   "Cancels consumer using basic.cancel AMQP method"
-  [^Channel channel, ^String consumer-tag]
+  [^Channel channel ^String consumer-tag]
   (.basicCancel ^Channel channel ^String consumer-tag))
 
 
