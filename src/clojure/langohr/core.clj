@@ -77,11 +77,9 @@
       (f cause))))
 
 
-;;
-;; Implementation
-;;
-
-(defn- env-config [uri]
+(defn settings-from
+  "Parses AMQP connection URI and returns a persistent map of settings"
+  [^String uri]
   (if uri
     (let [uri (java.net.URI. uri)
           [username password] (if (.getUserInfo uri)
@@ -94,17 +92,24 @@
       (into *default-config* (filter val uri-config)))
     *default-config*))
 
-(defn- get-config [config]
-  (merge (env-config (:uri config (System/getenv "RABBITMQ_URL")))
+
+;;
+;; Implementation
+;;
+
+(defn normalize-settings
+  "For setting maps that contain keys such as :host, :username, :vhost, returns the argument"
+  [config]
+  (merge (settings-from (:uri config (System/getenv "RABBITMQ_URL")))
          config))
 
 (defn- ^ConnectionFactory create-connection-factory
   "Creates connection factory from given attributes"
-  [config]
+  [settings]
   (let [{:keys [host port username password vhost
                 requested-heartbeat connection-timeout]
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
-              connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT} } (get-config config)]
+              connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT} } (normalize-settings settings)]
     (doto (ConnectionFactory.)
       (.setUsername           username)
       (.setPassword           password)
