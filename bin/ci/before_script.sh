@@ -13,3 +13,5 @@ sudo rabbitmqctl add_vhost langohr_testbed
 sudo rabbitmqctl add_user langohr "langohr.password"
 sudo rabbitmqctl set_permissions -p /               langohr ".*" ".*" ".*"
 sudo rabbitmqctl set_permissions -p langohr_testbed langohr ".*" ".*" ".*"
+
+sleep 3
