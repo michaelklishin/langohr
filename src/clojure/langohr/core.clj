@@ -9,7 +9,8 @@
 
 (ns langohr.core
   (:import [com.rabbitmq.client ConnectionFactory Connection Channel ShutdownListener])
-  (:require langohr.channel))
+  (:require langohr.channel
+            [clojure.string :as s]))
 
 ;;
 ;; Defaults
@@ -77,19 +78,19 @@
       (f cause))))
 
 
+(declare normalize-vhost
+         normalize-port)
 (defn settings-from
   "Parses AMQP connection URI and returns a persistent map of settings"
   [^String uri]
   (if uri
-    (let [uri (java.net.URI. uri)
-          [username password] (if (.getUserInfo uri)
-                                (.split (.getUserInfo uri) ":"))
-          uri-config {:host     (.getHost uri)
-                      :port     (.getPort uri)
-                      :vhost    (.getPath uri)
-                      :username username
-                      :password password}]
-      (into *default-config* (filter val uri-config)))
+    (let [cf (doto (ConnectionFactory.)
+               (.setUri uri))]
+      {:host     (.getHost cf)
+       :port     (.getPort cf)
+       :vhost    (.getVirtualHost cf)
+       :username (.getUsername cf)
+       :password (.getPassword cf)})
     *default-config*))
 
 

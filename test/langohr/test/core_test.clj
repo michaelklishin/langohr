@@ -1,11 +1,11 @@
-(ns langohr.test.core
-  (:import [com.rabbitmq.client Connection Channel]
+(ns langohr.test.core-test
+  (:import [com.rabbitmq.client Connection Channel])
   (:use clojure.test langohr.core))
 
 (set! *warn-on-reflection* true)
 (println (str "Using Clojure version " *clojure-version*))
 
-  
+
 (deftest t-connection-with-default-parameters
   (let [conn (connect)]
     (is (instance? com.rabbitmq.client.Connection conn))
@@ -35,3 +35,23 @@
     (is (open? conn))
     (close conn)
     (is (not (open? conn)))))
+
+(deftest t-uri-parsing-for-amqp
+  (testing "case without the path part"
+    (let [uri "amqp://dev.rabbitmq.com"
+          m   (settings-from uri)]
+      (is (= {:host "dev.rabbitmq.com" :port 5672 :username "guest" :vhost "/" :password "guest"} m))))
+  (testing "case where path is a single slash"
+    (let [uri "amqp://dev.rabbitmq.com/"
+          m   (settings-from uri)]
+      (is (= {:host "dev.rabbitmq.com" :port 5672 :username "guest" :vhost "" :password "guest"} m))))
+  (testing "case where path equals /product"
+    (let [uri "amqp://dev.rabbitmq.com/product"
+          m   (settings-from uri)]
+      (is (= {:host "dev.rabbitmq.com" :port 5672 :username "guest" :vhost "product" :password "guest"} m)))))
+
+(deftest t-uri-parsing-for-amqps
+  (testing "case without the path part"
+    (let [uri "amqps://dev.rabbitmq.com"
+          m   (settings-from uri)]
+      (is (= {:host "dev.rabbitmq.com" :port 5671 :username "guest" :vhost "/" :password "guest"} m)))))
