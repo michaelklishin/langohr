@@ -1,4 +1,4 @@
-(ns langohr.test.confirm
+(ns langohr.test.confirm-test
   (:import [com.rabbitmq.client Connection AMQP$Queue$DeclareOk AMQP$Confirm$SelectOk])
   (:require langohr.confirm
             [langohr.core  :as lhc]

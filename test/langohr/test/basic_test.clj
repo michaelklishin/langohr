@@ -1,4 +1,4 @@
-(ns langohr.test.basic
+(ns langohr.test.basic-test
   (:refer-clojure :exclude [get declare])
   (:import [com.rabbitmq.client Connection Channel AMQP
             AMQP$BasicProperties AMQP$BasicProperties$Builder

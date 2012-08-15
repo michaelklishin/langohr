@@ -1,4 +1,4 @@
-(ns langohr.test.tx
+(ns langohr.test.tx-test
   (:import [com.rabbitmq.client Connection AMQP$Tx$SelectOk AMQP$Tx$CommitOk AMQP$Tx$RollbackOk])
   (:require langohr.tx
             [langohr.core :as lhc])

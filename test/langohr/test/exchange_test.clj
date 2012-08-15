@@ -1,4 +1,4 @@
-(ns langohr.test.exchange
+(ns langohr.test.exchange-test
   (:refer-clojure :exclude [declare])
   (:import [com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Queue$DeclareOk ShutdownSignalException]
            java.io.IOException)

@@ -1,4 +1,4 @@
-(ns langohr.test.consumers
+(ns langohr.test.consumers-test
   (:import [com.rabbitmq.client Connection Consumer AMQP$Queue$DeclareOk])
   (:require [langohr.queue     :as lhq]
             [langohr.core      :as lhc]

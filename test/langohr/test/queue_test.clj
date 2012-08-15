@@ -1,4 +1,4 @@
-(ns langohr.test.queue
+(ns langohr.test.queue-test
   (:refer-clojure :exclude [declare get])
   (:import [com.rabbitmq.client Connection Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk]
            java.io.IOException)
