@@ -1,4 +1,17 @@
+## Changes between Langohr 1.0.0-beta3 and 1.0.0-beta4
+
+No changes yet.
+
+
+
 ## Changes between Langohr 1.0.0-beta2 and 1.0.0-beta3
+
+### URI parsing
+
+`langohr.core/settings-from` is a new public API function that parses AMQP and AMQPS connection URIs
+and returns an immutable map of individual arguments. URI parsing is now delegated to the Java client
+for consistency.
+
 
 ### RabbitMQ Java Client 2.8.6
 
