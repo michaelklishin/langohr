@@ -50,7 +50,7 @@ idea we have is implemented. Keep that in mind.
 
 With Leiningen:
 
-    [com.novemberain/langohr "1.0.0-beta2"]
+    [com.novemberain/langohr "1.0.0-beta3"]
 
 
 With Maven:
@@ -58,25 +58,8 @@ With Maven:
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>langohr</artifactId>
-      <version>1.0.0-beta2</version>
+      <version>1.0.0-beta3</version>
     </dependency>
-
-If you feel comfortable using snapshots:
-
-With Leiningen:
-
-    [com.novemberain/langohr "1.0.0-SNAPSHOT"]
-
-
-With Maven:
-
-    <dependency>
-      <groupId>com.novemberain</groupId>
-      <artifactId>langohr</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-
-Snapshot artifacts are [released to Clojars](https://clojars.org/com.novemberain/langohr) every day.
 
 
 ## Supported Clojure versions
@@ -97,7 +80,7 @@ Langohr is slowly approaching 1.0 release. A few remaining items before the rele
  * Test suite cleanup.
  * Some stress tests to set baseline performance expectations.
 
-We expect 1.0 to be released in 2012 (but not before documentation site is ready).
+We expect 1.0 to be released in 2012 (but not before the documentation site is ready).
 
 
 ## Langohr Is a ClojureWerkz Project
