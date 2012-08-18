@@ -1,8 +1,8 @@
 ## Changes between Langohr 1.0.0-beta2 and 1.0.0-beta3
 
-### RabbitMQ Java Client 2.8.2
+### RabbitMQ Java Client 2.8.6
 
-RabbitMQ Java Client has been upgraded to version 2.8.2.
+RabbitMQ Java Client has been upgraded to version 2.8.6.
 
 
 ## Changes between Langohr 1.0.0-beta1 and 1.0.0-beta2
