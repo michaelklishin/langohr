@@ -1,6 +1,10 @@
 ## Changes between Langohr 1.0.0-beta3 and 1.0.0-beta4
 
-No changes yet.
+### queue.declare :exclusive Default Value Change
+
+`langohr.queue/declare` now uses default value for the `:exclusive` parameter as `false`. The reason for
+this is that exclusive queues are deleted when connection that created them is closed. This caused
+confusion w.r.t. non-auto-deleted queues being deleted in such cases.
 
 
 

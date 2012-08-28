@@ -39,7 +39,7 @@
      (.queueDeclare channel))
   ([^Channel channel ^String queue]
      (.queueDeclare channel queue false true true nil))
-  ([^Channel channel ^String queue &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false, exclusive true, auto-delete true}}]
+  ([^Channel channel ^String queue &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false exclusive false auto-delete true}}]
      (.queueDeclare channel queue durable exclusive auto-delete arguments)))
 
 
@@ -53,7 +53,7 @@
   "Binds a queue to an exchange using queue.bind AMQP method"
   ([^Channel channel ^String queue ^String exchange]
      (.queueBind channel queue exchange ""))
-  ([^Channel channel ^String queue ^String exchange &{ :keys [routing-key arguments] :or { routing-key "", arguments nil } }]
+  ([^Channel channel ^String queue ^String exchange &{:keys [routing-key arguments] :or {routing-key "" arguments nil}}]
      (.queueBind channel queue exchange routing-key arguments)))
 
 
@@ -83,4 +83,4 @@
   "Returns a map with two keys: message-count and :consumer-count, for the given queue. Uses queue.declare AMQP method with the :passive attribute set."
   [^Channel channel ^String queue]
   (let [declare-ok ^AMQP$Queue$DeclareOk (.queueDeclarePassive channel queue)]
-    { :message-count (.getMessageCount declare-ok), :consumer-count (.getConsumerCount declare-ok) }))
+    {:message-count (.getMessageCount declare-ok) :consumer-count (.getConsumerCount declare-ok)}))

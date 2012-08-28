@@ -57,7 +57,7 @@
    &{:keys [^Boolean mandatory ^Boolean immediate ^String content-type ^String ^String content-encoding ^Map headers
             ^Boolean persistent ^Integer priority ^String correlation-id ^String reply-to ^String expiration ^String message-id
             ^Date timestamp ^String type ^String user-id ^String app-id ^String cluster-id]
-     :or { mandatory false immediate false }}]
+     :or {mandatory false immediate false}}]
   (let [payload-bytes      (.getBytes payload)
         properties-builder (AMQP$BasicProperties$Builder.)
         properties         (.build (doto properties-builder
@@ -118,8 +118,8 @@
      ^Boolean :no-local (default false) - flag set to true unless server local buffering is required.
 
 "
-  [^Channel channel ^String queue ^Consumer consumer &{ :keys [consumer-tag auto-ack exclusive arguments no-local]
-                                                       :or { consumer-tag "" auto-ack false exclusive false no-local false } }]
+  [^Channel channel ^String queue ^Consumer consumer &{:keys [consumer-tag auto-ack exclusive arguments no-local]
+                                                       :or {consumer-tag "" auto-ack false exclusive false no-local false}}]
   (.basicConsume ^Channel channel ^String queue ^Boolean auto-ack ^String consumer-tag ^Boolean no-local ^Boolean exclusive ^Map arguments ^Consumer consumer))
 
 
