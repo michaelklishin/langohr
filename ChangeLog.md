@@ -1,5 +1,10 @@
 ## Changes between Langohr 1.0.0-beta3 and 1.0.0-beta4
 
+### Payload is Now Longer Assumed to Be a String
+
+`langohr.basic/publish` no longer assumes the payload is always a string. It can be anything the `langohr.conversion/BytePayload`
+protocol is implemented for, by default byte arrays and strings.
+
 ### queue.declare :exclusive Default Value Change
 
 `langohr.queue/declare` now uses default value for the `:exclusive` parameter as `false`. The reason for
