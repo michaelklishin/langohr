@@ -27,6 +27,9 @@
   ^String :exchange - name of the exchange to publish to. Can be empty, which means default exchange.
   ^String :routing-key - the routing key for the message. Used for ourting messages depending on exchange configuration.
 
+  Payload can be anything the langohr.conversion/BytePayload protocol is extended for, Langohr ships with
+  an implementation for byte arrays and strings.
+
   Options:
   ^Boolean :mandatory, default false - specifies reaction of server if the message can't be routed to a queue. True when requesting a mandatory publish
   ^Boolean :immediate, default false - specifies reaction of server if the message can't be routed to a queue consumer immediately. True when requesting an immediate publish.
