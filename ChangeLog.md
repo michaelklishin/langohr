@@ -1,6 +1,12 @@
 ## Changes between Langohr 1.0.0-beta4 and 1.0.0-beta5
 
-No changes yet.
+### Clojure 1.4 By Default
+
+Langohr now depends on `org.clojure/clojure` version `1.4.0`. It is still compatible with Clojure 1.3 and if your `project.clj` depends
+on 1.3, it will be used, but 1.4 is the default now.
+
+We encourage all users to upgrade to 1.4, it is a drop-in replacement for the majority of projects out there.
+
 
 
 ## Changes between Langohr 1.0.0-beta3 and 1.0.0-beta4
