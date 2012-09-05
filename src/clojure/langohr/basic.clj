@@ -10,6 +10,7 @@
 (ns langohr.basic
   (:refer-clojure :exclude [get])
   (:require langohr.util)
+  (:use [langohr.conversion :only [to-bytes]])
   (:import [com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener]
            [java.util Map Date]))
 
@@ -53,12 +54,12 @@
       (lhb/publish channel exchange queue payload :priority 8, :message-id msg-id, :content-type content-type, :headers { \"see you soon\" \"à bientôt\" })
 
   "
-  [^Channel channel ^String exchange ^String routing-key ^String payload
+  [^Channel channel ^String exchange ^String routing-key payload
    &{:keys [^Boolean mandatory ^Boolean immediate ^String content-type ^String ^String content-encoding ^Map headers
             ^Boolean persistent ^Integer priority ^String correlation-id ^String reply-to ^String expiration ^String message-id
             ^Date timestamp ^String type ^String user-id ^String app-id ^String cluster-id]
      :or {mandatory false immediate false}}]
-  (let [payload-bytes      (.getBytes payload)
+  (let [payload-bytes      (to-bytes payload)
         properties-builder (AMQP$BasicProperties$Builder.)
         properties         (.build (doto properties-builder
                                      (.contentType     content-type)

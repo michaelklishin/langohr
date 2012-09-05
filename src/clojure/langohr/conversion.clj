@@ -1,4 +1,5 @@
-(ns langohr.conversion)
+(ns langohr.conversion
+  (:require [clojurewerkz.support.internal :as i]))
 
 
 ;;
@@ -44,3 +45,16 @@
     (merge (to-message-metadata (.getProperties input))
            (to-message-metadata (.getEnvelope input)))))
 
+
+
+(defprotocol BytePayload
+  (to-bytes [input] "Converts the input to a byte array that can be sent as an AMQP 0.9.1 message payload"))
+
+(extend-protocol BytePayload
+  String
+  (to-bytes [^String input]
+    (.getBytes input "UTF-8")))
+
+(extend i/byte-array-type
+  BytePayload
+  {:to-bytes identity})
