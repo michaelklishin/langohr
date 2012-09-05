@@ -1,3 +1,8 @@
+## Changes between Langohr 1.0.0-beta4 and 1.0.0-beta5
+
+No changes yet.
+
+
 ## Changes between Langohr 1.0.0-beta3 and 1.0.0-beta4
 
 ### Payload is Now Longer Assumed to Be a String
