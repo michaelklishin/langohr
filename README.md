@@ -9,8 +9,8 @@ communicating over AMQP.
 ## Project Goals
 
  * Embrace [AMQP 0.9.1 Model](http://bitly.com/amqp-model-explained). Follow Java client's API conventions instead of inventing new overly opinionated ones
- * Provide additional functions/protocols where it actually saves time (we learned a lot from 3 years history of the [Ruby amqp gem](https://github.com/ruby-amqp/amqp) development)
- * Be well documented. Two example READMEs do not cut it
+ * Provide additional functions/protocols where it actually saves time (we learned a lot from 3+ years history of the [Ruby amqp gem](https://github.com/ruby-amqp/amqp) development)
+ * Be well documented. Use [Ruby amqp gem guides](http://rubyamqp.info) as a foundation.
  * Strict TDD development style (with tests sometimes being freeform examples first)
  * Support all of the [RabbitMQ extensions to AMQP 0.9.1](http://www.rabbitmq.com/extensions.html)
  * Provide support for testing of AMQP applications, including asynchronous workflows
@@ -50,7 +50,7 @@ idea we have is implemented. Keep that in mind.
 
 With Leiningen:
 
-    [com.novemberain/langohr "1.0.0-beta3"]
+    [com.novemberain/langohr "1.0.0-beta4"]
 
 
 With Maven:
@@ -58,7 +58,7 @@ With Maven:
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>langohr</artifactId>
-      <version>1.0.0-beta3</version>
+      <version>1.0.0-beta4</version>
     </dependency>
 
 
