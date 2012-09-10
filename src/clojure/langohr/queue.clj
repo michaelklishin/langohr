@@ -38,7 +38,7 @@
   ([^Channel channel]
      (.queueDeclare channel))
   ([^Channel channel ^String queue]
-     (.queueDeclare channel queue false true true nil))
+     (.queueDeclare channel queue false false true nil))
   ([^Channel channel ^String queue &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false exclusive false auto-delete true}}]
      (.queueDeclare channel queue durable exclusive auto-delete arguments)))
 
