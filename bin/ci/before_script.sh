@@ -14,4 +14,7 @@ sudo rabbitmqctl add_user langohr "langohr.password"
 sudo rabbitmqctl set_permissions -p /               langohr ".*" ".*" ".*"
 sudo rabbitmqctl set_permissions -p langohr_testbed langohr ".*" ".*" ".*"
 
+sudo rabbitmqctl set_permissions -p /               guest ".*" ".*" ".*"
+sudo rabbitmqctl set_permissions -p langohr_testbed guest ".*" ".*" ".*"
+
 sleep 3
