@@ -5,10 +5,10 @@
   :dependencies [[org.clojure/clojure      "1.4.0"]
                  [com.rabbitmq/amqp-client "2.8.6"]
                  [clojurewerkz/support     "0.7.0"]]
-  :profiles {:dev { :dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]] }
-             :1.3 { :dependencies [[org.clojure/clojure "1.3.0"]]}
+  :profiles {:1.3 { :dependencies [[org.clojure/clojure "1.3.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.0-master-SNAPSHOT"]]}
-             :dev {:plugins [[codox "0.6.1"]]
+             :dev {:dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]]
+                   :plugins [[codox "0.6.1"]]
                    :codox {:sources ["src/clojure"]
                            :output-dir "doc/api"}}}
   :source-paths      ["src/clojure"]
