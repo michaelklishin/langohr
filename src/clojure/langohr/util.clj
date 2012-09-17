@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.util
-  (:import (java.util UUID)))
+  (:import java.util.UUID))
 
 
 ;;
