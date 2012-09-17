@@ -78,8 +78,6 @@
       (f cause))))
 
 
-(declare normalize-vhost
-         normalize-port)
 (defn settings-from
   "Parses AMQP connection URI and returns a persistent map of settings"
   [^String uri]
