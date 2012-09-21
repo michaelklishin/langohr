@@ -2,6 +2,7 @@
   (:import [com.rabbitmq.client Connection Consumer AMQP$Queue$DeclareOk])
   (:require [langohr.queue     :as lhq]
             [langohr.core      :as lhc]
+            [langohr.channel   :as lch]
             [langohr.basic     :as lhb]
             [langohr.util      :as lhu]
             [langohr.consumers :as lhcons])
@@ -12,11 +13,11 @@
 ;; API
 ;;
 
-(defonce ^:dynamic ^Connection *conn* (lhc/connect))
+(defonce conn (lhc/connect))
 
 
 (deftest t-consume-ok-handler
-  (let [channel  (.createChannel *conn*)
+  (let [channel  (lch/open conn)
         queue    (.getQueue (lhq/declare channel))
         latch    (java.util.concurrent.CountDownLatch. 1)
         consumer (lhcons/create-default channel :consume-ok-fn (fn [consumer-tag]
@@ -26,7 +27,7 @@
 
 
 (deftest t-cancel-ok-handler
-  (let [channel  (.createChannel *conn*)
+  (let [channel  (lch/open conn)
         queue    (.getQueue (lhq/declare channel))
         tag      (lhu/generate-consumer-tag "t-cancel-ok-handler")
         latch    (java.util.concurrent.CountDownLatch. 1)
@@ -38,7 +39,7 @@
 
 
 (deftest t-cancel-notification-handler
-  (let [channel  (.createChannel *conn*)
+  (let [channel  (lch/open conn)
         queue    (.getQueue (lhq/declare channel))
         latch    (java.util.concurrent.CountDownLatch. 1)
         consumer (lhcons/create-default channel :cancel-fn (fn [consumer_tag]
@@ -49,7 +50,7 @@
 
 
 (deftest t-delivery-handler
-  (let [channel    (.createChannel *conn*)
+  (let [channel    (lch/open conn)
         exchange   ""
         payload    ""
         queue      (.getQueue (lhq/declare channel "" :auto-delete true))
