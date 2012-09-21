@@ -1,5 +1,17 @@
 ## Changes between Langohr 1.0.0-beta4 and 1.0.0-beta5
 
+### Broker Capabilities Introspection
+
+`langohr.core/capabilities-of` is a new function that returns broker capabilities as an immutable map,
+e.g.
+
+``` clojure
+{:exchange_exchange_bindings true
+ :consumer_cancel_notify true
+ :basic.nack true
+ :publisher_confirms true}
+```
+
 ### Clojure 1.4 By Default
 
 Langohr now depends on `org.clojure/clojure` version `1.4.0`. It is still compatible with Clojure 1.3 and if your `project.clj` depends
