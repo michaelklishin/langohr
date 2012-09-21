@@ -54,12 +54,15 @@
 ;; API
 ;;
 
+(def ^{:const true}
+  version "1.0.0-beta5-SNAPSHOT")
+
 (declare create-connection-factory)
 (defn ^Connection connect
   "Creates and returns a new connection to RabbitMQ."
   ;; defaults
   ([]
-     (.newConnection (ConnectionFactory.)))
+     (.newConnection ^ConnectionFactory (create-connection-factory {})))
   ;; settings
   ([settings]
      (.newConnection ^ConnectionFactory (create-connection-factory settings))))
@@ -106,6 +109,17 @@
   (merge (settings-from (:uri config (System/getenv "RABBITMQ_URL")))
          config))
 
+(def ^{:private true}
+  client-properties {"product"      "Langohr"
+                     "information"  "See http://clojurerabbitmq.info/"
+                     "platform"     "Java"
+                     "capabilities" {"exchange_exchange_bindings" true
+                                     "consumer_cancel_notify" true
+                                     "basic.nack" true
+                                     "publisher_confirms" true}
+                     "copyright" "Copyright (C) 2011-2012 Michael S. Klishin, Alex Petrov"
+                     "version"   version})
+
 (defn- ^ConnectionFactory create-connection-factory
   "Creates connection factory from given attributes"
   [settings]
@@ -114,6 +128,7 @@
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT} } (normalize-settings settings)]
     (doto (ConnectionFactory.)
+      (.setClientProperties   client-properties)
       (.setUsername           username)
       (.setPassword           password)
       (.setVirtualHost        vhost)
