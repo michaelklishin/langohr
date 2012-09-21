@@ -32,8 +32,9 @@
         tag      (lhu/generate-consumer-tag "t-cancel-ok-handler")
         latch    (java.util.concurrent.CountDownLatch. 1)
         consumer (lhcons/create-default channel :cancel-ok-fn (fn [consumer-tag]
-                                                                (.countDown latch)))]
-    (lhb/consume channel queue consumer :consumer-tag tag)
+                                                                (.countDown latch)))
+        ret-tag  (lhb/consume channel queue consumer :consumer-tag tag)]
+    (is (= tag ret-tag))
     (lhb/cancel channel tag)
     (.await latch)))
 
