@@ -22,12 +22,30 @@
     (is (= 5672        (.getPort conn)))
     (is (= 3           (.getHeartbeat conn)))))
 
+(deftest t-connection-with-uri
+  (let [conn (connect {:uri "amqp://127.0.0.1:5672"})]
+    (is (open? conn))
+    (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
+    (is (= 5672        (.getPort conn)))
+    (is (-> conn .getServerProperties (get "capabilities") (get "publisher_confirms")))))
+
+(deftest t-broker-capabilities
+  (let [conn (connect {:uri "amqp://127.0.0.1:5672"})]
+    (is (= {:exchange_exchange_bindings true
+            :consumer_cancel_notify true
+            :basic.nack true
+            :publisher_confirms true}
+           (capabilities-of conn)))))
+
 
 (deftest t-connection-failure-due-to-misconfigured-port
   (is (thrown? java.net.ConnectException (connect { :host "127.0.0.1" :port 2887 }))))
 
 (deftest t-connection-failure-due-to-unknown-host
   (is (thrown? java.net.UnknownHostException (connect { :host "skdjhfkjshfglkashfklajshdf.local" :port 2887 }))))
+
+(deftest t-connection-failure-due-to-invalid-credentials
+  (is (thrown? com.rabbitmq.client.PossibleAuthenticationFailureException (connect { :username "skdjhfkjshFGLKASHFKlajshdf" :password "HFKlajshdf" }))))
 
 
 (deftest t-close-connection

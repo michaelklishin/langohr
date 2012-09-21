@@ -10,7 +10,8 @@
 (ns langohr.core
   (:import [com.rabbitmq.client ConnectionFactory Connection Channel ShutdownListener])
   (:require langohr.channel
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [clojure.walk   :as walk]))
 
 ;;
 ;; Defaults
@@ -91,6 +92,9 @@
        :password (.getPassword cf)})
     *default-config*))
 
+(defn capabilities-of
+  [^Connection conn]
+  (walk/keywordize-keys (into {} (-> conn .getServerProperties (get "capabilities")))))
 
 ;;
 ;; Implementation
