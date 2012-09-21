@@ -48,7 +48,23 @@
   (testing "case where path equals /product"
     (let [uri "amqp://dev.rabbitmq.com/product"
           m   (settings-from uri)]
-      (is (= {:host "dev.rabbitmq.com" :port 5672 :username "guest" :vhost "product" :password "guest"} m)))))
+      (is (= {:host "dev.rabbitmq.com" :port 5672 :username "guest" :vhost "product" :password "guest"} m))))
+  (testing "case where path contains dots"
+    (let [uri "amqp://dev.rabbitmq.com/a.b.c"
+          m   (settings-from uri)]
+      (is (= {:host "dev.rabbitmq.com" :port 5672 :username "guest" :vhost "a.b.c" :password "guest"} m))))
+  (testing "case where path uses URL encoding"
+    (let [uri "amqp://dev.rabbitmq.com/%2Fvault"
+          m   (settings-from uri)]
+      (is (= {:host "dev.rabbitmq.com" :port 5672 :vhost "/vault" :username "guest" :password "guest"} m))))
+  (testing "case where path uses URL encoding"
+    (let [uri "amqp://dev.rabbitmq.com/foo%2Fbar"
+          m   (settings-from uri)]
+      (is (= {:host "dev.rabbitmq.com" :port 5672 :vhost "foo/bar" :username "guest" :password "guest"} m))))
+  (testing "with a sample CloudFoundry URI"
+    (let [uri "amqp://utquQluArWWn3:vZ19hISpc3ICU@172.22.87.188:87888/5e56ec8f588b44f17213b6d756v544a70"
+          m   (settings-from uri)]
+      (is (= {:host "172.22.87.188" :port 87888 :vhost "5e56ec8f588b44f17213b6d756v544a70" :username "utquQluArWWn3" :password "vZ19hISpc3ICU"} m)))))
 
 (deftest t-uri-parsing-for-amqps
   (testing "case without the path part"
