@@ -1,5 +1,10 @@
 ## Changes between Langohr 1.0.0-beta4 and 1.0.0-beta5
 
+### Client Capabilities
+
+Langohr now provides its capabilities to the broker so it's possible to tell the difference between
+Langohr and the RabbitMQ Java client in the RabbitMQ Management UI connection information.
+
 ### Broker Capabilities Introspection
 
 `langohr.core/capabilities-of` is a new function that returns broker capabilities as an immutable map,
