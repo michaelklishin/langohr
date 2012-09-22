@@ -1,3 +1,8 @@
+## Changes between Langohr 1.0.0-beta6 and 1.0.0-beta7
+
+No changes yet.
+
+
 ## Changes between Langohr 1.0.0-beta5 and 1.0.0-beta6
 
 `1.0.0-beta6` has **BREAKING CHANGES**:
@@ -12,7 +17,7 @@ that of `langohr.basic/subscribe`:
   )
 ```
 
-This makes delivery handler signatures consistent everywhere.
+This makes delivery handler signatures consistent across the board.
 
 
 
