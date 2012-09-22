@@ -8,7 +8,6 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.consumers
-  (:refer-clojure :exclude [get])
   (:import [com.rabbitmq.client Channel Consumer DefaultConsumer QueueingConsumer QueueingConsumer$Delivery ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery])
   (:require [langohr.basic :as lhb])
   (:use langohr.conversion))
@@ -41,19 +40,26 @@
       (when recover-ok-fn
         (recover-ok-fn)))
 
-    (handleShutdownSignal [^String consumer-tag, ^ShutdownSignalException sig]
+    (handleShutdownSignal [^String consumer-tag ^ShutdownSignalException sig]
       (when shutdown-signal-fn
         (shutdown-signal-fn consumer-tag sig)))
 
-    (handleDelivery [^String consumer-tag, ^Envelope envelope, ^AMQP$BasicProperties properties, ^bytes body]
+    (handleDelivery [^String consumer-tag ^Envelope envelope ^AMQP$BasicProperties properties ^bytes body]
       (when handle-delivery-fn
         (let [delivery (QueueingConsumer$Delivery. envelope properties body)]
-          (handle-delivery-fn delivery properties body))))))
+          (handle-delivery-fn channel (to-message-metadata delivery) body))))))
 
 (defn subscribe
   "Adds new blocking default consumer to a queue using basic.consume AMQP method"
-  [^Channel channel ^String queue f & options]
-  (let [queueing-consumer (create-default channel
-                                          :handle-delivery-fn (fn [delivery properties body]
-                                                                (f channel (to-message-metadata delivery) body)))]
-    (apply lhb/consume channel queue queueing-consumer (flatten (vec options)))))
+  [^Channel channel ^String queue f & {:as options}]
+  (let [keys      [:handle-consume-ok :handle-cancel :handle-cancel-ok :handle-recover-ok :handle-shutdown-signal]
+        cons-opts (select-keys options keys)
+        options'  (apply dissoc (concat [options] keys))
+        consumer  (create-default channel
+                                 :handle-delivery-fn f
+                                 :handle-consume-ok      (get cons-opts :handle-consume-ok)
+                                 :handle-cancel-ok       (get cons-opts :handle-cancel-ok)
+                                 :handle-cancel          (get cons-opts :handle-cancel)
+                                 :handle-recover-ok      (get cons-opts :handle-recover-ok)
+                                 :handle-shutdown-signal (get cons-opts :handle-shutdown-signal))]
+    (apply lhb/consume channel queue consumer (flatten (vec options')))))

@@ -1,3 +1,21 @@
+## Changes between Langohr 1.0.0-beta5 and 1.0.0-beta6
+
+`1.0.0-beta6` has **BREAKING CHANGES**:
+
+### langohr.basic/consume Delivery Handler Signature Change
+
+`langohr.basic/consume`'s `:handle-delivery-fn` signature is now consistent with
+that of `langohr.basic/subscribe`:
+
+``` clojure
+(fn [^Channel ch metadata ^bytes payload]
+  )
+```
+
+This makes delivery handler signatures consistent everywhere.
+
+
+
 ## Changes between Langohr 1.0.0-beta4 and 1.0.0-beta5
 
 ### More Connection Settings

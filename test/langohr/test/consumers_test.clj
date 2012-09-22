@@ -58,7 +58,7 @@
         n          300
         latch      (java.util.concurrent.CountDownLatch. (inc n))
         consumer   (lhcons/create-default channel
-                                          :handle-delivery-fn (fn [delivery message-properties message-payload]
+                                          :handle-delivery-fn (fn [ch metadata ^bytes payload]
                                                                 (.countDown latch))
                                           :consume-ok-fn      (fn [consumer-tag]
                                                                 (.countDown latch)))]
