@@ -1,6 +1,19 @@
 ## Changes between Langohr 1.0.0-beta6 and 1.0.0-beta7
 
-No changes yet.
+`1.0.0-beta7` has **BREAKING CHANGES**:
+
+### langohr.basic/consume Handler Names
+
+The options `langohr.basic/consume` takes now have consistent naming:
+
+ * `:consume-ok-fn` becomes `:handle-consume-ok-fn`
+ * `:cancel-fn` becomes `:handle-cancel-fn`
+ * `:cancel-ok-fn` becomes `:handle-cancel-ok-fn`
+ * `:shutdown-signal-ok-fn` becomes `:handle-shutdown-signal-ok-fn`
+ * `:recover-ok-fn` becomes `:handle-recover-ok-fn`
+ * `:handle-delivery-fn` does not change
+
+This makes handler argument names consistent across the board.
 
 
 ## Changes between Langohr 1.0.0-beta5 and 1.0.0-beta6

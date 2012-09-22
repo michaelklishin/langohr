@@ -20,8 +20,8 @@
   (let [channel  (lch/open conn)
         queue    (.getQueue (lhq/declare channel))
         latch    (java.util.concurrent.CountDownLatch. 1)
-        consumer (lhcons/create-default channel :consume-ok-fn (fn [consumer-tag]
-                                                                 (.countDown latch)))]
+        consumer (lhcons/create-default channel :handle-consume-ok-fn (fn [consumer-tag]
+                                                                        (.countDown latch)))]
     (lhb/consume channel queue consumer)
     (.await latch)))
 
@@ -31,8 +31,8 @@
         queue    (.getQueue (lhq/declare channel))
         tag      (lhu/generate-consumer-tag "t-cancel-ok-handler")
         latch    (java.util.concurrent.CountDownLatch. 1)
-        consumer (lhcons/create-default channel :cancel-ok-fn (fn [consumer-tag]
-                                                                (.countDown latch)))
+        consumer (lhcons/create-default channel :handle-cancel-ok-fn (fn [consumer-tag]
+                                                                       (.countDown latch)))
         ret-tag  (lhb/consume channel queue consumer :consumer-tag tag)]
     (is (= tag ret-tag))
     (lhb/cancel channel tag)
@@ -43,8 +43,8 @@
   (let [channel  (lch/open conn)
         queue    (.getQueue (lhq/declare channel))
         latch    (java.util.concurrent.CountDownLatch. 1)
-        consumer (lhcons/create-default channel :cancel-fn (fn [consumer_tag]
-                                                             (.countDown latch)))]
+        consumer (lhcons/create-default channel :handle-cancel-fn (fn [consumer_tag]
+                                                                    (.countDown latch)))]
     (lhb/consume channel queue consumer)
     (lhq/delete channel queue)
     (.await latch)))
@@ -58,10 +58,10 @@
         n          300
         latch      (java.util.concurrent.CountDownLatch. (inc n))
         consumer   (lhcons/create-default channel
-                                          :handle-delivery-fn (fn [ch metadata ^bytes payload]
-                                                                (.countDown latch))
-                                          :consume-ok-fn      (fn [consumer-tag]
-                                                                (.countDown latch)))]
+                                          :handle-delivery-fn   (fn [ch metadata ^bytes payload]
+                                                                  (.countDown latch))
+                                          :handle-consume-ok-fn (fn [consumer-tag]
+                                                                  (.countDown latch)))]
     (lhb/consume channel queue consumer)
     (.start (Thread. (fn []
                        (dotimes [i n]
