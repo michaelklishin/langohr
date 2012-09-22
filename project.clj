@@ -13,7 +13,7 @@
                            :output-dir "doc/api"}}}
   :source-paths      ["src/clojure"]
   :java-source-paths ["src/java"]  
-  :url "https://github.com/michaelklishin/langohr"
+  :url "http://clojurerabbitmq.info"
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
                              :releases {:checksum :fail :update :always}}
