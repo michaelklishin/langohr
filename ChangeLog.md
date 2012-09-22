@@ -1,5 +1,15 @@
 ## Changes between Langohr 1.0.0-beta4 and 1.0.0-beta5
 
+### More Connection Settings
+
+`langohr.core/connect` now supports several more options:
+
+ * `:ssl` (true or false): when true, Langohr will use the default SSL protocol (SSLv3) and the default (trusting) trust manager
+ * `:ssl-context` (`javax.net.ssl.SSLContext`): SSL context to use to create connection factory
+ * `:sasl-config` (`com.rabbitmq.client.SaslConfig`): use if you need to use a custom SASL config
+ * `:socket-factory` (`javax.net.SocketFactory`): use if you need to use a custom socket factory
+
+
 ### Client Capabilities
 
 Langohr now provides its capabilities to the broker so it's possible to tell the difference between

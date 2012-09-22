@@ -124,10 +124,13 @@
   "Creates connection factory from given attributes"
   [settings]
   (let [{:keys [host port username password vhost
-                requested-heartbeat connection-timeout]
+                requested-heartbeat connection-timeout ssl ssl-context socket-factory sasl-config]
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
-              connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT} } (normalize-settings settings)]
-    (doto (ConnectionFactory.)
+              connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT} } (normalize-settings settings)
+        cf   (ConnectionFactory.)]
+    (when ssl
+      (.useSslProtocol cf))
+    (doto cf
       (.setClientProperties   client-properties)
       (.setUsername           username)
       (.setPassword           password)
@@ -135,4 +138,9 @@
       (.setHost               host)
       (.setPort               port)
       (.setRequestedHeartbeat requested-heartbeat)
-      (.setConnectionTimeout  connection-timeout))))
+      (.setConnectionTimeout  connection-timeout))
+    (when sasl-config
+      (.setSaslConfig cf sasl-config))
+    (when ssl-context
+      (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context))
+    cf))
