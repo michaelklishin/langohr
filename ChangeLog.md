@@ -4,7 +4,7 @@
 
 ### langohr.basic/consume Handler Names
 
-The options `langohr.basic/consume` takes now have consistent naming:
+The options `langohr.consumers/create-default` takes now have consistent naming:
 
  * `:consume-ok-fn` becomes `:handle-consume-ok-fn`
  * `:cancel-fn` becomes `:handle-cancel-fn`
@@ -20,9 +20,9 @@ This makes handler argument names consistent across the board.
 
 `1.0.0-beta6` has **BREAKING CHANGES**:
 
-### langohr.basic/consume Delivery Handler Signature Change
+### langohr.consumes/create-default Delivery Handler Signature Change
 
-`langohr.basic/consume`'s `:handle-delivery-fn` signature is now consistent with
+`langohr.consumers/create-default`'s `:handle-delivery-fn` signature is now consistent with
 that of `langohr.basic/subscribe`:
 
 ``` clojure
