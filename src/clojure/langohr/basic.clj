@@ -10,7 +10,7 @@
 (ns langohr.basic
   (:refer-clojure :exclude [get])
   (:require langohr.util)
-  (:use [langohr.conversion :only [to-bytes]])
+  (:use [langohr.conversion :only [to-bytes to-message-metadata]])
   (:import [com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener]
            [java.util Map Date]))
 
@@ -133,12 +133,18 @@
   (.basicCancel ^Channel channel ^String consumer-tag))
 
 
-(defn ^GetResponse get
+(defn get
   "Fetches a message from a queue using basic.get AMQP method"
   ([^Channel channel ^String queue]
-     (.basicGet channel queue true))
+     (let [response (.basicGet channel queue true)]
+       (if response
+         [(to-message-metadata response) (.getBody response)]
+         nil)))
   ([^Channel channel ^String queue ^Boolean auto-ack]
-     (.basicGet channel queue auto-ack)))
+     (let [response (.basicGet channel queue auto-ack)]
+       (if response
+         [(to-message-metadata response) (.getBody response)]
+         nil))))
 
 
 

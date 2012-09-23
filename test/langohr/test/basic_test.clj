@@ -99,27 +99,25 @@
 (deftest t-basic-get-with-automatic-ack
   (let [channel    (.createChannel conn)
         exchange   ""
-        payload    "A message we will fetch with basic.get"
+        body       "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue1"
         declare-ok (lhq/declare channel queue :auto-delete true)]
-    (lhb/publish channel exchange queue payload)
-    (let [get-response (lhb/get channel queue)]
-      (is (instance? GetResponse get-response))
-      (is (= (String. (.getBody get-response)) payload))
-      (is (= (.getMessageCount get-response) 0))
-      (is (= (.. get-response getEnvelope getExchange) exchange))
-      (is (= (.. get-response getEnvelope getRoutingKey) queue)))))
+    (lhb/publish channel exchange queue body)
+    (let [[metadata payload] (lhb/get channel queue)]
+      (is (= (String. ^bytes payload) body))
+      (is (= (:message-count metadata) 0))
+      (is (= (:exchange metadata) exchange))
+      (is (= (:routing-key metadata) queue)))))
 
 (deftest t-basic-get-with-explicit-ack
   (let [channel    (.createChannel conn)
         exchange   ""
-        payload    "A message we will fetch with basic.get"
+        body       "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue2"
         declare-ok (lhq/declare channel queue :auto-delete true)]
-    (lhb/publish channel exchange queue payload)
-    (let [get-response (lhb/get channel queue false)]
-      (is (instance? GetResponse get-response))
-      (is (= (String. (.getBody get-response)) payload)))))
+    (lhb/publish channel exchange queue body)
+    (let [[metadata payload] (lhb/get channel queue false)]
+      (is (= (String. ^bytes payload) body)))))
 
 
 (deftest t-basic-get-with-an-empty-queue
@@ -152,8 +150,7 @@
                                  (lhb/publish producer-channel "" queue "Two")
                                  (lhb/publish producer-channel "" queue "Three"))))
     (Thread/sleep 200)
-    (let [get-response (lhb/get consumer-channel queue false)
-          delivery-tag (.. get-response getEnvelope getDeliveryTag)]
+    (let [[{delivery-tag :delivery-tag} _] (lhb/get consumer-channel queue false)]
       (is (= 1 delivery-tag))
       (lhb/ack consumer-channel delivery-tag))
     (lhq/purge   producer-channel queue)))
@@ -168,10 +165,8 @@
                                  (lhb/publish producer-channel "" queue "Two")
                                  (lhb/publish producer-channel "" queue "Three"))))
     (Thread/sleep 200)
-    (let [get-response1 (lhb/get consumer-channel queue false)
-          get-response2 (lhb/get consumer-channel queue false)
-          delivery-tag1  (.. get-response1 getEnvelope getDeliveryTag)
-          delivery-tag2  (.. get-response2 getEnvelope getDeliveryTag)]
+    (let [[{delivery-tag1 :delivery-tag} _] (lhb/get consumer-channel queue false)
+          [{delivery-tag2 :delivery-tag} _] (lhb/get consumer-channel queue false)]
       (is (= 1 delivery-tag1))
       (is (= 2 delivery-tag2))
       (lhb/ack consumer-channel delivery-tag1 true))
@@ -191,8 +186,7 @@
                                  (lhb/publish channel "" queue "Two")
                                  (lhb/publish channel "" queue "Three"))))
     (Thread/sleep 200)
-    (let [get-response (lhb/get channel queue false)
-          delivery-tag (.. get-response getEnvelope getDeliveryTag)]
+    (let [[{:keys [delivery-tag]} _] (lhb/get channel queue false)]
       (is (= 1 delivery-tag))
       (lhb/nack channel delivery-tag false true))
     (lhq/purge channel queue)))
@@ -206,10 +200,8 @@
                                  (lhb/publish channel "" queue "Two")
                                  (lhb/publish channel "" queue "Three"))))
     (Thread/sleep 200)
-    (let [get-response1 (lhb/get channel queue false)
-          get-response2 (lhb/get channel queue false)
-          delivery-tag1  (.. get-response1 getEnvelope getDeliveryTag)
-          delivery-tag2  (.. get-response2 getEnvelope getDeliveryTag)]
+    (let [[{delivery-tag1 :delivery-tag} _] (lhb/get channel queue false)
+          [{delivery-tag2 :delivery-tag} _] (lhb/get channel queue false)]
       (is (= 1 delivery-tag1))
       (is (= 2 delivery-tag2))
       (lhb/nack channel delivery-tag1 true false))
@@ -230,8 +222,7 @@
                                  (lhb/publish channel "" queue "Two")
                                  (lhb/publish channel "" queue "Three"))))
     (Thread/sleep 200)
-    (let [get-response (lhb/get channel queue false)
-          delivery-tag (.. get-response getEnvelope getDeliveryTag)]
+    (let [[{:keys [delivery-tag]} _] (lhb/get channel queue false)]
       (is (= 1 delivery-tag))
       (lhb/reject channel delivery-tag true))
     (lhq/purge channel queue)))
@@ -245,10 +236,8 @@
                                  (lhb/publish channel "" queue "Two")
                                  (lhb/publish channel "" queue "Three"))))
     (Thread/sleep 200)
-    (let [get-response1 (lhb/get channel queue false)
-          get-response2 (lhb/get channel queue false)
-          delivery-tag1  (.. get-response1 getEnvelope getDeliveryTag)
-          delivery-tag2  (.. get-response2 getEnvelope getDeliveryTag)]
+    (let [[{delivery-tag1 :delivery-tag} _] (lhb/get channel queue false)
+          [{delivery-tag2 :delivery-tag} _] (lhb/get channel queue false)]
       (is (= 1 delivery-tag1))
       (is (= 2 delivery-tag2))
       (lhb/reject channel delivery-tag1 false))

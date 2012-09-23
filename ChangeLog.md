@@ -1,3 +1,21 @@
+## Changes between Langohr 1.0.0-beta7 and 1.0.0-beta8
+
+`1.0.0-beta8` has **BREAKING CHANGES**:
+
+### langohr.basic/get Return Value Change
+
+`langohr.basic/get` now returns a pair of `[metadata payload]` to be consistent with what
+delivery handler functions accept:
+
+``` clojure
+(require '[langohr.basic :as lhb])
+
+(let [[metadata payload] (lhb/get channel queue)]
+  (println metadata)
+  (println (String. ^bytes payload)))
+```
+
+
 ## Changes between Langohr 1.0.0-beta6 and 1.0.0-beta7
 
 `1.0.0-beta7` has **BREAKING CHANGES**:

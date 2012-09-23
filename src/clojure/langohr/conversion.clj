@@ -14,7 +14,7 @@
 
 (extend-protocol MessageMetadata
   com.rabbitmq.client.Envelope
-  (to-message-metadata [^Envelope input]
+  (to-message-metadata [input]
     {:delivery-tag (.getDeliveryTag input)
      :redelivery?  (.isRedeliver input)
      :exchange     (.getExchange input)
@@ -22,7 +22,7 @@
 
 
   com.rabbitmq.client.AMQP$BasicProperties
-  (to-message-metadata [^AMQP$BasicProperties input]
+  (to-message-metadata [input]
     {:content-type     (.getContentType input)
      :content-encoding (.getContentEncoding input)
      :headers          (.getHeaders input)
@@ -41,9 +41,15 @@
 
 
   com.rabbitmq.client.QueueingConsumer$Delivery
-  (to-message-metadata [^QueueingConsumer$Delivery input]
+  (to-message-metadata [input]
     (merge (to-message-metadata (.getProperties input))
-           (to-message-metadata (.getEnvelope input)))))
+           (to-message-metadata (.getEnvelope input))))
+
+  com.rabbitmq.client.GetResponse
+  (to-message-metadata [input]
+    (merge (to-message-metadata (.getProps input))
+           (to-message-metadata (.getEnvelope input))
+           {:message-count (.getMessageCount input)})))
 
 
 
