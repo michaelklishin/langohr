@@ -50,7 +50,7 @@ idea we have is implemented. Keep that in mind.
 
 With Leiningen:
 
-    [com.novemberain/langohr "1.0.0-beta7"]
+    [com.novemberain/langohr "1.0.0-beta8"]
 
 
 With Maven:
@@ -58,13 +58,14 @@ With Maven:
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>langohr</artifactId>
-      <version>1.0.0-beta7</version>
+      <version>1.0.0-beta8</version>
     </dependency>
 
 
 ## Supported Clojure versions
 
-Langohr is built from the ground up for Clojure 1.3 and up.
+Langohr is built from the ground up for Clojure 1.3 and up. The most recent stable release is highly
+recommended.
 
 
 ## Supported RabbitMQ versions
