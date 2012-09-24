@@ -37,7 +37,7 @@
      :internal (default: false): If set, the exchange may not be used directly by publishers, but only when bound to other exchanges. Internal exchanges are used to construct wiring that is not visible to applications."
   ([^Channel channel ^String name ^String type]
      (.exchangeDeclare channel name type))
-  ([^Channel channel ^String name ^String type &{ :keys [durable auto-delete internal arguments] :or {durable false, auto-delete false, internal false} }]
+  ([^Channel channel ^String name ^String type &{:keys [durable auto-delete internal arguments] :or {durable false auto-delete false internal false}}]
      (.exchangeDeclare channel name type durable auto-delete internal arguments)))
 
 (defn ^AMQP$Exchange$DeclareOk direct
