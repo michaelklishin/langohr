@@ -265,7 +265,7 @@
         queue    (.getQueue (lhq/declare channel))
         latch    (java.util.concurrent.CountDownLatch. 1)
         rl       (lhb/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
-                                        (is (= body "return-me"))
+                                        (is (= (String. ^bytes body) "return-me"))
                                         (.countDown latch)))]
     (.addReturnListener channel rl)
     (lhb/publish channel "" queue "return-me" :immediate true)

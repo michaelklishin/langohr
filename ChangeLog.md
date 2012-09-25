@@ -1,3 +1,15 @@
+## Changes between Langohr 1.0.0-beta8 and 1.0.0-beta9
+
+`1.0.0-beta9` has **BREAKING CHANGES**:
+
+### Return Handlers Body Now Passed as-is
+
+Langohr no longer instantiates a string from the message body before passing it to
+return listeners. The body will be passed as is, as an array of bytes.
+
+
+
+
 ## Changes between Langohr 1.0.0-beta7 and 1.0.0-beta8
 
 `1.0.0-beta8` has **BREAKING CHANGES**:

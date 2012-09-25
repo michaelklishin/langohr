@@ -97,12 +97,16 @@
         (.addReturnListener channel listener))
 
   "
-  [^clojure.lang.IFn handler-fn]
+  [^clojure.lang.IFn f]
   (reify ReturnListener
     (handleReturn [this reply-code reply-text exchange routing-key properties body]
-      (handler-fn reply-code reply-text exchange routing-key properties (String. ^bytes body)))))
+      (f reply-code reply-text exchange routing-key properties body))))
 
-
+(defn add-return-listener
+  "Adds return listener to the given channel"
+  [^Channel channel ^clojure.lang.IFn f]
+  (.addReturnListener channel (return-listener f))
+  channel)
 
 
 
