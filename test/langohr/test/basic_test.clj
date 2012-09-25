@@ -252,8 +252,9 @@
   (let [channel  (.createChannel conn)
         exchange "langohr.tests.basic.return1"
         latch    (java.util.concurrent.CountDownLatch. 1)
-        rl       (lhb/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
-                                        (is (= body "return-me"))
+        rl       (lhb/return-listener (fn [reply-code reply-text exchange routing-key properties body]
+                                        (is (= reply-text "NO_ROUTE"))
+                                        (is (= (String. ^bytes body) "return-me"))
                                         (.countDown latch)))]
     (.addReturnListener channel rl)
     (lhe/declare channel exchange "direct" :auto-delete true)
@@ -264,7 +265,8 @@
   (let [channel  (.createChannel conn)
         queue    (.getQueue (lhq/declare channel))
         latch    (java.util.concurrent.CountDownLatch. 1)
-        rl       (lhb/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
+        rl       (lhb/return-listener (fn [reply-code reply-text exchange routing-key properties body]
+                                        (is (= reply-text "NO_CONSUMERS"))
                                         (is (= (String. ^bytes body) "return-me"))
                                         (.countDown latch)))]
     (.addReturnListener channel rl)
