@@ -4,5 +4,6 @@ pom.xml
 /classes/
 .lein-*
 docs/*
+doc/*
 deploy.docs.sh
 target/*
