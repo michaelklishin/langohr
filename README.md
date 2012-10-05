@@ -28,7 +28,28 @@ Here is what Langohr *does not* try to be:
 
 ## Documentation & Examples
 
-We are working on documentation guides & examples site for the 1.0 release. In the meantime, please refer to the [test suite](https://github.com/michaelklishin/langohr/tree/master/test/langohr/test) for code examples.
+If you are only starting out, please see our [Getting Started guide](http://clojurerabbitmq.info/articles/getting_started.html).
+
+[Documentation guides](http://clojurerabbitmq.info) are incomplete but most of the content is there:
+
+ * [AMQP Concepts](http://www.rabbitmq.com/tutorials/amqp-concepts.html)
+ * [Conneciting To The Broker](http://clojurerabbitmq.info/articles/connecting.html)
+ * [Queues and Consumers](http://clojurerabbitmq.info/articles/queues.html)
+ * [Exchanges and Publishing](http://clojurerabbitmq.info/articles/exchanges.html)
+ * [Bindings](http://clojurerabbitmq.info/articles/bindings.html)
+
+The rest of the guides will be written eventually.
+
+### API Reference
+
+For existing users, there is [API reference](http://api.clojurerabbitmq.info).
+
+
+### Code Examples
+
+Several code examples used in the guides are kept in [a separate Git repository](https://github.com/clojurewerkz/langohr.examples).
+
+Our [test suite](https://github.com/michaelklishin/langohr/tree/master/test/langohr/test) also can be used for code examples.
 
 
 
@@ -42,7 +63,7 @@ To subscribe for announcements of releases, important changes and so on, please 
 ## This is a Work In Progress
 
 While the API is largely stabilized at this point, Langohr is a work in progress. Breaking API changes are not out of the question because
-it is much less painful to do them when the library is still young. Documentation and tutorials site is still not published, not every
+it is much less painful to do them when the library is still young. Also, not every
 idea we have is implemented. Keep that in mind.
 
 
@@ -50,7 +71,7 @@ idea we have is implemented. Keep that in mind.
 
 With Leiningen:
 
-    [com.novemberain/langohr "1.0.0-beta8"]
+    [com.novemberain/langohr "1.0.0-beta9"]
 
 
 With Maven:
@@ -58,7 +79,7 @@ With Maven:
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>langohr</artifactId>
-      <version>1.0.0-beta8</version>
+      <version>1.0.0-beta9</version>
     </dependency>
 
 
