@@ -140,15 +140,11 @@
 (defn get
   "Fetches a message from a queue using basic.get AMQP method"
   ([^Channel channel ^String queue]
-     (let [response (.basicGet channel queue true)]
-       (if response
-         [(to-message-metadata response) (.getBody response)]
-         nil)))
+     (when-let [response (.basicGet channel queue true)]
+       [(to-message-metadata response) (.getBody response)]))
   ([^Channel channel ^String queue ^Boolean auto-ack]
-     (let [response (.basicGet channel queue auto-ack)]
-       (if response
-         [(to-message-metadata response) (.getBody response)]
-         nil))))
+     (when-let [response (.basicGet channel queue auto-ack)]
+       [(to-message-metadata response) (.getBody response)])))
 
 
 
