@@ -261,18 +261,6 @@
     (lhb/publish channel exchange (str (UUID/randomUUID)) "return-me" :mandatory true)
     (.await latch)))
 
-(deftest t-handling-of-returned-immediate-messages-with-a-listener-instance
-  (let [channel  (.createChannel conn)
-        queue    (.getQueue (lhq/declare channel))
-        latch    (java.util.concurrent.CountDownLatch. 1)
-        rl       (lhb/return-listener (fn [reply-code reply-text exchange routing-key properties body]
-                                        (is (= reply-text "NO_CONSUMERS"))
-                                        (is (= (String. ^bytes body) "return-me"))
-                                        (.countDown latch)))]
-    (.addReturnListener channel rl)
-    (lhb/publish channel "" queue "return-me" :immediate true)
-    (.await latch)))
-
 
 
 ;;
