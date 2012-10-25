@@ -166,9 +166,9 @@
 (defn reject
   "Rejects (and, optionally, requeues) a messages using basic.reject AMQP method"
   ([^Channel channel ^long delivery-tag]
-     (.basicAck channel delivery-tag false))
+     (.basicReject channel delivery-tag false))
   ([^Channel channel ^long delivery-tag ^Boolean requeue]
-     (.basicAck channel delivery-tag requeue)))
+     (.basicReject channel delivery-tag requeue)))
 
 
 (defn nack
