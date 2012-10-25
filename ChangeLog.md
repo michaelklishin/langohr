@@ -1,3 +1,14 @@
+## Changes between Langohr 1.0.0-beta9 and 1.0.0-beta10
+
+### langohr.basic/reject now correctly uses basic.reject
+
+langohr.basic/reject now correctly uses `basic.reject` AMQP method
+and not `basic.ack`.
+
+Contributed by @natedev.
+
+
+
 ## Changes between Langohr 1.0.0-beta8 and 1.0.0-beta9
 
 `1.0.0-beta9` has **BREAKING CHANGES**:
