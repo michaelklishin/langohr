@@ -31,17 +31,17 @@
 (deftest t-declare-a-durable-direct-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct2"]
-    (lhe/declare channel exchange "direct" :auto-delete false, :durable true)))
+    (lhe/declare channel exchange "direct" :auto-delete false :durable true)))
 
 (deftest t-declare-a-durable-direct-exchange-shortcut
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct2"]
-    (lhe/direct channel exchange :auto-delete false, :durable true)))
+    (lhe/direct channel exchange :auto-delete false :durable true)))
 
 (deftest t-declare-an-auto-deleted-direct-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct3"]
-    (lhe/declare channel exchange "direct" :auto-delete true, :durable false)))
+    (lhe/declare channel exchange "direct" :auto-delete true :durable false)))
 
 
 (deftest t-direct-exchange-routing-key-delivery
