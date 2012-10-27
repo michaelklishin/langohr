@@ -1,7 +1,8 @@
 (ns langohr.test.exchange-test
   (:refer-clojure :exclude [declare])
   (:import [com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Queue$DeclareOk ShutdownSignalException]
-           java.io.IOException)
+           java.io.IOException
+           java.util.UUID)
   (:use     clojure.test)
   (:require [langohr.core     :as lhc]
             [langohr.exchange :as lhe]
@@ -162,6 +163,21 @@
       (Thread/sleep 200)
 
       (is (= 2 (:message-count (lhq/status channel queue))))))
+
+;; passive declaration
+
+(deftest t-passive-declare-with-existing-exchange
+  (let [channel    (lhc/create-channel conn)
+        exchange   "langohr.tests.exchanges.direct2"
+        _          (lhe/direct channel exchange :auto-delete false :durable true)
+        declare-ok (lhe/declare-passive channel exchange)]
+    (is declare-ok)))
+
+(deftest t-passive-declare-with-non-existing-exchange
+  (let [channel    (lhc/create-channel conn)
+        exchange   (format "langohr.tests.exchanges.%s" (UUID/randomUUID))]
+    (is (thrown? java.io.IOException
+                 (lhe/declare-passive channel exchange)))))
 
 ;;
 ;; exchange.delete

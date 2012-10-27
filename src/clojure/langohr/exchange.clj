@@ -40,6 +40,11 @@
   ([^Channel channel ^String name ^String type &{:keys [durable auto-delete internal arguments] :or {durable false auto-delete false internal false}}]
      (.exchangeDeclare channel name type durable auto-delete internal arguments)))
 
+(defn ^AMQP$Exchange$DeclareOk declare-passive
+  "Performs a passive exchange declaration (checks if an exchange exists)"
+  [^Channel ch ^String name]
+  (.exchangeDeclarePassive ch name))
+
 (defn ^AMQP$Exchange$DeclareOk direct
   "Shortcut method for declaring direct exchange by using exchange.declare AMQP method"
   [^Channel channel ^String name & opts]

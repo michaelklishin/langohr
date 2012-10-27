@@ -1,3 +1,24 @@
+## Changes between Langohr 1.0.0-beta10 and 1.0.0-beta11
+
+### langohr.exchange/declare-passive
+
+`langohr.exchange/declare-passive` is a new function that performs passive
+exchange declaration (checks if an exchange exists).
+
+An example to demonstrate:
+
+``` clojure
+(require '[langohr.channel  :as lch])
+(require '[langohr.exchange :as le])
+
+(let [ch (lch/open conn)]
+  (le/declare-passive ch "an.exchange"))
+```
+
+If the exchange does exist, the function works just like ``. If not,
+an exception (`com.rabbitmq.client.ShutdownSignalException`, `java.io.IOException`) will be thrown.
+
+
 ## Changes between Langohr 1.0.0-beta9 and 1.0.0-beta10
 
 ### langohr.basic/reject now correctly uses basic.reject
