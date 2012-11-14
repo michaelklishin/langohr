@@ -54,7 +54,7 @@
         (handle-delivery-fn channel (to-message-metadata (QueueingConsumer$Delivery. envelope properties body)) body)))))
 
 (defn subscribe
-  "Adds new blocking default consumer to a queue using basic.consume AMQP method"
+  "Adds new default consumer to a queue using basic.consume AMQP method"
   [^Channel channel ^String queue f & {:as options}]
   (let [keys      [:handle-consume-ok :handle-cancel :handle-cancel-ok :handle-recover-ok :handle-shutdown-signal]
         cons-opts (select-keys options keys)
