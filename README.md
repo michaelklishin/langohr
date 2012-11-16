@@ -42,7 +42,7 @@ The rest of the guides will be written eventually.
 
 ### API Reference
 
-For existing users, there is [API reference](http://api.clojurerabbitmq.info).
+For existing users, there is [API reference](http://reference.clojurerabbitmq.info).
 
 
 ### Code Examples
