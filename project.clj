@@ -3,8 +3,10 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"}
   :dependencies [[org.clojure/clojure      "1.4.0"]
-                 [com.rabbitmq/amqp-client "2.8.6"]
-                 [clojurewerkz/support     "0.7.0"]]
+                 [com.rabbitmq/amqp-client "2.8.7"]
+                 [clojurewerkz/support     "0.9.0"]
+                 [clj-http                 "0.5.7"]
+                 [cheshire                 "4.0.3"]]
   :profiles {:1.3 { :dependencies [[org.clojure/clojure "1.3.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]]
@@ -22,4 +24,14 @@
                                        :releases {:checksum :fail :update :always}}}
   :aliases {"all" ["with-profile" "dev:dev,1.3:dev,1.5"]}
   :warn-on-reflection true
-  :jvm-opts ["-Xmx512m"])
+  :jvm-opts ["-Xmx512m"]
+  :test-selectors {:default        (fn [m]
+                                     (and (not (:performance m))
+                                          (not (:edge-features m))
+                                          (not (:time-consuming m))))
+                   :http-api       :http-api
+                   :focus          :focus
+                   ;; as in, edge rabbitmq server
+                   :edge-features  :edge-features
+                   :time-consuming :time-consuming
+                   :all           (constantly true)})
