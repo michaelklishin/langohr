@@ -29,7 +29,7 @@
                                      (and (not (:performance m))
                                           (not (:edge-features m))
                                           (not (:time-consuming m))))
-                   :http-api       :http-api
+                   :http           :http
                    :focus          :focus
                    ;; as in, edge rabbitmq server
                    :edge-features  :edge-features

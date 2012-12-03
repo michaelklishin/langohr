@@ -96,7 +96,11 @@
 
 (defn get-connection
   [^String id]
-  (get (url-with-path (str "/api/nodes/" id))))
+  (get (url-with-path (str "/api/connections/" id))))
+
+(defn close-connection
+  [^String id]
+  (delete (url-with-path (str "/api/connections/" id))))
 
 (defn list-channels
   []
@@ -113,20 +117,20 @@
   (get (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
 
 (defn declare-exchange
-  [^String vhost ^String exchange & {:as properties}]
-  (post (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
+  [^String vhost ^String exchange properties]
+  (post (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange))) :body (json/generate-string properties)))
 
 (defn delete-exchange
   [^String vhost ^String exchange]
   (delete (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
 
 (defn list-bindings-for-which-exchange-is-the-source
-  [^String vhost ^String name]
-  )
+  [^String vhost ^String exchange]
+  (get (url-with-path (format "/api/exchanges/%s/%s/bindings/source" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
 
 (defn list-bindings-for-which-exchange-is-the-destination
-  [^String vhost ^String name]
-  )
+  [^String vhost ^String exchange]
+  (get (url-with-path (format "/api/exchanges/%s/%s/bindings/destination" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
 
 (defn publish
   [^String vhost ^String exchange]
@@ -134,25 +138,25 @@
 
 (defn list-queues
   ([]
-     )
+     (get (url-with-path "/api/queues")))
   ([^String vhost]
-     ))
+     (get (url-with-path (format "/api/queues/%s" (URLEncoder/encode vhost))))))
 
 (defn get-queue
-  [^String vhost ^String name]
-  )
+  [^String vhost ^String queue]
+  (get (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue)))))
 
 (defn declare-queue
-  [^String vhost ^String name properties]
-  )
+  [^String vhost ^String queue properties]
+  (post (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue))) :body (json/generate-string properties)))
 
 (defn delete-queue
-  [^String vhost ^String name]
-  )
+  [^String vhost ^String queue]
+  (delete (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue)))))
 
 (defn purge-queue
-  [^String vhost ^String name]
-  )
+  [^String vhost ^String queue]
+  (delete (url-with-path (format "/api/queues/%s/%s/contents" (URLEncoder/encode vhost) (URLEncoder/encode queue)))))
 
 (defn list-bindings
   [^String vhost ^String queue]
