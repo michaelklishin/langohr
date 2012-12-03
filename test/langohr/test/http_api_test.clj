@@ -94,3 +94,16 @@
         _  (hc/delete-queue "/" s)]
     (is (= true r1))
     (is (= true r2))))
+
+(deftest ^{:http true} test-list-bindings
+  (let [q  "langohr.http.queue"
+        e  "langohr.http.fanout"
+        r1 (hc/bind "/" e q)
+        xs (hc/list-bindings "/")
+        m  (first xs)]
+    (is r1)
+    (is (coll? xs))
+    (is (:source m))
+    (is (:destination m))
+    (is (:vhost m))
+    (is (= "queue" (:destination_type m)))))

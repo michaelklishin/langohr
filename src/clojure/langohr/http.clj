@@ -158,23 +158,28 @@
   [^String vhost ^String queue]
   (delete (url-with-path (format "/api/queues/%s/%s/contents" (URLEncoder/encode vhost) (URLEncoder/encode queue)))))
 
-(defn list-bindings
-  [^String vhost ^String queue]
-  )
-
 (defn get-message
   [^String vhost ^String queue]
   )
 
 (defn list-bindings
   ([]
-     )
+     (get (url-with-path "/api/bindings")))
   ([^String vhost]
-     ))
+     (get (url-with-path (format "/api/bindings/%s" (URLEncoder/encode vhost)))))
+  ([^String vhost ^String queue]
+     (get (url-with-path (format "/api/queues/%s/%s/bindings"
+                                 (URLEncoder/encode vhost)
+                                 (URLEncoder/encode queue))))))
 
 (defn bind
-  [^String vhost ^String exchange ^String queue]
-  )
+  ([^String vhost ^String exchange ^String queue]
+     (bind vhost exchange queue {}))
+  ([^String vhost ^String exchange ^String queue properties]
+     (post (url-with-path (format "/api/bindings/%s/e/%s/q/%s"
+                                  (URLEncoder/encode vhost)
+                                  (URLEncoder/encode exchange)
+                                  (URLEncoder/encode queue))) :body properties)))
 
 (defn list-vhosts
   []
