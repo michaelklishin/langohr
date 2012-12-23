@@ -8,7 +8,7 @@
                  [clj-http                 "0.5.7"]
                  [cheshire                 "4.0.3"]]
   :profiles {:1.3 { :dependencies [[org.clojure/clojure "1.3.0"]]}
-             :1.5 {:dependencies [[org.clojure/clojure "1.5.0-master-SNAPSHOT"]]}
+             :1.5 {:dependencies [[org.clojure/clojure "1.5.0-RC1"]]}
              :dev {:dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]]
                    :plugins [[codox "0.6.1"]]
                    :codox {:sources ["src/clojure"]
