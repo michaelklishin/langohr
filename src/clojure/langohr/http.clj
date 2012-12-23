@@ -183,7 +183,7 @@
 
 (defn list-vhosts
   []
-  )
+  (get (url-with-path "/api/vhosts")))
 
 (defn get-vhost
   [^String vhost]

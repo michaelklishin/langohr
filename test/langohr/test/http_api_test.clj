@@ -1,6 +1,7 @@
 (ns langohr.test.http-api-test
   (:require [langohr.http :as hc])
-  (:use clojure.test))
+  (:use clojure.test
+        [clojure.set :only [subset? superset?]]))
 
 (hc/connect! "http://127.0.0.1:55672" "guest" "guest")
 
@@ -107,3 +108,7 @@
     (is (:destination m))
     (is (:vhost m))
     (is (= "queue" (:destination_type m)))))
+
+(deftest ^{:http true} test-list-vhosts
+  (let [xs (hc/list-vhosts)]
+    (is (subset? #{"/"} (set (map :name xs))))))
