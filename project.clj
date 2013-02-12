@@ -9,12 +9,14 @@
                  [cheshire                 "4.0.3"]]
   :profiles {:1.3 { :dependencies [[org.clojure/clojure "1.3.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.0-RC1"]]}
-             :dev {:dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]]
+             :dev {:dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]
+                                  [com.google.guava/guava "14.0-rc2"]]
                    :plugins [[codox "0.6.1"]]
                    :codox {:sources ["src/clojure"]
                            :output-dir "doc/api"}}}
   :source-paths      ["src/clojure"]
-  :java-source-paths ["src/java"]  
+  :java-source-paths ["src/java"]
+  :javac-options     ["-target" "1.6" "-source" "1.6"]
   :url "http://clojurerabbitmq.info"
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
