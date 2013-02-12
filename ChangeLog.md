@@ -1,5 +1,10 @@
 ## Changes between Langohr 1.0.0-beta10 and 1.0.0-beta11
 
+### RabbitMQ Java Client 3.0.x
+
+RabbitMQ Java Client has been upgraded to version `3.0.2`.
+
+
 ### langohr.exchange/declare-passive
 
 `langohr.exchange/declare-passive` is a new function that performs passive
