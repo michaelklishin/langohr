@@ -1,5 +1,11 @@
 ## Changes between Langohr 1.0.0-beta10 and 1.0.0-beta11
 
+### More Convenient TLS Support
+
+Langohr will now automatically enable TLS/SSL if provided `:port` is
+`5671`.
+
+
 ### RabbitMQ Java Client 3.0.x
 
 RabbitMQ Java Client has been upgraded to version `3.0.2`.

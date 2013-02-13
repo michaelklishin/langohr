@@ -128,7 +128,8 @@
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT} } (normalize-settings settings)
         cf   (ConnectionFactory.)]
-    (when ssl
+    (when (or ssl
+              (= port ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT))
       (.useSslProtocol cf))
     (doto cf
       (.setClientProperties   client-properties)
