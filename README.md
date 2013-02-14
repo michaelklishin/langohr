@@ -98,11 +98,11 @@ Langohr depends on RabbitMQ Java client 2.8.x and thus should work with RabbitMQ
 
 Langohr is slowly approaching 1.0 release. A few remaining items before the release are
 
- * Documentation guides.
- * Test suite cleanup.
- * Some stress tests to set baseline performance expectations.
+ * Documentation guides
+ * Test suite cleanup
+ * Some stress tests to set baseline performance expectations
 
-We expect 1.0 to be released in 2012 (but not before the documentation site is ready).
+We expect 1.0 to be released in 2013 (but not before the documentation site is ready).
 
 
 ## Langohr Is a ClojureWerkz Project
