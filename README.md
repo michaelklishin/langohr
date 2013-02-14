@@ -99,7 +99,9 @@ with RabbitMQ versions 2.0 and later.
 
 Langohr is slowly approaching 1.0 release. A few remaining items before the release are
 
+ * Make the library even more Clojuric
  * Documentation guides
+ * Design error handling and recovery
  * Test suite cleanup
  * Some stress tests to set baseline performance expectations
 
