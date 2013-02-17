@@ -6,11 +6,6 @@ Langohr `1.0.0-beta11` features initial bits of RabbitMQ HTTP API client
 under `langohr.http`.
 
 
-### Cheshire 5.x
-
-[Cheshire](https://github.com/dakrone/cheshire) dependency has been upgraded to `5.0.1`
-
-
 ### More Convenient TLS Support
 
 Langohr will now automatically enable TLS/SSL if provided `:port` is
