@@ -1,3 +1,9 @@
+## Changes between Langohr 1.0.0-beta11 and 1.0.0-beta12
+
+No changes yet.
+
+
+
 ## Changes between Langohr 1.0.0-beta10 and 1.0.0-beta11
 
 ### HTTP API Client
