@@ -71,7 +71,7 @@ idea we have is implemented. Keep that in mind.
 
 With Leiningen:
 
-    [com.novemberain/langohr "1.0.0-beta10"]
+    [com.novemberain/langohr "1.0.0-beta11"]
 
 
 With Maven:
@@ -79,7 +79,7 @@ With Maven:
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>langohr</artifactId>
-      <version>1.0.0-beta10</version>
+      <version>1.0.0-beta11</version>
     </dependency>
 
 
@@ -100,12 +100,13 @@ with RabbitMQ versions 2.0 and later.
 Langohr is slowly approaching 1.0 release. A few remaining items before the release are
 
  * Make the library even more Clojuric
- * Documentation guides
+ * Finish [documentation guides](http://clojurerabbitmq.info)
  * Design error handling and recovery
- * Test suite cleanup
  * Some stress tests to set baseline performance expectations
+ * Finish HTTP API client support
+ * Test suite cleanup
 
-We expect 1.0 to be released in 2013 (but not before the documentation site is ready).
+We expect 1.0 to be released in 2013 (but not before [documentation guides](http://clojurerabbitmq.info) are finished).
 
 
 ## Langohr Is a ClojureWerkz Project
