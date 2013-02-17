@@ -1,5 +1,10 @@
 ## Changes between Langohr 1.0.0-beta10 and 1.0.0-beta11
 
+### Cheshire 5.x
+
+[Cheshire](https://github.com/dakrone/cheshire) dependency has been upgraded to `5.0.1`
+
+
 ### More Convenient TLS Support
 
 Langohr will now automatically enable TLS/SSL if provided `:port` is
