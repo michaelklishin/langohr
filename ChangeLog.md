@@ -38,7 +38,7 @@ An example to demonstrate:
   (le/declare-passive ch "an.exchange"))
 ```
 
-If the exchange does exist, the function works just like `langohr.exchange/declare`. If not,
+If the exchange does exist, the function has no effect. If not,
 an exception (`com.rabbitmq.client.ShutdownSignalException`, `java.io.IOException`) will be thrown.
 
 
