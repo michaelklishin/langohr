@@ -8,3 +8,4 @@ doc/*
 deploy.docs.sh
 target/*
 .dir-locals.el
+debug/*
