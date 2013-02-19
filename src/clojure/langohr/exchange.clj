@@ -21,7 +21,7 @@
 
    By default declares non-autodeleted non-durable exchanges.
 
-   Core exhange types:
+   Core exchange types:
 
     - direct: 1:1 form of communication. Routing key defines how broker will direct message from producer to the consumer.
     - fanout: 1:N message delivery pattern. No routing keys are involved. You bind a queue to exchange and messages sent to that exchange are delivered to all bound queues.
