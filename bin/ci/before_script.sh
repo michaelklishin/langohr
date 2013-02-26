@@ -1,7 +1,5 @@
 #!/bin/sh
 
-./bin/ci/setup_client_keystore.sh
-
 # guest:guest has full access to /
 
 sudo rabbitmqctl add_vhost /
