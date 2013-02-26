@@ -1,11 +1,11 @@
 (ns langohr.test.queue-test
   (:refer-clojure :exclude [declare get])
+  (:require [langohr.core  :as lhc]
+            [langohr.queue :as lhq]
+            [langohr.basic :as lhb])
+  (:use clojure.test)
   (:import [com.rabbitmq.client Connection Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk]
-           java.io.IOException)
-  (:use clojure.test
-        [langohr.core  :as lhc]
-        [langohr.queue :as lhq]
-        [langohr.basic :as lhb]))
+           java.io.IOException))
 
 ;;
 ;; queue.declare
@@ -14,29 +14,29 @@
 (defonce ^Connection conn (lhc/connect))
 
 
-(deftest t-declare-a-server-named-queue-with-default-attributes
+(deftest test-declare-a-server-named-queue-with-default-attributes
   (let [channel    (lhc/create-channel conn)
-        declare-ok (lhq/declare channel)]
-    (is (re-seq #"^amq\.gen-(.+)" (.getQueue declare-ok)))
-    (is (= 0 (.getConsumerCount declare-ok)))
-    (is (= 0 (.getMessageCount declare-ok)))))
+        {:keys [consumer-count message-count queue]} (lhq/declare channel)]
+    (is (re-seq #"^amq\.gen-(.+)" queue))
+    (is (= 0 consumer-count))
+    (is (= 0 message-count))))
 
 
-(deftest t-declare-a-client-named-queue-with-default-attributes
+(deftest test-declare-a-client-named-queue-with-default-attributes
   (let  [channel    (lhc/create-channel conn)
          queue-name "langohr.tests2.queues.client-named-with-default-attributes"
-         declare-ok (lhq/declare channel queue-name)]
-    (is (= (.getQueue declare-ok) queue-name))))
+         {:keys [queue]} (lhq/declare channel queue-name)]
+    (is (= queue queue-name))))
 
 
-(deftest t-declare-a-durable-non-exclusive-non-auto-deleted-client-named-queue
+(deftest test-declare-a-durable-non-exclusive-non-auto-deleted-client-named-queue
   (let  [channel    (lhc/create-channel conn)
          queue-name "langohr.tests2.queues.client-named.durable.non-exclusive.non-auto-deleted"
-         declare-ok (lhq/declare channel queue-name :durable true :exclusive false :auto-delete false)]
-    (is (= (.getQueue declare-ok) queue-name))))
+         {:keys [queue]} (lhq/declare channel queue-name :durable true :exclusive false :auto-delete false)]
+    (is (= queue queue-name))))
 
 
-(deftest t-redeclare-an-auto-deleted-queue-with-different-attributes
+(deftest test-redeclare-an-auto-deleted-queue-with-different-attributes
   (let [conn        (lhc/connect)
         channel     (lhc/create-channel conn)
         queue       "langohr.tests2.queues.non-auto-deleted1"
@@ -50,15 +50,15 @@
         nil))))
 
 
-(deftest t-queue-declaration-with-message-ttl
+(deftest test-queue-declaration-with-message-ttl
   (let [channel  (lhc/create-channel conn)
-        queue    (.getQueue (lhq/declare channel "" :auto-delete true :arguments { "x-message-ttl" 1500 } ))]
+        {:keys [queue]} (lhq/declare channel "" :auto-delete true :arguments { "x-message-ttl" 1500 } )]
     (lhb/publish channel "" queue "")
     (Thread/sleep 1700)
     (is (nil? (lhb/get channel queue)))))
 
 
-(deftest t-queue-declaration-with-queue-ttl
+(deftest test-queue-declaration-with-queue-ttl
   (let [channel  (lhc/create-channel conn)
         queue    "langohr.test.leased.queue"]
     (lhq/declare channel queue :auto-delete true :exclusive false :arguments { "x-expires" 1500 } )
@@ -76,7 +76,7 @@
 ;; Passive queue.declare
 ;;
 
-(deftest t-passive-declare-a-non-durable-exclusive-auto-deleted-client-named-queue
+(deftest test-passive-declare-a-non-durable-exclusive-auto-deleted-client-named-queue
   (let  [channel    (lhc/create-channel conn)
          queue-name "langohr.tests2.queues.client-named.non-durable.non-exclusive.auto-deleted"
          _          (lhq/declare channel queue-name :durable false :exclusive false :auto-delete true)
@@ -89,15 +89,14 @@
 ;; queue.bind
 ;;
 
-(deftest t-bind-a-server-named-queue-to-amq-fanout
+(deftest test-bind-a-server-named-queue-to-amq-fanout
   (let [channel  (lhc/create-channel conn)
-        declare-ok (lhq/declare channel)
-        queue    (.getQueue declare-ok)
+        {:keys [queue]} (lhq/declare channel)
         exchange "amq.fanout"]
     (lhq/bind channel queue exchange)))
 
 
-(deftest t-bind-a-client-named-queue-to-amq-fanout
+(deftest test-bind-a-client-named-queue-to-amq-fanout
   (let [channel  (lhc/create-channel conn)
         queue    "langohr.tests2.queues.client-named.non-durable.non-exclusive.auto-deleted"
         exchange "amq.fanout"]
@@ -109,10 +108,9 @@
 ;; queue.unbind
 ;;
 
-(deftest t-unbind-a-server-named-queue-from-amq-fanout
+(deftest test-unbind-a-server-named-queue-from-amq-fanout
   (let [channel  (lhc/create-channel conn)
-        declare-ok (lhq/declare channel)
-        queue    (.getQueue declare-ok)
+        {:keys [queue]} (lhq/declare channel)
         exchange "amq.fanout"]
     (lhq/bind   channel queue exchange :routing-key "abc")
     (lhq/unbind channel queue exchange "abc")))
@@ -123,7 +121,7 @@
 ;; queue.delete
 ;;
 
-(deftest t-declare-and-immediately-delete-a-client-named-queue-with-default-attributes
+(deftest test-declare-and-immediately-delete-a-client-named-queue-with-default-attributes
   (let  [channel    (lhc/create-channel conn)
          queue-name "langohr.tests2.queues.client-named-with-default-attributes"]
     (lhq/declare         channel queue-name)
@@ -133,14 +131,14 @@
                  (lhq/declare-passive channel queue-name)))))
 
 
-(deftest t-declare-and-immediately-delete-a-client-named-queue-if-it-is-empty
+(deftest test-declare-and-immediately-delete-a-client-named-queue-if-it-is-empty
   (let  [channel    (lhc/create-channel conn)
          queue-name "langohr.tests2.queues.client-named-with-default-attributes"]
     (lhq/declare channel queue-name)
     (lhq/delete channel queue-name false true)))
 
 
-(deftest t-declare-and-immediately-delete-a-client-named-queue-if-it-is-unused
+(deftest test-declare-and-immediately-delete-a-client-named-queue-if-it-is-unused
   (let  [channel    (lhc/create-channel conn)
          queue-name "langohr.tests2.queues.client-named-with-default-attributes"]
     (lhq/declare channel queue-name)
@@ -151,7 +149,7 @@
 ;; queue.purge
 ;;
 
-(deftest t-purge-a-queue-without-messages
+(deftest test-purge-a-queue-without-messages
   (let  [channel (lhc/create-channel conn)
          queue   "langohr.tests2.queues.client-named-with-default-attributes"]
     (lhq/declare channel queue)
@@ -159,7 +157,7 @@
     (lhq/purge channel queue)
     (is (= 0 (:message-count (lhq/status channel queue))))))
 
-(deftest t-purge-a-queue-that-has-messages-in-it
+(deftest test-purge-a-queue-that-has-messages-in-it
   (let  [channel (lhc/create-channel conn)
          queue   "langohr.tests2.queues.client-named-with-default-attributes"
          n       30]
