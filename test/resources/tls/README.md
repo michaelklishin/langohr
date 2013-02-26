@@ -8,4 +8,4 @@ They are generated using the [rabbitmq-test](http://hg.rabbitmq.com/rabbitmq-tes
 ## Generation
 
     cd test/resources/tls
-    PASSWORD=tops3kre7 make
+    PASSWORD=bunnies make
