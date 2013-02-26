@@ -14,7 +14,7 @@
 
 (defn resource-as-bytes
   [^String path]
-  (.getBytes (slurp (io/resource path)) "UTF-8"))
+  (.getBytes ^String (slurp (io/resource path)) "UTF-8"))
 
 (deftest test-publishing-large-payload1
   (with-open [ch (lhc/create-channel conn)]
