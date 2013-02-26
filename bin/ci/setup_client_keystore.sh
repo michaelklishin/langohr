@@ -5,8 +5,8 @@ set -e
 rm -rf ./tmp/langohr
 mkdir -p ./tmp/langohr/keystore/ ./tmp/langohr/empty
 
-export KEYSTORE=`mktemp ./tmp/langohr/keystore/keystore.XXXXX`
-export EMPTY_KEYSTORE=`mktemp ./tmp/langohr/empty/empty_keystore.XXXXX`
+export KEYSTORE="./tmp/langohr/keystore/keystore"
+export EMPTY_KEYSTORE="./tmp/langohr/empty/empty_keystore"
 export PASSWORD="bunnies"
 
 rm -rf $KEYSTORE $EMPTY_KEYSTORE
