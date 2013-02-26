@@ -10,19 +10,19 @@
 (ns langohr.queue
   (:refer-clojure :exclude [declare])
   (:import [com.rabbitmq.client Channel AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk AMQP$Queue$DeleteOk AMQP$Queue$PurgeOk]
-           java.util.Map))
+           java.util.Map [com.novemberain.langohr.queue DeclareOk BindOk UnbindOk DeleteOk PurgeOk]))
 
 ;;
 ;; API
 ;;
 
-(defn ^AMQP$Queue$DeclareOk declare
+(defn ^com.novemberain.langohr.queue.DeclareOk declare
   "Actively declare a server-named or named queue using queue.declare AMQP method.
 
    Usage example:
 
        ;; declare server-named, exclusive, autodelete, non-durable queue.
-       (lhq/declare channel) ;; will yield a name like: 'amq.gen-QtE7OdDDjlHcxNGWuSoUb3'
+       (lhq/declare channel) ;; will return a map that contains the name: {:queue \"amq.gen-QtE7OdDDjlHcxNGWuSoUb3\"}
 
        ;; creates named non-durable, exclusive, autodelete queue
        (lhq/declare channel queue-name :durable false :exclusive true :auto-delete true)
@@ -36,51 +36,52 @@
     :arguments: other properties for the Queue.
   "
   ([^Channel channel]
-     (.queueDeclare channel))
+     (DeclareOk. (.queueDeclare channel)))
   ([^Channel channel ^String queue]
-     (.queueDeclare channel queue false false true nil))
+     (DeclareOk. (.queueDeclare channel queue false false true nil)))
   ([^Channel channel ^String queue &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false exclusive false auto-delete true}}]
-     (.queueDeclare channel queue durable exclusive auto-delete arguments)))
+     (DeclareOk. (.queueDeclare channel queue durable exclusive auto-delete arguments))))
 
 
-(defn declare-passive
+(defn ^com.novemberain.langohr.queue.DeclareOk declare-passive
   "Declares a queue passively (checks that it is there) using queue.declare AMQP method"
   [^Channel channel ^String queue]
-  (.queueDeclarePassive channel queue))
+  (DeclareOk. (.queueDeclarePassive channel queue)))
 
 
-(defn ^AMQP$Queue$BindOk bind
+(defn ^com.novemberain.langohr.queue.BindOk bind
   "Binds a queue to an exchange using queue.bind AMQP method"
   ([^Channel channel ^String queue ^String exchange]
-     (.queueBind channel queue exchange ""))
+     (BindOk. (.queueBind channel queue exchange "")))
   ([^Channel channel ^String queue ^String exchange &{:keys [routing-key arguments] :or {routing-key "" arguments nil}}]
-     (.queueBind channel queue exchange routing-key arguments)))
+     (BindOk. (.queueBind channel queue exchange routing-key arguments))))
 
 
-(defn ^AMQP$Queue$UnbindOk unbind
+(defn ^com.novemberain.langohr.queue.UnbindOk unbind
   "Unbinds a queue from an exchange using queue.bind AMQP method"
   ([^Channel channel ^String queue ^String exchange ^String routing-key]
-     (.queueUnbind channel queue exchange routing-key))
+     (UnbindOk. (.queueUnbind channel queue exchange routing-key)))
   ([^Channel channel ^String queue ^String exchange ^String routing-key ^Map arguments]
-     (.queueUnbind channel queue exchange routing-key arguments)))
+     (UnbindOk. (.queueUnbind channel queue exchange routing-key arguments))))
 
 
-(defn ^AMQP$Queue$DeleteOk delete
+(defn ^com.novemberain.langohr.queue.DeleteOk delete
   "Deletes a queue using queue.delete AMQP method"
   ([^Channel channel ^String queue]
-     (.queueDelete channel queue))
+     (DeleteOk. (.queueDelete channel queue)))
   ([^Channel channel ^String queue if-unused if-empty]
-     (.queueDelete channel queue if-unused if-empty)))
+     (DeleteOk. (.queueDelete channel queue if-unused if-empty))))
 
 
-(defn ^AMQP$Queue$PurgeOk purge
+(defn ^com.novemberain.langohr.queue.PurgeOk purge
   "Purges a queue using queue.purge AMQP method"
   [^Channel channel ^String queue]
-  (.queuePurge channel queue))
+  (PurgeOk. (.queuePurge channel queue)))
 
 
 (defn status
-  "Returns a map with two keys: message-count and :consumer-count, for the given queue. Uses queue.declare AMQP method with the :passive attribute set."
+  "Returns a map with two keys: message-count and :consumer-count, for the given queue.
+   Uses queue.declare AMQP method with the :passive attribute set."
   [^Channel channel ^String queue]
   (let [declare-ok ^AMQP$Queue$DeclareOk (.queueDeclarePassive channel queue)]
     {:message-count (.getMessageCount declare-ok) :consumer-count (.getConsumerCount declare-ok)}))
