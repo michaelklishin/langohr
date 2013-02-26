@@ -6,9 +6,9 @@
                  [com.rabbitmq/amqp-client "3.0.2"]
                  [clojurewerkz/support     "0.13.0"]
                  [clj-http                 "0.6.4"]
-                 [cheshire                 "5.0.1"]]
+                 [cheshire                 "5.0.2"]]
   :profiles {:1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
-             :1.5 {:dependencies [[org.clojure/clojure "1.5.0-RC16"]]}
+             :1.5 {:dependencies [[org.clojure/clojure "1.5.0-RC17"]]}
              :dev {:dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]
                                   [com.google.guava/guava "14.0-rc2"]]
                    :resource-paths ["test/resources"]
@@ -31,10 +31,13 @@
   :test-selectors {:default        (fn [m]
                                      (and (not (:performance m))
                                           (not (:edge-features m))
-                                          (not (:time-consuming m))))
+                                          (not (:time-consuming m))
+                                          (not (:tls m))))
                    :http           :http
                    :focus          :focus
                    ;; as in, edge rabbitmq server
                    :edge-features  :edge-features
                    :time-consuming :time-consuming
-                   :all           (constantly true)})
+                   :performance    :performance
+                   :tls            :tls
+                   :ci             (fn [m] (not (:tls m)))})
