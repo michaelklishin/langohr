@@ -1,6 +1,9 @@
 ## Changes between Langohr 1.0.0-beta11 and 1.0.0-beta12
 
-No changes yet.
+### More Convenient TLS Support
+
+Langohr will now correct the port to TLS/SSL if provided `:port` is
+`5672` (default non-TLS port) and `:ssl` is set to `true`.
 
 
 
