@@ -11,7 +11,8 @@
   "Exchanges are the entities to which messages are sent. Exchanges match and distribute messages across queues."
   (:refer-clojure :exclude [declare])
   (:import [com.rabbitmq.client Channel AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Exchange$BindOk]
-           [com.novemberain.langohr.exchange DeclareOk DeleteOk BindOk UnbindOk]))
+           [com.novemberain.langohr.exchange DeclareOk DeleteOk BindOk UnbindOk]
+           java.util.Map))
 
 ;;
 ;; API
@@ -93,5 +94,5 @@
   "Unbinds an exchange from another exchange using exchange.unbind AMQP method (a RabbitMQ-specific extension)"
   ([^Channel channel ^String destination ^String source ^String routing-key]
     (UnbindOk. (.exchangeUnbind channel destination source routing-key)))
-  ([^Channel channel ^String destination ^String source &{:keys [arguments ^String routing-key]}]
+  ([^Channel channel ^String destination ^String source ^String routing-key ^Map arguments]
     (UnbindOk. (.exchangeUnbind channel destination source routing-key arguments))))

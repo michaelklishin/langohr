@@ -49,7 +49,7 @@
   (let [conn (lhc/connect)
         channel (lhc/create-channel conn)
         exchange "langohr.tests.exchanges.direct4"
-        queue    (lhq/declare-server-named channel "" :auto-delete true)]
+        queue    (lhq/declare-server-named channel)]
 
     (lhe/declare channel exchange "direct")
     (lhq/bind channel queue exchange :routing-key "abc")
@@ -94,7 +94,7 @@
   (let [conn (lhc/connect)
         channel (lhc/create-channel conn)
         exchange "langohr.tests.exchanges.fanout4"
-        queue    (.getQueue (lhq/declare channel "" :auto-delete true))]
+        queue    (lhq/declare-server-named channel)]
 
     (lhe/declare channel exchange "fanout")
     (lhq/bind channel queue exchange)
@@ -104,7 +104,7 @@
 
     (Thread/sleep 200)
 
-    (is (= 2 (:message-count (lhq/status channel queue))))))
+    (is (= 2 (lhq/message-count channel queue)))))
 
 ;; topic
 
@@ -151,7 +151,7 @@
   (let [conn (lhc/connect)
         channel (lhc/create-channel conn)
         exchange "langohr.tests.exchanges.topic5"
-        queue    (.getQueue (lhq/declare channel "" :auto-delete true))]
+        queue    (lhq/declare-server-named channel)]
 
     (lhe/declare channel exchange "topic")
     (lhq/bind channel queue exchange :routing-key "log.*")
@@ -162,7 +162,7 @@
 
     (Thread/sleep 200)
 
-    (is (= 2 (:message-count (lhq/status channel queue))))))
+    (is (= 2 (lhq/message-count channel queue)))))
 
 ;; passive declaration
 
@@ -205,7 +205,7 @@
   (let [channel     (lhc/create-channel conn)
         source      "langohr.tests.exchanges.source"
         destination "langohr.tests.exchanges.destination"
-        queue       (.getQueue (lhq/declare channel "" :auto-delete true))]
+        queue       (lhq/declare-server-named channel)]
     (lhe/declare channel source      "fanout" :auto-delete true)
     (lhe/declare channel destination "fanout" :auto-delete true)
     (lhq/bind channel queue destination)
@@ -218,7 +218,7 @@
   (let [channel     (lhc/create-channel conn)
         source      "langohr.tests.exchanges.source2"
         destination "langohr.tests.exchanges.destination2"
-        queue       (.getQueue (lhq/declare channel "" :auto-delete true))]
+        queue       (lhq/declare-server-named channel)]
     (lhe/declare channel source      "fanout" :auto-delete true)
     (lhe/declare channel destination "fanout" :auto-delete true)
     (lhq/bind channel queue destination :arguments { "X-For-Some-Extension" "a value" })
@@ -236,7 +236,7 @@
 
   (let [channel (lhc/create-channel conn)
         exchange "langohr.tests.exchanges.headers2"
-        queue    (.getQueue (lhq/declare channel "" :auto-delete true))]
+        queue    (lhq/declare-server-named channel)]
 
     (lhe/declare channel exchange "headers")
     (lhq/bind channel queue exchange :arguments { "x-match" "all" "arch" "x86_64" "os" "linux" })
@@ -249,7 +249,7 @@
 
     (Thread/sleep 200)
 
-    (is (= 1 (:message-count (lhq/status channel queue))))))
+    (is (= 1 (lhq/message-count channel queue)))))
 
 
 
@@ -261,7 +261,7 @@
   (let [channel     (lhc/create-channel conn)
         fe          "langohr.extensions.altexchanges.fanout1"
         de          "langohr.extensions.altexchanges.direct1"
-        queue       (.getQueue (lhq/declare channel "" :auto-delete true))
+        queue       (lhq/declare-server-named channel)
         latch       (java.util.concurrent.CountDownLatch. 1)
         msg-handler (fn [ch metadata payload]
                       (.countDown latch))]
@@ -272,4 +272,3 @@
     (.start (Thread. (fn []
                        (lhb/publish channel de "" "1010" :mandatory true)) "publisher"))
     (.await latch)))
-
