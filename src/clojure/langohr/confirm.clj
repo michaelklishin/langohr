@@ -16,7 +16,7 @@
 ;;
 
 
-(defn listener
+(defn ^ConfirmListener listener
   "Instantiates and returns a new confirmations listener that handles basic.ack and basic.nack method deliveries"
   [^clojure.lang.IFn ack-handler ^clojure.lang.IFn nack-handler]
   (reify ConfirmListener
@@ -26,11 +26,11 @@
       (nack-handler delivery-tag multiple))))
 
 
-(defn add-listener
+(defn ^Channel add-listener
   "Adds confirmations listener to given channel"
   [^Channel channel ^ConfirmListener cl]
   (.addConfirmListener channel cl)
-  cl)
+  channel)
 
 
 (defn select
