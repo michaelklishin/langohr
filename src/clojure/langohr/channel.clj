@@ -8,7 +8,8 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.channel
-  (:import [com.rabbitmq.client ConnectionFactory Connection Channel AMQP$Channel$FlowOk]))
+  (:import [com.rabbitmq.client ConnectionFactory Connection Channel]
+           com.novemberain.langohr.channel.FlowOk))
 
 
 ;;
@@ -17,8 +18,10 @@
 
 (defn ^Channel open
   "Opens a new channel on given connection using channel.open AMQP method"
-  [^Connection connection]
-  (.createChannel connection))
+  ([^Connection connection]
+     (.createChannel connection))
+  ([^Connection connection id]
+     (.createChannel connection id)))
 
 
 (defn close
@@ -33,6 +36,7 @@
   "Checks if channel is open. Consider using langohr.core/open? instead."
   [^Channel channel]
   (.isOpen channel))
+(def closed? (complement open?))
 
 
 (defn ^Boolean flow?
@@ -41,7 +45,7 @@
      (.getActive (.getFlow channel))))
 
 
-(defn ^AMQP$Channel$FlowOk flow
+(defn ^com.novemberain.langohr.channel.FlowOk flow
   "Enables or disables channel flow using channel.flow AMQP method"
   ([^Channel channel ^Boolean on]
-     (.flow channel on)))
+     (FlowOk. (.flow channel on))))
