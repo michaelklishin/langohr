@@ -8,24 +8,26 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.tx
-  (:import com.rabbitmq.client.Channel))
+  (:import com.rabbitmq.client.Channel
+           [com.novemberain.langohr.tx SelectOk CommitOk RollbackOk]))
 
 
 ;;
 ;; API
 ;;
 
-(defn select
-  "Activates transactions on given channel. Please note that transactions only cover publishing and acknowledgements."
+(defn ^com.novemberain.langohr.tx.SelectOk select
+  "Activates transactions on given channel. Please note that transactions only
+   cover publishing and acknowledgements, not delivery to consumers."
   [^Channel channel]
-  (.txSelect channel))
+  (SelectOk. (.txSelect channel)))
 
 
-(defn commit
+(defn ^com.novemberain.langohr.tx.CommitOk commit
   [^Channel channel]
-  (.txCommit channel))
+  (CommitOk. (.txCommit channel)))
 
 
-(defn rollback
+(defn ^com.novemberain.langohr.tx.CommitOk rollback
   [^Channel channel]
-  (.txRollback channel))
+  (RollbackOk. (.txRollback channel)))
