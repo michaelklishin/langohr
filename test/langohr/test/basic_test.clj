@@ -19,7 +19,7 @@
 (defonce ^Connection conn (lhc/connect))
 
 
-(deftest t-publishing-using-default-exchange-and-default-message-attributes
+(deftest test-publishing-using-default-exchange-and-default-message-attributes
   (let [channel    (.createChannel conn)
         exchange   ""
         ;; yes, payload may be blank. This is an edge case Ruby amqp
@@ -52,7 +52,7 @@
     (.await latch)))
 
 
-(deftest t-demonstrate-sender-selected-distribution-extension-support
+(deftest test-demonstrate-sender-selected-distribution-extension-support
   (let [channel     (lhc/create-channel conn)
         queue1      (.getQueue (lhq/declare channel "" :auto-delete true))
         queue2      (.getQueue (lhq/declare channel "" :auto-delete true))
@@ -69,7 +69,7 @@
 ;; basic.cancel
 ;;
 
-(deftest t-basic-cancel
+(deftest test-basic-cancel
   (let [channel     (.createChannel conn)
         exchange    ""
         payload     ""
@@ -96,7 +96,7 @@
 ;; basic.get
 ;;
 
-(deftest t-basic-get-with-automatic-ack
+(deftest test-basic-get-with-automatic-ack
   (let [channel    (.createChannel conn)
         exchange   ""
         body       "A message we will fetch with basic.get"
@@ -109,7 +109,7 @@
       (is (= (:exchange metadata) exchange))
       (is (= (:routing-key metadata) queue)))))
 
-(deftest t-basic-get-with-explicit-ack
+(deftest test-basic-get-with-explicit-ack
   (let [channel    (.createChannel conn)
         exchange   ""
         body       "A message we will fetch with basic.get"
@@ -120,7 +120,7 @@
       (is (= (String. ^bytes payload) body)))))
 
 
-(deftest t-basic-get-with-an-empty-queue
+(deftest test-basic-get-with-an-empty-queue
   (let [channel    (.createChannel conn)
         queue      (.getQueue (lhq/declare channel "" :auto-delete true))]
     (is (nil? (lhb/get channel queue false)))))
@@ -131,7 +131,7 @@
 ;; basic.qos
 ;;
 
-(deftest t-using-non-global-basic-qos
+(deftest test-using-non-global-basic-qos
   (let [channel (.createChannel conn)]
     (lhb/qos channel 5)))
 
@@ -140,7 +140,7 @@
 ;; basic.ack
 ;;
 
-(deftest t-acknowledge-one-message
+(deftest test-acknowledge-one-message
   (let [producer-channel (.createChannel conn)
         consumer-channel (.createChannel conn)
         queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue1" :auto-delete true))]
@@ -155,7 +155,7 @@
       (lhb/ack consumer-channel delivery-tag))
     (lhq/purge   producer-channel queue)))
 
-(deftest t-acknowledge-multiple-messages
+(deftest test-acknowledge-multiple-messages
   (let [producer-channel (.createChannel conn)
         consumer-channel (.createChannel conn)
         queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue2" :auto-delete true))]
@@ -177,7 +177,7 @@
 ;; basic.nack
 ;;
 
-(deftest t-nack-one-message-to-requeue-it
+(deftest test-nack-one-message-to-requeue-it
   (let [channel (.createChannel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue1" :auto-delete true))]
     (lhq/purge channel queue)
@@ -191,7 +191,7 @@
       (lhb/nack channel delivery-tag false true))
     (lhq/purge channel queue)))
 
-(deftest t-nack-multiple-messages-without-requeueing
+(deftest test-nack-multiple-messages-without-requeueing
   (let [channel (.createChannel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue2" :auto-delete true))]
     (lhq/purge channel queue)
@@ -213,7 +213,7 @@
 ;; basic.reject
 ;;
 
-(deftest t-reject-one-message-to-requeue-it
+(deftest test-reject-one-message-to-requeue-it
   (let [channel (.createChannel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue1" :auto-delete true))]
     (lhq/purge channel queue)
@@ -227,7 +227,7 @@
       (lhb/reject channel delivery-tag true))
     (lhq/purge channel queue)))
 
-(deftest t-reject-one-message-without-requeueing
+(deftest test-reject-one-message-without-requeueing
   (let [channel (.createChannel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue2" :auto-delete true))]
     (lhq/purge channel queue)
@@ -248,7 +248,7 @@
 ;; basic.return
 ;;
 
-(deftest t-handling-of-returned-mandatory-messages-with-a-listener-instance
+(deftest test-handling-of-returned-mandatory-messages-with-a-listener-instance
   (let [channel  (.createChannel conn)
         exchange "langohr.tests.basic.return1"
         latch    (java.util.concurrent.CountDownLatch. 1)
@@ -267,6 +267,6 @@
 ;; basic.recover, basic.recovery-async
 ;;
 
-(deftest t-kind-of-deprecated-recovery-methods
+(deftest test-kind-of-deprecated-recovery-methods
   (let [channel (.createChannel conn)]
     (lhb/recover-async channel true)))
