@@ -8,7 +8,8 @@
 ;; You must not remove this notice, or any other from this software.
 
 (ns langohr.confirm
-  (:import [com.rabbitmq.client Channel AMQP$Confirm$SelectOk ConfirmListener]))
+  (:import [com.rabbitmq.client Channel ConfirmListener]
+           com.novemberain.langohr.confirm.SelectOk))
 
 
 ;;
@@ -33,12 +34,12 @@
   channel)
 
 
-(defn select
+(defn ^com.novemberain.langohr.confirm.SelectOk select
   "Activates publishing confirmations on given channel."
   ([^Channel channel]
-     (.confirmSelect channel))
+     (SelectOk. (.confirmSelect channel)))
   ([^Channel channel ack-handler nack-handler]
      (let [select-ok (.confirmSelect channel)
            cl        (listener ack-handler nack-handler)]
        (.addConfirmListener channel cl)
-       select-ok)))
+       (SelectOk. select-ok))))
