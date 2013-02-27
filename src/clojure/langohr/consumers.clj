@@ -8,9 +8,9 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.consumers
-  (:import [com.rabbitmq.client Channel Consumer DefaultConsumer QueueingConsumer QueueingConsumer$Delivery ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery])
   (:require [langohr.basic :as lhb])
-  (:use langohr.conversion))
+  (:use langohr.conversion)
+  (:import [com.rabbitmq.client Channel Consumer DefaultConsumer QueueingConsumer QueueingConsumer$Delivery ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery]))
 
 
 
@@ -54,7 +54,7 @@
         (handle-delivery-fn channel (to-message-metadata (QueueingConsumer$Delivery. envelope properties body)) body)))))
 
 (defn subscribe
-  "Adds new default consumer to a queue using basic.consume AMQP method"
+  "Adds new default consumer to a queue using basic.consume AMQP 0.9.1 method"
   [^Channel channel ^String queue f & {:as options}]
   (let [keys      [:handle-consume-ok :handle-cancel :handle-cancel-ok :handle-recover-ok :handle-shutdown-signal]
         cons-opts (select-keys options keys)
