@@ -48,6 +48,14 @@
   [^Channel channel ^String queue]
   (DeclareOk. (.queueDeclarePassive channel queue)))
 
+(defn ^String declare-server-named
+  "Declares a server-named queue and returns its name."
+  ([^Channel channel]
+     (-> channel .queueDeclare .getQueue))
+  ([^Channel channel &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false exclusive false auto-delete true}}]
+     (-> channel
+         (.queueDeclare "" durable exclusive auto-delete arguments)
+         .getQueue)))
 
 (defn ^com.novemberain.langohr.queue.BindOk bind
   "Binds a queue to an exchange using queue.bind AMQP method"
@@ -85,3 +93,14 @@
   [^Channel channel ^String queue]
   (let [declare-ok ^AMQP$Queue$DeclareOk (.queueDeclarePassive channel queue)]
     {:message-count (.getMessageCount declare-ok) :consumer-count (.getConsumerCount declare-ok)}))
+
+(defn message-count
+  "Returns a number of messages that are ready for delivery (e.g. not pending acknowledgements)
+   in the queue"
+  [^Channel channel ^String queue]
+  (:message-count (status channel queue)))
+
+(defn consumer-count
+  "Returns a number of active consumers on the queue"
+  [^Channel channel ^String queue]
+  (:consumer-count (status channel queue)))
