@@ -22,40 +22,40 @@
 (defn publish
   "Publishes a message using basic.publish AMQP method.
 
-  This method publishes a message to a specific exchange. The message will be routed to queues as defined by the exchange configuration and distributed to any active consumers when the transaction, if any, is committed.
+  This method publishes a message to a specific exchange. The message will be routed to queues as defined by
+  the exchange configuration and distributed to any active consumers when the transaction, if any, is committed.
 
-  ^String :exchange - name of the exchange to publish to. Can be empty, which means default exchange.
-  ^String :routing-key - the routing key for the message. Used for ourting messages depending on exchange configuration.
+  ^String :exchange: name of the exchange to publish to. Can be an empty string, which means default exchange.
+  ^String :routing-key: the routing key for the message. Used for ourting messages depending on exchange configuration.
 
   Payload can be anything the langohr.conversion/BytePayload protocol is extended for, Langohr ships with
   an implementation for byte arrays and strings.
 
   Options:
-  ^Boolean :mandatory, default false - specifies reaction of server if the message can't be routed to a queue. True when requesting a mandatory publish
-  ^Boolean :immediate, default false - specifies reaction of server if the message can't be routed to a queue consumer immediately. True when requesting an immediate publish.
+  ^Boolean :mandatory (default false): specifies reaction of server if the message can't be routed to a queue.
+  ^Boolean :immediate (default false): specifies reaction of server if the message can't be delivered to a consumer immediately.
 
 
   Basic properties:
 
-    ^String :content content-type - MIME Content type
-    ^String :content-encoding - MIME Content encoding
-    ^Map :headers - headers that will be passed to subscribers, given in Map format.
-    ^Integer :persistent - indicates delivery mode for the message. Non-persistent 1, persistent - 2.
-    ^Integer :priority - message priority, number from 0 to 9
-    ^String :correlation-id - application correlation identifier. Useful for cases when it's required to match request with the response. Usually it's a unique value.
-    ^String :reply-to - name of the callback queue. RabbitMQ spec says: address to reply to.
-    ^String :expiration - Docs TBD
-    ^String :message-id - application Message identifier
-    ^Date :timestamp - message timestamp
-    ^String :type - message type name
-    ^String :user-id - creating user ID
-    ^String :app-id - creating application ID
-    ^String :cluster-id - Docs TBD
+    ^String :content content-type: MIME Content type
+    ^String :content-encoding: MIME Content encoding
+    ^Map :headers: headers that will be passed to subscribers, given in Map format.
+    ^Integer :persistent: should this message be persisted to disk?
+    ^Integer :priority: message priority, number from 0 to 9
+    ^String :correlation-id: application correlation identifier. Useful for cases when it's required to match request with the response.
+                             Usually a unique value.
+    ^String :reply-to: name of the reply queue.
+    ^String :expiration: how long a message is valid
+    ^String :message-id: message identifier
+    ^Date :timestamp: timestamp associated with this message
+    ^String :type: message type, can be in any format, e.g. search.requests.index
+    ^String :user-id: user ID. RabbitMQ will validate this against the active connection user
+    ^String :app-id: publishing application ID
 
-  EXAMPLE:
+  Example:
 
-      (lhb/publish channel exchange queue payload :priority 8, :message-id msg-id, :content-type content-type, :headers { \"see you soon\" \"à bientôt\" })
-
+      (lhb/publish channel exchange queue payload :priority 8 :message-id msg-id :content-type content-type :headers { \"see you soon\" \"à bientôt\" })
   "
   [^Channel channel ^String exchange ^String routing-key payload
    &{:keys [^Boolean mandatory ^Boolean immediate ^String content-type ^String ^String content-encoding ^Map headers
@@ -82,27 +82,26 @@
     (.basicPublish channel exchange routing-key mandatory immediate  properties payload-bytes)))
 
 
-(defn return-listener
+(defn ^ReturnListener return-listener
   "Creates new return listener. Usually used in order to be notified of failed deliveries when basic-publish is called with :mandatory or :immediate flags set, but
    message coudn't be delivered.
 
    If the client has not configured a return listener for a particular channel, then the associated returned message will be silently dropped.
 
-   ^IFn :handler-fn - callback/handler funciton, with :reply-code, :reply-text, :exchange, :routing-key, :properties and :body set.
+   f: a handler function that accepts reply-code, reply-text, exchange, routing-key, properties and body as arguments.
 
 
-   EXAMPLE:
-      (let [listener (langohr.basic/return-listener (fn [reply-code, reply-text, exchange, routing-key, properties, body]
-                                                      (println reply-code, reply-text, exchange, routing-key, properties, body))) ]
-        (.addReturnListener channel listener))
+   Example:
 
-  "
+      (let [f (langohr.basic/return-listener (fn [reply-code reply-text exchange routing-key properties body]
+                                               (println reply-code reply-text exchange routing-key properties body)))]
+        (.addReturnListener ch f))"
   [^clojure.lang.IFn f]
   (reify ReturnListener
     (handleReturn [this reply-code reply-text exchange routing-key properties body]
       (f reply-code reply-text exchange routing-key properties body))))
 
-(defn add-return-listener
+(defn ^Channel add-return-listener
   "Adds return listener to the given channel"
   [^Channel channel ^clojure.lang.IFn f]
   (.addReturnListener channel (return-listener f))
