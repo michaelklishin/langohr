@@ -1,4 +1,4 @@
-(defproject com.novemberain/langohr "1.0.0-beta12"
+(defproject com.novemberain/langohr "1.0.0-beta13-SNAPSHOT"
   :description "An idiomatic Clojure client for RabbitMQ that embraces AMQP 0.9.1 model. Built on top of the RabbitMQ Java client"
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"}
@@ -10,7 +10,7 @@
   :profiles {:1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.0-RC17"]]}
              :dev {:dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]
-                                  [com.google.guava/guava "14.0-rc2"]]
+                                  [com.google.guava/guava "14.0"]]
                    :resource-paths ["test/resources"]
                    :plugins [[codox "0.6.1"]]
                    :codox {:sources ["src/clojure"]
