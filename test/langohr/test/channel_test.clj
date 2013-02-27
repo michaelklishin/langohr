@@ -1,56 +1,56 @@
 (ns langohr.test.channel-test
-  (:import [com.rabbitmq.client Connection Channel])
+  (:require [langohr.core    :as lc]
+            [langohr.channel :as lch])
   (:use clojure.test)
-  (:require [langohr.core    :as lhcore]
-            [langohr.channel :as lhch]))
+  (:import [com.rabbitmq.client Connection Channel]))
 
-(deftest t-open-a-channel
-  (let [conn (lhcore/connect)
-        ch   (lhch/open conn)]
+(deftest test-open-a-channel
+  (let [conn (lc/connect)
+        ch   (lch/open conn)]
     (is (instance? com.rabbitmq.client.Channel ch))
-    (is (lhcore/open? ch))))
+    (is (lc/open? ch))))
 
-(deftest t-open-a-channel-with-explicitly-given-id
-  (let [conn (lhcore/connect)
-        ch   (.createChannel conn 987)]
+(deftest test-open-a-channel-with-explicitly-given-id
+  (let [conn (lc/connect)
+        ch   (lc/create-channel conn 987)]
     (is (instance? com.rabbitmq.client.Channel ch))
-    (is (lhcore/open? ch))
+    (is (lc/open? ch))
     (is (= (.getChannelNumber ch) 987))
-    (lhcore/close ch)))
+    (lc/close ch)))
 
 
-(deftest t-close-a-channel-using-langohr-core-close
-  (let [conn (lhcore/connect)
-        ch   (lhch/open conn)]
-    (is (lhcore/open? ch))
-    (lhcore/close ch)
-    (is (not (lhcore/open? ch)))))
-
-
-
-(deftest t-close-a-channel-using-langohr-channel-close
-  (let [conn (lhcore/connect)
-        ch   (lhch/open conn)]
-    (is (lhcore/open? ch))
-    (lhch/close ch)
-    (is (not (lhcore/open? ch)))))
-
-
-(deftest t-close-a-channel-using-langohr-channel-close-with-provided-message
-  (let [conn (lhcore/connect)
-        ch   (lhch/open conn)]
-    (is (lhcore/open? ch))
-    (lhch/close ch 200 "Bye-bye")
-    (is (not (lhcore/open? ch)))))
+(deftest test-close-a-channel-using-langohr-core-close
+  (let [conn (lc/connect)
+        ch   (lch/open conn)]
+    (is (lc/open? ch))
+    (lc/close ch)
+    (is (lc/closed? ch))))
 
 
 
-(deftest t-toggle-flow-control
-  (let [conn (lhcore/connect)
-        ch   (lhch/open conn)]
-    (is (lhch/flow? ch))
-    (lhch/flow ch false)
-    (lhch/flow ch true)
-    (is (lhch/flow? ch))
-    (lhch/close ch)
-    (is (not (lhch/open? ch)))))
+(deftest test-close-a-channel-using-langohr-channel-close
+  (let [conn (lc/connect)
+        ch   (lch/open conn)]
+    (is (lc/open? ch))
+    (lch/close ch)
+    (is (lc/closed? ch))))
+
+
+(deftest test-close-a-channel-using-langohr-channel-close-with-provided-message
+  (let [conn (lc/connect)
+        ch   (lch/open conn)]
+    (is (lc/open? ch))
+    (lch/close ch 200 "Bye-bye")
+    (is (lc/closed? ch))))
+
+
+
+(deftest test-toggle-flow-control
+  (let [conn (lc/connect)
+        ch   (lch/open conn)]
+    (is (lch/flow? ch))
+    (lch/flow ch false)
+    (lch/flow ch true)
+    (is (lch/flow? ch))
+    (lch/close ch)
+    (is (not (lch/open? ch)))))

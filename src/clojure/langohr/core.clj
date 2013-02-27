@@ -14,7 +14,7 @@
             [clojure.walk   :as walk]))
 
 ;;
-;; Defaults
+;; Implementation
 ;;
 
 (def ^{:dynamic true :doc "Default connection settings."} *default-config*
@@ -22,10 +22,10 @@
    :password "guest"
    :vhost     "/"
    :host      "localhost"
-   :port      5672})
+   :port      ConnectionFactory/DEFAULT_AMQP_PORT})
 
 ;;
-;; Protocols
+;; API
 ;;
 
 (defprotocol Closeable
@@ -40,22 +40,21 @@
 
 
 (defprotocol Openable
-  (open? [this] "Checks whether given entity is still open"))
+  (open? [this] "Checks whether given entity is open")
+  (closed? [this] "Checks whether given entity is closed"))
 
 (extend-protocol Openable
   com.rabbitmq.client.Connection
-  (open? [this] (.isOpen this))
+  (open? [conn] (.isOpen conn))
+  (closed? [conn] (not (.isOpen conn)))
 
   com.rabbitmq.client.Channel
-  (open? [this] (.isOpen this)))
+  (open? [ch] (.isOpen ch))
+  (closed? [ch] (not (.isOpen ch))))
 
-
-;;
-;; API
-;;
 
 (def ^{:const true}
-  version "1.0.0-beta10-SNAPSHOT")
+  version "1.0.0-beta12-SNAPSHOT")
 
 (declare create-connection-factory)
 (defn ^Connection connect
@@ -96,6 +95,7 @@
     *default-config*))
 
 (defn capabilities-of
+  "Returns capabilities of the broker on the other side of the connection"
   [^Connection conn]
   (walk/keywordize-keys (into {} (-> conn .getServerProperties (get "capabilities")))))
 
