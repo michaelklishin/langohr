@@ -8,11 +8,13 @@
                  [clj-http                 "0.6.4"]
                  [cheshire                 "5.0.2"]]
   :profiles {:1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
-             :1.5 {:dependencies [[org.clojure/clojure "1.5.0-RC17"]]}
+             :1.5 {:dependencies [[org.clojure/clojure "1.5.0"]]}
+             :1.6 {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
+             :master {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]
                                   [com.google.guava/guava "14.0"]]
                    :resource-paths ["test/resources"]
-                   :plugins [[codox "0.6.1"]]
+                   :plugins [[codox "0.6.4"]]
                    :codox {:sources ["src/clojure"]
                            :output-dir "doc/api"}}}
   :source-paths      ["src/clojure"]
@@ -25,7 +27,7 @@
                  "sonatype-snapshots" {:url "http://oss.sonatype.org/content/repositories/snapshots"
                                        :snapshots true
                                        :releases {:checksum :fail :update :always}}}
-  :aliases {"all" ["with-profile" "dev:dev,1.3:dev,1.5"]}
+  :aliases {"all" ["with-profile" "dev:dev,1.3:dev,1.5:dev,1.6:dev,master"]}
   :warn-on-reflection true
   :jvm-opts ["-Xmx512m"]
   :test-selectors {:default        (fn [m]
