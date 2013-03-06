@@ -6,11 +6,11 @@
 
 The options `langohr.consumers/subscribe` takes now have consistent naming:
 
- * `:consume-ok-fn` becomes `:handle-consume-ok-fn`
- * `:cancel-fn` becomes `:handle-cancel-fn`
- * `:cancel-ok-fn` becomes `:handle-cancel-ok-fn`
- * `:shutdown-signal-ok-fn` becomes `:handle-shutdown-signal-ok-fn`
- * `:recover-ok-fn` becomes `:handle-recover-ok-fn`
+ * `:handle-consume-ok` becomes `:handle-consume-ok-fn`
+ * `:handle-cancel` becomes `:handle-cancel-fn`
+ * `:handle-cancel-ok` becomes `:handle-cancel-ok-fn`
+ * `:handle-shutdown-signal-ok` becomes `:handle-shutdown-signal-ok-fn`
+ * `:handle-recover-ok` becomes `:handle-recover-ok-fn`
  * `:handle-delivery-fn` does not change
 
 This makes handler argument names consistent across the board.
