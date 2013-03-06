@@ -71,7 +71,7 @@ idea we have is implemented. Keep that in mind.
 
 With Leiningen:
 
-    [com.novemberain/langohr "1.0.0-beta12"]
+    [com.novemberain/langohr "1.0.0-beta13"]
 
 
 With Maven:
@@ -79,7 +79,7 @@ With Maven:
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>langohr</artifactId>
-      <version>1.0.0-beta12</version>
+      <version>1.0.0-beta13</version>
     </dependency>
 
 
