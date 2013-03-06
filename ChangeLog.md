@@ -1,3 +1,23 @@
+## Changes between Langohr 1.0.0-beta12 and 1.0.0-beta13
+
+`1.0.0-beta13` has **BREAKING CHANGES**:
+
+### langohr.consumers/subscribe Options Renamed
+
+The options `langohr.consumers/subscribe` takes now have consistent naming:
+
+ * `:consume-ok-fn` becomes `:handle-consume-ok-fn`
+ * `:cancel-fn` becomes `:handle-cancel-fn`
+ * `:cancel-ok-fn` becomes `:handle-cancel-ok-fn`
+ * `:shutdown-signal-ok-fn` becomes `:handle-shutdown-signal-ok-fn`
+ * `:recover-ok-fn` becomes `:handle-recover-ok-fn`
+ * `:handle-delivery-fn` does not change
+
+This makes handler argument names consistent across the board.
+
+Previous options (`:handle-cancel`, etc) are still supported
+for backwards compatibility but will eventually be removed.
+
 ## Changes between Langohr 1.0.0-beta11 and 1.0.0-beta12
 
 ### Clojure-friendly Return Values
