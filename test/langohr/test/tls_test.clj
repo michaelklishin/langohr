@@ -31,7 +31,7 @@
 (def ^String pkcs12-cert-path "./test/resources/tls/client/keycert.p12")
 (def pkcs12-cert-pwd  (.toCharArray "bunnies"))
 
-(deftest test-connection-with-peer-verification
+(deftest ^{:tls true} test-connection-with-peer-verification
   (let [f (File. keystore-path)]
     (is (.exists f)))
   (let [jks-keystore    (doto (KeyStore/getInstance "JKS")
