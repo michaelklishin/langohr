@@ -61,9 +61,9 @@
         options'  (apply dissoc (concat [options] keys))
         consumer  (create-default channel
                                   :handle-delivery-fn f
-                                  :handle-consume-ok      (get cons-opts :handle-consume-ok)
-                                  :handle-cancel-ok       (get cons-opts :handle-cancel-ok)
-                                  :handle-cancel          (get cons-opts :handle-cancel)
-                                  :handle-recover-ok      (get cons-opts :handle-recover-ok)
-                                  :handle-shutdown-signal (get cons-opts :handle-shutdown-signal))]
+                                  :handle-consume-ok-fn      (get cons-opts :handle-consume-ok)
+                                  :handle-cancel-ok-fn       (get cons-opts :handle-cancel-ok)
+                                  :handle-cancel-fn          (get cons-opts :handle-cancel)
+                                  :handle-recover-ok-fn      (get cons-opts :handle-recover-ok)
+                                  :handle-shutdown-signal-fn (get cons-opts :handle-shutdown-signal))]
     (apply lhb/consume channel queue consumer (flatten (vec options')))))
