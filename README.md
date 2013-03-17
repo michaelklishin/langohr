@@ -8,13 +8,12 @@ communicating with it.
 
 ## Project Goals
 
- * Embrace [AMQP 0.9.1 Model](http://bitly.com/amqp-model-explained). Follow Java client's API conventions instead of inventing new overly opinionated ones
- * Provide additional functions/protocols where it actually saves time (we learned a lot from 3+ years history of the [Ruby amqp gem](https://github.com/ruby-amqp/amqp) development)
+ * Embrace [AMQP 0.9.1 Model](http://www.rabbitmq.com/tutorials/amqp-concepts.html). Follow Java client's API conventions instead of inventing new overly opinionated ones
+ * Provide additional functions/protocols where it actually saves time (we learned a lot from 3+ years history of the [Ruby amqp gem](http://rubyamqp.info) development)
  * Be well documented. Use [Ruby amqp gem guides](http://rubyamqp.info) as a foundation.
- * Strict TDD development style (with tests sometimes being freeform examples first)
- * Support all of the [RabbitMQ extensions to AMQP 0.9.1](http://www.rabbitmq.com/extensions.html)
- * Provide support for testing of AMQP applications, including asynchronous workflows
- * Provide additional batteries such as CLI interface to AMQP operations
+ * Be well tested.
+ * Support all of the [RabbitMQ extensions to AMQP 0.9.1](http://www.rabbitmq.com/extensions.html).
+ * Provide additional batteries.
 
 ## Project Anti-Goals
 
