@@ -31,7 +31,7 @@ If you are only starting out, please see our [Getting Started guide](http://cloj
 
 [Documentation guides](http://clojurerabbitmq.info) are incomplete but most of the content is there:
 
- * [AMQP Concepts](http://www.rabbitmq.com/tutorials/amqp-concepts.html)
+ * [AMQP 0.9.1 Concepts](http://www.rabbitmq.com/tutorials/amqp-concepts.html)
  * [Conneciting To The Broker](http://clojurerabbitmq.info/articles/connecting.html)
  * [Queues and Consumers](http://clojurerabbitmq.info/articles/queues.html)
  * [Exchanges and Publishing](http://clojurerabbitmq.info/articles/exchanges.html)
