@@ -29,24 +29,31 @@
     (is (= 5672        (.getPort conn)))
     (is (-> conn .getServerProperties (get "capabilities") (get "publisher_confirms")))))
 
-(deftest t-connection-to-first-available
+(deftest t-connection-to-first-available-with-default-settings
   ;; see ./bin/ci/before_script.sh
-  (let [conn (connect-to-first-available {
-                       :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
-                       :requested-heartbeat 3 :connection-timeout 5 }
-               [["127.0.0.1" 0]
-                ["127.0.0.1" 5672]])]
+  (let [conn (connect-to-first-available
+              [["127.0.0.1" 0]
+               ["127.0.0.1" 5672]])]
     (is (open? conn))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
-    (is (= 5672        (.getPort conn)))
-    (is (= 3           (.getHeartbeat conn)))))
+    (is (= 5672        (.getPort conn)))))
 
 (deftest t-connection-to-first-available-missing-port
   ;; see ./bin/ci/before_script.sh
-  (let [conn (connect-to-first-available {
-                       :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
-                       :requested-heartbeat 3 :connection-timeout 5 }
-               [["127.0.0.1"]])]
+  (let [conn (connect-to-first-available
+              [["127.0.0.1"]])]
+    (is (open? conn))
+    (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
+    (is (= 5672        (.getPort conn)))))
+
+(deftest t-connection-to-first-available-with-overriden-settings
+  ;; see ./bin/ci/before_script.sh
+  (let [conn (connect-to-first-available
+              [["127.0.0.1" 0]
+               ["127.0.0.1" 5672]]
+              {:vhost "langohr_testbed"
+               :username "langohr" :password "langohr.password"
+               :requested-heartbeat 3 :connection-timeout 5 })]
     (is (open? conn))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))

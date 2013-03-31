@@ -78,7 +78,7 @@
   ([addresses]
      (connect-to-first-available addresses {}))
   ;; settings
-  ([settings addresses]
+  ([addresses settings]
      (.newConnection ^ConnectionFactory (create-connection-factory settings)
                      #^"[Lcom.rabbitmq.client.Address;" (create-address-array addresses))))
 
