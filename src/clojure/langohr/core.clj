@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.core
-  (:import [com.rabbitmq.client ConnectionFactory Connection Channel ShutdownListener])
+  (:import [com.rabbitmq.client Address ConnectionFactory Connection Channel ShutdownListener])
   (:require langohr.channel
             [clojure.string :as s]
             [clojure.walk   :as walk]))
@@ -65,6 +65,22 @@
   ;; settings
   ([settings]
      (.newConnection ^ConnectionFactory (create-connection-factory settings))))
+
+(defn- create-address-array [addresses]
+  (into-array Address
+              (for [[host port] addresses]
+                (Address. host (or port ConnectionFactory/DEFAULT_AMQP_PORT)))))
+
+(defn ^Connection connect-to-first-available
+  "Creates and returns a new connection to RabbitMQ. addresses is a
+   sequence of host/port pairs, to try in order until one succeeds."
+  ;; defaults
+  ([addresses]
+     (connect-to-first-available addresses {}))
+  ;; settings
+  ([settings addresses]
+     (.newConnection ^ConnectionFactory (create-connection-factory settings)
+                     #^"[Lcom.rabbitmq.client.Address;" (create-address-array addresses))))
 
 
 (defn ^Channel create-channel
