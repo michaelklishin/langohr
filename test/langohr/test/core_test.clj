@@ -29,9 +29,9 @@
     (is (= 5672        (.getPort conn)))
     (is (-> conn .getServerProperties (get "capabilities") (get "publisher_confirms")))))
 
-(deftest t-connection-with-addresses
+(deftest t-connection-to-first-available
   ;; see ./bin/ci/before_script.sh
-  (let [conn (connect-with-addresses {
+  (let [conn (connect-to-first-available {
                        :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
                        :requested-heartbeat 3 :connection-timeout 5 }
                [["127.0.0.1" 0]
@@ -41,9 +41,9 @@
     (is (= 5672        (.getPort conn)))
     (is (= 3           (.getHeartbeat conn)))))
 
-(deftest t-connection-with-addresses-without-port
+(deftest t-connection-to-first-available-missing-port
   ;; see ./bin/ci/before_script.sh
-  (let [conn (connect-with-addresses {
+  (let [conn (connect-to-first-available {
                        :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
                        :requested-heartbeat 3 :connection-timeout 5 }
                [["127.0.0.1"]])]

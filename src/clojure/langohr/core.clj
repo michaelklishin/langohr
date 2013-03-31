@@ -71,12 +71,12 @@
               (for [[host port] addresses]
                 (Address. host (or port ConnectionFactory/DEFAULT_AMQP_PORT)))))
 
-(defn ^Connection connect-with-addresses
+(defn ^Connection connect-to-first-available
   "Creates and returns a new connection to RabbitMQ. addresses is a
    sequence of host/port pairs, to try in order until one succeeds."
   ;; defaults
   ([addresses]
-     (connect-with-addresses addresses {}))
+     (connect-to-first-available addresses {}))
   ;; settings
   ([settings addresses]
      (.newConnection ^ConnectionFactory (create-connection-factory settings)
