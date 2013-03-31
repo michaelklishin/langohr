@@ -29,7 +29,7 @@
     (is (= 5672        (.getPort conn)))
     (is (-> conn .getServerProperties (get "capabilities") (get "publisher_confirms")))))
 
-(deftest t-connection-to-first-available-with-default-parameters
+(deftest t-connection-to-first-available-with-default-settings
   ;; see ./bin/ci/before_script.sh
   (let [conn (connect-to-first-available
               [["127.0.0.1" 0]
@@ -46,7 +46,7 @@
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))))
 
-(deftest t-connection-to-first-available-with-overriden-parameters
+(deftest t-connection-to-first-available-with-overriden-settings
   ;; see ./bin/ci/before_script.sh
   (let [conn (connect-to-first-available
               [["127.0.0.1" 0]
