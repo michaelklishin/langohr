@@ -1,5 +1,15 @@
 ## Changes between Langohr 1.0.0-beta13 and 1.0.0-beta14
 
+### Shutdown Signal Functions
+
+Several new functions in `langohr.shutdown` aid with shutdown signals:
+
+ * `langohr.shutdown/initiated-by-application?`
+ * `langohr.shutdown/initiated-by-broker?`
+ * `langohr.shutdown/reason-of`
+ * `langohr.shutdown/channel-of`
+ * `langohr.shutdown/connection-of`
+
 ### Clojure 1.5 By Default
 
 Langohr now depends on `org.clojure/clojure` version `1.5.0`. It is
