@@ -72,3 +72,27 @@
                                   :handle-shutdown-signal-fn (or (get cons-opts :handle-shutdown-signal-fn)
                                                                  (get cons-opts :handle-shutdown-signal)))]
     (apply lhb/consume channel queue consumer (flatten (vec options')))))
+
+(defn- consumer-seq
+  "Builds a lazy seq of Delivery instances from a QueueingConsumer."
+  [^QueueingConsumer qcs]
+  (lazy-seq (cons (.nextDelivery qcs) (consumer-seq qcs))))
+
+(defn consumer-auto-ack
+  "Wrapper which auto-acks messages.
+
+   This differs from `:auto-ack true', which tells the broker to
+   consider messages acked upon delivery. This explicitly acks, as
+   long as the consumer function doesn't throw an exception."
+  [f]
+  (fn [^Channel channel {:keys [delivery-tag] :as metadata} body]
+    (f channel metadata body)
+    (.basicAck channel delivery-tag false)))
+
+(defn blocking-subscribe
+  "Adds new QueueingConsumer to a queue using basic.consume AMQP 0.9.1 method"
+  [^Channel channel ^Queue queue f & options]
+  (let [consumer (QueueingConsumer. channel)]
+    (apply lhb/consume channel queue consumer options)
+    (doseq [^Delivery d (consumer-seq consumer)]
+      (f channel (to-message-metadata d) (.getBody d)))))
