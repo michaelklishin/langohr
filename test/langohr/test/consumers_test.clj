@@ -67,3 +67,19 @@
                        (dotimes [i n]
                          (lhb/publish channel exchange queue payload))) "publisher"))
     (.await latch)))
+
+(deftest t-shutdown-notification-handler
+  (let [ch    (lch/open conn)
+        q     (:queue (lhq/declare ch))
+        latch    (java.util.concurrent.CountDownLatch. 1)
+        consumer (lhcons/create-default ch :handle-shutdown-signal-fn (fn [consumer_tag reason]
+                                                                        (.countDown latch)))]
+    (lhb/consume ch q consumer)
+    (.start (Thread. (fn []
+                       (Thread/sleep 200)
+                       ;; bind a queue that does not exist
+                       (try
+                         (lhq/bind ch "ugggggh" "amq.fanout")
+                         (catch Exception e
+                           (comment "Do nothing"))))))
+    (.await latch)))
