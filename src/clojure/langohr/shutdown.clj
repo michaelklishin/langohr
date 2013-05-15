@@ -54,6 +54,6 @@
   [^ShutdownSignalException sse]
   ;; reference is either a connection or channel
   (let [r (.getReference sse)]
-    (when (instance? Connection r)
+    (if (instance? Connection r)
       r
       (.getConnection ^Channel r))))
