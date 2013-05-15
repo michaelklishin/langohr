@@ -65,7 +65,11 @@
 
 (deftest ^{:http true} test-get-exchange
   (let [r (hc/get-exchange "/" "amq.fanout")]
-    (is (= r {:name "amq.fanout" :vhost "/" :type "fanout" :durable true :auto_delete false :internal false :arguments {}}))))
+    (is (:name r))
+    (is (:vhost r))
+    (is (:type r))
+    (is (:durable r))
+    (is (:arguments r))))
 
 (deftest ^{:http true} test-declare-and-delete-exchange
   (let [s  "langohr.http.fanout"
