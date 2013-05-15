@@ -91,8 +91,8 @@
 
 (defn blocking-subscribe
   "Adds new QueueingConsumer to a queue using basic.consume AMQP 0.9.1 method"
-  [^Channel channel ^Queue queue f & options]
+  [^Channel channel ^String queue f & options]
   (let [consumer (QueueingConsumer. channel)]
     (apply lhb/consume channel queue consumer options)
-    (doseq [^Delivery d (consumer-seq consumer)]
+    (doseq [^QueueingConsumer$Delivery d (consumer-seq consumer)]
       (f channel (to-message-metadata d) (.getBody d)))))
