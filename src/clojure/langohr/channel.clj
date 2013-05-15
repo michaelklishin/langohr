@@ -8,6 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.channel
+  "Operations on channels"
   (:import [com.rabbitmq.client ConnectionFactory Connection Channel]
            com.novemberain.langohr.channel.FlowOk))
 
