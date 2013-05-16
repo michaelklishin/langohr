@@ -1,5 +1,35 @@
 ## Changes between Langohr 1.0.0-beta13 and 1.0.0-beta14
 
+### Queueing Consumers
+
+In its early days, Langohr has been using `QueueingConsumer` for `langohr.queue/subscribe`.
+It was later replaced by a `DefaultConsumer` implementation.
+
+The key difference between the two is that
+
+ * `QueueingConsumer` blocks the caller
+ * with `QueueingConsumer`, deliveries are typically processed in the same thread
+
+This implementation has pros and cons. As such, an implementation on top of
+`QueueingConsumer` is back with `langohr.consumers/blocking-subscribe` which is
+identical to `langohr.consumers/subscribe` in the signature but blocks the caller.
+
+In addition, `langohr.consumers/ack-unless-exception` is a new convenience function
+that takes a delivery handler fn and will return a new function
+that explicitly acks deliveries unless an exception was raised by the original handler:
+
+``` clojure
+(require '[langohr.consumers :as lc])
+(require '[langohr.basic     :as lb])
+
+(let [f  (fn [metadata payload]
+           (comment "Message delivery handler"))
+      f' (lc/ack-unless-exception f)]
+  (lb/consume ch q (lc/create-default :handle-delivery-fn f'))
+```
+
+Contributed by Ian Eure.
+
 ### Shutdown Signal Functions
 
 Several new functions in `langohr.shutdown` aid with shutdown signals:
