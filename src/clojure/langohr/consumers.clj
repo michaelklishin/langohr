@@ -79,7 +79,7 @@
   (lazy-seq (cons (.nextDelivery qcs) (consumer-seq qcs))))
 
 (defn ack-unless-exception
-  "Wrapper which auto-acks messages.
+  "Wrapper for delivery handlers which auto-acks messages.
 
    This differs from `:auto-ack true', which tells the broker to
    consider messages acked upon delivery. This explicitly acks, as
