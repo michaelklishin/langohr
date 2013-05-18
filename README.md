@@ -1,19 +1,19 @@
-# Langohr, a feature-rich Clojure RabbitMQ client that embraces [AMQP 0.9.1 Model](http://bitly.com/amqp-model-explained)
+# Langohr, a feature-rich Clojure RabbitMQ client
 
-Langohr is a [Clojure RabbitMQ client](http://clojurerabbitmq.info) that embraces [AMQP 0.9.1 Model](http://bitly.com/amqp-model-explained)
-and does not try to hide it behind many layers of DSLs. It is pre-1.0 only in the sense that API is not completely
-locked down at this point: otherwise, it is solid and is used very actively to develop commercial products that involve thousands of nodes
-communicating with it.
+Langohr is a [Clojure RabbitMQ client](http://clojurerabbitmq.info) that embraces [AMQP 0.9.1 Model](http://www.rabbitmq.com/tutorials/amqp-concepts.html).
 
 
 ## Project Goals
 
  * Embrace [AMQP 0.9.1 Model](http://www.rabbitmq.com/tutorials/amqp-concepts.html). Follow Java client's API conventions instead of inventing new overly opinionated ones
- * Provide additional functions/protocols where it actually saves time (we learned a lot from 3+ years history of the [Ruby amqp gem](http://rubyamqp.info) development)
  * Be well documented. Use [Ruby amqp gem guides](http://rubyamqp.info) as a foundation.
  * Be well tested.
- * Support all of the [RabbitMQ extensions to AMQP 0.9.1](http://www.rabbitmq.com/extensions.html).
- * Provide additional batteries.
+ * Error handling and recovery should be well covered
+ * Support all of the RabbitMQ features, include [extensions to AMQP 0.9.1](http://www.rabbitmq.com/extensions.html).
+
+We've learned a lot from ~ 4 years history of the [Ruby amqp
+gem](http://rubyamqp.info) and [Bunny](http://rubybunny.info)
+development and try to apply this experience to Langohr design.
 
 ## Project Anti-Goals
 
@@ -23,6 +23,36 @@ Here is what Langohr *does not* try to be:
  * Sugar-coated API for task queues that hides all the AMQP machinery from the developer
  * A port of Ruby amqp gem to Clojure
 
+
+## Artifacts
+
+Langohr artifacts are [released to Clojars](https://clojars.org/com.novemberain/langohr). If you are using Maven, add the following repository
+definition to your `pom.xml`:
+
+``` xml
+<repository>
+  <id>clojars.org</id>
+  <url>http://clojars.org/repo</url>
+</repository>
+```
+
+### The Most Recent Release
+
+With [Leiningen](http://leiningen.org):
+
+``` clojure
+[com.novemberain/langohr "1.0.0-beta14"]
+```
+
+With Maven:
+
+``` xml
+<dependency>
+  <groupId>com.novemberain</groupId>
+  <artifactId>langohr</artifactId>
+  <version>1.0.0-beta14</version>
+</dependency>
+```
 
 
 ## Documentation & Examples
@@ -51,59 +81,47 @@ Several code examples used in the guides are kept in [a separate Git repository]
 Our [test suite](https://github.com/michaelklishin/langohr/tree/master/test/langohr/test) also can be used for code examples.
 
 
+## Supported Clojure Versions
+
+Langohr is built from the ground up for Clojure 1.3+. The most recent
+stable release is highly recommended.
+
+
+## Supported RabbitMQ Versions
+
+Langohr depends on RabbitMQ Java client 3.0.x and thus should work
+with RabbitMQ versions 2.0 and later.
+
+
+## Project Maturity
+
+Langohr has been around since 2011 and is slowly approaching 1.0 release.
+
+While the API is largely stabilized at this point, Langohr is a work
+in progress. Breaking API changes are not out of the question because
+it is much less painful to do them when the library is still
+relatively young.
+
+
+### The Road to 1.0
+
+A few remaining items before the release are
+
+ * Finish [documentation guides](http://clojurerabbitmq.info)
+ * Make error handling and recovery easier
+ * Some stress tests to set baseline performance expectations
+ * Finish HTTP API client support
+
+1.0 will not be released before [documentation guides](http://clojurerabbitmq.info) are finished.
+
+
+
 
 ## Community
 
 [Langohr has a mailing list](https://groups.google.com/forum/#!forum/clojure-rabbitmq). Feel free to join it and ask any questions you may have.
 
 To subscribe for announcements of releases, important changes and so on, please follow [@ClojureWerkz](https://twitter.com/#!/clojurewerkz) on Twitter.
-
-
-## This is a Work In Progress
-
-While the API is largely stabilized at this point, Langohr is a work in progress. Breaking API changes are not out of the question because
-it is much less painful to do them when the library is still young. Also, not every
-idea we have is implemented. Keep that in mind.
-
-
-## Artifacts
-
-With Leiningen:
-
-    [com.novemberain/langohr "1.0.0-beta13"]
-
-
-With Maven:
-
-    <dependency>
-      <groupId>com.novemberain</groupId>
-      <artifactId>langohr</artifactId>
-      <version>1.0.0-beta13</version>
-    </dependency>
-
-
-## Supported Clojure versions
-
-Langohr is built from the ground up for Clojure 1.3 and up. The most recent stable release is highly
-recommended.
-
-
-## Supported RabbitMQ versions
-
-Langohr depends on RabbitMQ Java client 3.0.x and thus should work
-with RabbitMQ versions 2.0 and later.
-
-
-## The Road to 1.0
-
-Langohr is slowly approaching 1.0 release. A few remaining items before the release are
-
- * Finish [documentation guides](http://clojurerabbitmq.info)
- * Design error handling and recovery
- * Some stress tests to set baseline performance expectations
- * Finish HTTP API client support
-
-We expect 1.0 to be released in 2013 (but not before [documentation guides](http://clojurerabbitmq.info) are finished).
 
 
 ## Langohr Is a ClojureWerkz Project

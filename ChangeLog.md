@@ -1,3 +1,9 @@
+## Changes between Langohr 1.0.0-beta14 and 1.0.0-beta15
+
+No changes yet.
+
+
+
 ## Changes between Langohr 1.0.0-beta13 and 1.0.0-beta14
 
 ### Queueing Consumers
