@@ -95,25 +95,10 @@ with RabbitMQ versions 2.0 and later.
 
 ## Project Maturity
 
-Langohr has been around since 2011 and is slowly approaching 1.0 release.
+Langohr has been around since 2011 and is now a 1.0 project.
 
-While the API is largely stabilized at this point, Langohr is a work
-in progress. Breaking API changes are not out of the question because
-it is much less painful to do them when the library is still
-relatively young.
-
-
-### The Road to 1.0
-
-A few remaining items before the release are
-
- * Finish [documentation guides](http://clojurerabbitmq.info)
- * Make error handling and recovery easier
- * Some stress tests to set baseline performance expectations
- * Finish HTTP API client support
-
-1.0 will not be released before [documentation guides](http://clojurerabbitmq.info) are finished.
-
+There are some improvements planned in 1.1 but overall, Langohr
+is a battle tested library.
 
 
 
