@@ -1,3 +1,20 @@
+## Changes between Langohr 1.0.0 and 1.1.0
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.1.3`.
+
+### clj-http Upgrade
+
+clj-http dependency has been updated to `0.7.4`.
+
+### Cheshire Upgrade
+
+Cheshire dependency has been updated to `5.2.0`.
+
+
+
+
 ## Changes between Langohr 1.0.0-beta13 and 1.0.0
 
 ### Queueing Consumers
