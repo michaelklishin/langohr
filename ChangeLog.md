@@ -1,5 +1,10 @@
 ## Changes between Langohr 1.0.0 and 1.1.0
 
+### langohr.core/connect-to-first-available is Removed
+
+`langohr.core/connect-to-first-available` is removed. A better failover functionality
+will be available in future versions.
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.1.3`.
