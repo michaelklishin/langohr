@@ -10,7 +10,8 @@
 (ns langohr.consumers
   (:require [langohr.basic :as lhb])
   (:use langohr.conversion)
-  (:import [com.rabbitmq.client Channel Consumer DefaultConsumer QueueingConsumer QueueingConsumer$Delivery ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery]))
+  (:import [com.rabbitmq.client Consumer DefaultConsumer QueueingConsumer QueueingConsumer$Delivery ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery]
+           com.novemberain.langohr.Channel))
 
 
 
@@ -27,7 +28,7 @@
                              handle-shutdown-signal-fn
                              handle-recover-ok-fn
                              handle-delivery-fn]}]
-  (proxy [DefaultConsumer] [^Channel channel]
+  (proxy [DefaultConsumer] [(.getDelegate ^Channel channel)]
     (handleConsumeOk [^String consumer-tag]
       (when handle-consume-ok-fn
         (handle-consume-ok-fn consumer-tag)))

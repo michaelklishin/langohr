@@ -9,11 +9,11 @@
 (defonce ^Connection conn (lhc/connect))
 
 (deftest t-confirm-select
-  (let [channel (.createChannel conn)]
+  (let [channel (lhc/create-channel conn)]
     (is (instance? AMQP$Confirm$SelectOk (langohr.confirm/select channel)))))
 
 (deftest t-confirm-select-with-a-listener
-  (let [channel  (.createChannel conn)
+  (let [channel  (lhc/create-channel conn)
         queue    (.getQueue (lhq/declare channel))
         latch    (java.util.concurrent.CountDownLatch. 1)
         listener (langohr.confirm/listener (fn [delivery-tag, multiple]
@@ -28,7 +28,7 @@
 
 
 (deftest t-confirm-select-with-callback-functions
-  (let [channel  (.createChannel conn)
+  (let [channel  (lhc/create-channel conn)
         queue    (.getQueue (lhq/declare channel))
         latch    (java.util.concurrent.CountDownLatch. 1)]
     (langohr.confirm/select channel

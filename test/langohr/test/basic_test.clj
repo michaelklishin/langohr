@@ -1,9 +1,9 @@
 (ns langohr.test.basic-test
   (:refer-clojure :exclude [get declare])
-  (:import [com.rabbitmq.client Connection Channel AMQP
+  (:import [com.rabbitmq.client AMQP
             AMQP$BasicProperties AMQP$BasicProperties$Builder
-            QueueingConsumer GetResponse AMQP$Queue$DeclareOk]
-           java.util.UUID)
+            QueueingConsumer GetResponse AMQP$Queue$DeclareOk] java.util.UUID
+           [com.novemberain.langohr Connection Channel])
   (:use clojure.test)
   (:require [langohr.core      :as lhc]
             [langohr.consumers :as lhcons]
@@ -20,7 +20,7 @@
 
 
 (deftest test-publishing-using-default-exchange-and-default-message-attributes
-  (let [channel    (.createChannel conn)
+  (let [channel    (lhc/create-channel conn)
         exchange   ""
         ;; yes, payload may be blank. This is an edge case Ruby amqp
         ;; gem did not support for a long time so I want to use it in the langohr
@@ -70,7 +70,7 @@
 ;;
 
 (deftest test-basic-cancel
-  (let [channel     (.createChannel conn)
+  (let [channel     (lhc/create-channel conn)
         exchange    ""
         payload     ""
         queue       (.getQueue (lhq/declare channel "" :auto-delete true))
@@ -97,7 +97,7 @@
 ;;
 
 (deftest test-basic-get-with-automatic-ack
-  (let [channel    (.createChannel conn)
+  (let [channel    (lhc/create-channel conn)
         exchange   ""
         body       "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue1"
@@ -110,7 +110,7 @@
       (is (= (:routing-key metadata) queue)))))
 
 (deftest test-basic-get-with-explicit-ack
-  (let [channel    (.createChannel conn)
+  (let [channel    (lhc/create-channel conn)
         exchange   ""
         body       "A message we will fetch with basic.get"
         queue      "langohr.examples.basic.get.queue2"
@@ -121,7 +121,7 @@
 
 
 (deftest test-basic-get-with-an-empty-queue
-  (let [channel    (.createChannel conn)
+  (let [channel    (lhc/create-channel conn)
         queue      (.getQueue (lhq/declare channel "" :auto-delete true))]
     (is (nil? (lhb/get channel queue false)))))
 
@@ -132,7 +132,7 @@
 ;;
 
 (deftest test-using-non-global-basic-qos
-  (let [channel (.createChannel conn)]
+  (let [channel (lhc/create-channel conn)]
     (lhb/qos channel 5)))
 
 
@@ -141,8 +141,8 @@
 ;;
 
 (deftest test-acknowledge-one-message
-  (let [producer-channel (.createChannel conn)
-        consumer-channel (.createChannel conn)
+  (let [producer-channel (lhc/create-channel conn)
+        consumer-channel (lhc/create-channel conn)
         queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue1" :auto-delete true))]
     (lhq/purge   producer-channel queue)
     (.start (Thread. ^Callable (fn []
@@ -156,8 +156,8 @@
     (lhq/purge   producer-channel queue)))
 
 (deftest test-acknowledge-multiple-messages
-  (let [producer-channel (.createChannel conn)
-        consumer-channel (.createChannel conn)
+  (let [producer-channel (lhc/create-channel conn)
+        consumer-channel (lhc/create-channel conn)
         queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue2" :auto-delete true))]
     (lhq/purge   producer-channel queue)
     (.start (Thread. ^Callable (fn []
@@ -178,7 +178,7 @@
 ;;
 
 (deftest test-nack-one-message-to-requeue-it
-  (let [channel (.createChannel conn)
+  (let [channel (lhc/create-channel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue1" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
@@ -192,7 +192,7 @@
     (lhq/purge channel queue)))
 
 (deftest test-nack-multiple-messages-without-requeueing
-  (let [channel (.createChannel conn)
+  (let [channel (lhc/create-channel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue2" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
@@ -214,7 +214,7 @@
 ;;
 
 (deftest test-reject-one-message-to-requeue-it
-  (let [channel (.createChannel conn)
+  (let [channel (lhc/create-channel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue1" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
@@ -228,7 +228,7 @@
     (lhq/purge channel queue)))
 
 (deftest test-reject-one-message-without-requeueing
-  (let [channel (.createChannel conn)
+  (let [channel (lhc/create-channel conn)
         queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue2" :auto-delete true))]
     (lhq/purge channel queue)
     (.start (Thread. ^Callable (fn []
@@ -249,7 +249,7 @@
 ;;
 
 (deftest test-handling-of-returned-mandatory-messages-with-a-listener-instance
-  (let [channel  (.createChannel conn)
+  (let [channel  (lhc/create-channel conn)
         exchange "langohr.tests.basic.return1"
         latch    (java.util.concurrent.CountDownLatch. 1)
         rl       (lhb/return-listener (fn [reply-code reply-text exchange routing-key properties body]
@@ -268,5 +268,5 @@
 ;;
 
 (deftest test-kind-of-deprecated-recovery-methods
-  (let [channel (.createChannel conn)]
+  (let [channel (lhc/create-channel conn)]
     (lhb/recover-async channel true)))

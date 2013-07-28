@@ -1,19 +1,18 @@
 (ns langohr.test.channel-test
   (:require [langohr.core    :as lc]
             [langohr.channel :as lch])
-  (:use clojure.test)
-  (:import [com.rabbitmq.client Connection Channel]))
+  (:use clojure.test))
 
 (deftest test-open-a-channel
   (let [conn (lc/connect)
         ch   (lch/open conn)]
-    (is (instance? com.rabbitmq.client.Channel ch))
+    (is (instance? com.novemberain.langohr.Channel ch))
     (is (lc/open? ch))))
 
 (deftest test-open-a-channel-with-explicitly-given-id
   (let [conn (lc/connect)
         ch   (lc/create-channel conn 987)]
-    (is (instance? com.rabbitmq.client.Channel ch))
+    (is (instance? com.novemberain.langohr.Channel ch))
     (is (lc/open? ch))
     (is (= (.getChannelNumber ch) 987))
     (lc/close ch)))

@@ -8,7 +8,8 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.core
-  (:import [com.rabbitmq.client Address ConnectionFactory Connection Channel ShutdownListener])
+  (:import [com.rabbitmq.client Address ConnectionFactory ShutdownListener]
+           [com.novemberain.langohr Connection Channel])
   (:require langohr.channel
             [clojure.string :as s]
             [clojure.walk   :as walk]))
@@ -36,6 +37,12 @@
   (close [this] (.close this))
 
   com.rabbitmq.client.Channel
+  (close [this] (.close this))
+
+  com.novemberain.langohr.Connection
+  (close [this] (.close this))
+
+  com.novemberain.langohr.Channel
   (close [this] (.close this)))
 
 
@@ -50,6 +57,14 @@
 
   com.rabbitmq.client.Channel
   (open? [ch] (.isOpen ch))
+  (closed? [ch] (not (.isOpen ch)))
+
+  com.novemberain.langohr.Connection
+  (open? [conn] (.isOpen conn))
+  (closed? [conn] (not (.isOpen conn)))
+
+  com.novemberain.langohr.Channel
+  (open? [ch] (.isOpen ch))
   (closed? [ch] (not (.isOpen ch))))
 
 
@@ -61,27 +76,19 @@
   "Creates and returns a new connection to RabbitMQ."
   ;; defaults
   ([]
-     (.newConnection ^ConnectionFactory (create-connection-factory {})))
+     (let [^ConnectionFactory cf (create-connection-factory {})]
+       (doto (Connection. cf)
+         .init)))
   ;; settings
   ([settings]
-     (.newConnection ^ConnectionFactory (create-connection-factory settings))))
+     (let [^ConnectionFactory cf (create-connection-factory settings)]
+       (doto (Connection. cf (dissoc settings :password :username))
+         .init))))
 
 (defn- create-address-array [addresses]
   (into-array Address
               (for [[host port] addresses]
                 (Address. host (or port ConnectionFactory/DEFAULT_AMQP_PORT)))))
-
-(defn ^Connection connect-to-first-available
-  "Creates and returns a new connection to RabbitMQ. addresses is a
-   sequence of host/port pairs, to try in order until one succeeds."
-  ;; defaults
-  ([addresses]
-     (connect-to-first-available addresses {}))
-  ;; settings
-  ([addresses settings]
-     (.newConnection ^ConnectionFactory (create-connection-factory settings)
-                     #^"[Lcom.rabbitmq.client.Address;" (create-address-array addresses))))
-
 
 (defn ^Channel create-channel
   "Delegates to langohr.channel/open, kept for backwards compatibility"

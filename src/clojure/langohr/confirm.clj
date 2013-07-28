@@ -8,8 +8,9 @@
 ;; You must not remove this notice, or any other from this software.
 
 (ns langohr.confirm
-  (:import [com.rabbitmq.client Channel ConfirmListener]
-           com.novemberain.langohr.confirm.SelectOk))
+  (:import [com.rabbitmq.client ConfirmListener]
+           com.novemberain.langohr.confirm.SelectOk
+           com.novemberain.langohr.Channel))
 
 
 ;;

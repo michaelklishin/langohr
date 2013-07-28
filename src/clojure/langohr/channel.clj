@@ -9,7 +9,7 @@
 
 (ns langohr.channel
   "Operations on channels"
-  (:import [com.rabbitmq.client ConnectionFactory Connection Channel]
+  (:import [com.novemberain.langohr Connection Channel]
            com.novemberain.langohr.channel.FlowOk))
 
 

@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.tx
-  (:import com.rabbitmq.client.Channel
+  (:import com.novemberain.langohr.Channel
            [com.novemberain.langohr.tx SelectOk CommitOk RollbackOk]))
 
 

@@ -27,7 +27,7 @@
                          (catch Exception e
                            (comment "Do nothing"))))))
     (.await latch)
-    (is (= @cha ch))))
+    (is (= @cha (.getDelegate ch)))))
 
 (deftest test-connection-of
   (let [ch    (lch/open conn)
@@ -45,7 +45,7 @@
                          (catch Exception e
                            (comment "Do nothing"))))))
     (.await latch)
-    (is (= @conn' conn))))
+    (is (= @conn' (.getDelegate conn)))))
 
 (deftest test-initiator-with-a-channel-exception
   (let [ch    (lch/open conn)
