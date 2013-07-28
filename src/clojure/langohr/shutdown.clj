@@ -17,10 +17,14 @@
 ;;
 
 (defn hard-error?
+  "Returns true if the ShutDownSignalException signals a connection
+   error"
   [^ShutdownSignalException sse]
   (.isHardError sse))
 
 (defn soft-error?
+  "Returns true if the ShutdownSignalException does not signal a
+  connection error"
   [^ShutdownSignalException sse]
   (not (.isHardError sse)))
 
