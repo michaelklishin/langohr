@@ -1,6 +1,9 @@
 package com.novemberain.langohr;
 
-import clojure.lang.*;
+import clojure.lang.IMapEntry;
+import clojure.lang.IPersistentCollection;
+import clojure.lang.IPersistentMap;
+import clojure.lang.ISeq;
 
 import java.util.Iterator;
 
