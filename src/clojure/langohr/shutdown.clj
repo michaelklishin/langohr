@@ -20,7 +20,7 @@
   [^ShutdownSignalException sse]
   (.isHardError sse))
 
-(defn sort-error?
+(defn soft-error?
   [^ShutdownSignalException sse]
   (not (.isHardError sse)))
 
