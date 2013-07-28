@@ -1,3 +1,12 @@
+## Changes between Langohr 1.0.0 and 1.0.1
+
+### langohr.shutdown/sort-error? => langohr.shutdown/soft-error?
+
+`langohr.shutdown/soft-error?` is now correctly named.
+
+Contributed by Ralf Schmitt.
+
+
 ## Changes between Langohr 1.0.0-beta13 and 1.0.0
 
 ### Queueing Consumers
