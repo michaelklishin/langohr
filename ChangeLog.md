@@ -1,5 +1,11 @@
 ## Changes between Langohr 1.0.0 and 1.1.0
 
+### langohr.shutdown/sort-error? => langohr.shutdown/soft-error?
+
+`langohr.shutdown/soft-error?` is now correctly named.
+
+Contributed by Ralf Schmitt.
+
 ### langohr.core/connect-to-first-available is Removed
 
 `langohr.core/connect-to-first-available` is removed. A better failover functionality
