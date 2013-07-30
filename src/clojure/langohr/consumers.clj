@@ -58,6 +58,7 @@
   "Adds new default consumer to a queue using basic.consume AMQP 0.9.1 method"
   [^Channel channel ^String queue f & {:as options}]
   (let [keys      [:handle-consume-ok :handle-cancel :handle-cancel-ok :handle-recover-ok :handle-shutdown-signal]
+        keys      (concat keys (mapcat #(keyword (str (name %) "-fn")) keys))
         cons-opts (select-keys options keys)
         options'  (apply dissoc (concat [options] keys))
         consumer  (create-default channel
