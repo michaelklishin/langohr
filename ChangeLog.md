@@ -7,6 +7,8 @@ The documentation says to use function handler keys ending in
 commit ensures that all keys that are used within
 `langohr.consumers/subscribe` can be used as a parameter.
 
+Contributed by Steffen Dienst.
+
 ### langohr.shutdown/sort-error? => langohr.shutdown/soft-error?
 
 `langohr.shutdown/soft-error?` is now correctly named.
