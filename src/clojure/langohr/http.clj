@@ -11,7 +11,7 @@
 
 ;; a good default for now. RabbitMQ 3.0 will redirect
 ;; from port 55672 to 15672.
-(def ^:dynamic *endpoint* "http://127.0.0.1:55672")
+(def ^:dynamic *endpoint* "http://127.0.0.1:15672")
 
 (def ^:dynamic *username* "guest")
 (def ^:dynamic *password* "guest")
@@ -32,17 +32,17 @@
 
 (defn post
   [^String uri &{:keys [body] :as options}]
-  (io! (:body (http/post uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body)}))) true))
+  (io! (:body (http/post uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :content-type "application/json"}))) true))
 
 (defn put
   [^String uri &{:keys [body] :as options}]
-  (io! (:body (http/put uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions}))) true))
+  (io! (:body (http/put uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions :content-type "application/json"}))) true))
 
 (defn get
   ([^String uri]
-     (io! (json/decode (:body (http/get uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions})) true)))
+     (io! (json/decode (:body (http/get uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"})) true)))
   ([^String uri &{:as options}]
-     (io! (json/decode (:body (http/get uri (merge options {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions}))) true))))
+     (io! (json/decode (:body (http/get uri (merge options {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"}))) true))))
 
 (defn head
   [^String uri]
@@ -118,7 +118,7 @@
 
 (defn declare-exchange
   [^String vhost ^String exchange properties]
-  (post (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange))) :body (json/generate-string properties)))
+  (put (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange))) :body properties))
 
 (defn delete-exchange
   [^String vhost ^String exchange]
@@ -148,7 +148,7 @@
 
 (defn declare-queue
   [^String vhost ^String queue properties]
-  (post (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue))) :body (json/generate-string properties)))
+  (put (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue))) :body properties))
 
 (defn delete-queue
   [^String vhost ^String queue]
@@ -187,16 +187,73 @@
 
 (defn get-vhost
   [^String vhost]
-  )
+  (get (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost)))))
+
+(defn declare-vhost
+  [^String vhost]
+  (put (url-with-path (format "api/vhosts/%s" (URLEncoder/encode vhost))) :body {:name vhost}))
+
+(defn delete-vhost
+  [^String vhost]
+  (delete (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost)))))
 
 (defn list-permissions
-  [^String vhost]
-  )
+  ([]
+    (get (url-with-path "/api/permissions")))
+  ([^String vhost]
+    (get (url-with-path (format "/api/vhosts/%s/permissions" (URLEncoder/encode vhost))))))
 
 (defn get-permissions
   [^String vhost ^String username]
-  )
+  (get (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username)))))
+
+(defn declare-permissions 
+  [^String vhost ^String username {:keys [configure write read] :as body}]
+  {:pre [(every? string? [configure write read])]}
+  (put (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username))) :body body))
+
+(defn delete-permissions
+  [^String vhost ^String username]
+  (delete (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username)))))
+
+(defn list-users
+  []
+  (get (url-with-path "/api/users")))
+
+(defn get-user
+  [^String user]
+  (get (url-with-path (format "/api/users/%s" (URLEncoder/encode user)))))
+
+(defn declare-user
+  [^String user password tags]
+  (put (url-with-path (format "/api/users/%s" (URLEncoder/encode user))) :body {:username user :password password :tags tags :has-password true}))
+
+(defn delete-user
+  [^String user]
+  (delete (url-with-path (format "/api/users/%s" (URLEncoder/encode user)))))
+
+(defn list-policies
+  []
+  (get (url-with-path "/api/policies")))
+
+(defn get-policies
+  ([^String vhost]
+    (get (url-with-path (format "/api/policies/%s" (URLEncoder/encode vhost)))))
+  ([^String vhost ^String name]
+  (get (url-with-path (format "/api/policies/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode name))))))
+
+(defn declare-policy
+  [^String vhost ^String name policy]
+  (put (url-with-path (format "/api/policies/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode name))) :body policy))
+
+(defn delete-policy
+  [^String vhost]
+  (delete (url-with-path (format "/api/policies/%s" (URLEncoder/encode vhost)))))
+
+(defn whoami
+  []
+  (get (url-with-path "/api/whoami")))
 
 (defn aliveness-test
   [^String vhost]
-  )
+  (get (url-with-path (format "/api/aliveness-test/%s" (URLEncoder/encode vhost)))))

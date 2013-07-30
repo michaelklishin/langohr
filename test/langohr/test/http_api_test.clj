@@ -3,7 +3,7 @@
   (:use clojure.test
         [clojure.set :only [subset? superset?]]))
 
-(hc/connect! "http://127.0.0.1:55672" "guest" "guest")
+(hc/connect! "http://127.0.0.1:15672" "guest" "guest")
 
 ;;
 ;; These tests are pretty basic and make sure we don't
@@ -103,6 +103,8 @@
 (deftest ^{:http true} test-list-bindings
   (let [q  "langohr.http.queue"
         e  "langohr.http.fanout"
+        _ (hc/declare-exchange "/" e {:durable false :auto_delete true :internal false :arguments {}})
+        _ (hc/declare-queue "/" q {:durable false :auto_delete true :arguments {}})
         r1 (hc/bind "/" e q)
         xs (hc/list-bindings "/")
         m  (first xs)]
@@ -116,3 +118,26 @@
 (deftest ^{:http true} test-list-vhosts
   (let [xs (hc/list-vhosts)]
     (is (subset? #{"/"} (set (map :name xs))))))
+
+(deftest ^{:http true} test-vhost-manipulations
+  (let [vhost "new-vhost"
+        v (hc/declare-vhost vhost)
+        v-del (hc/delete-vhost vhost)]
+    (is v)
+    (is v-del)))
+
+(deftest ^{:http true} test-user-manipulations
+  (let [user "a-new-user"]
+    (is (hc/declare-user user "password" ""))
+    (is (= user (:name (hc/get-user user))))
+    (is (some #{user} (map :name (hc/list-users))))
+    (is (hc/delete-user user))))
+
+(deftest ^{:http true} test-permissions-manipulations
+  (let [user "a-new-user"
+        vhost "/"
+        permissions {:configure ".*" :write "write-only-exchange" :read "a|b|c"}]
+    (is (hc/declare-user user "password" ""))
+    (is (hc/declare-permissions vhost user permissions))
+    (is (= permissions (select-keys (hc/get-permissions vhost user) (keys permissions)))) 
+    (is (hc/delete-user user))))
