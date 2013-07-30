@@ -32,17 +32,17 @@
 
 (defn post
   [^String uri &{:keys [body] :as options}]
-  (io! (:body (http/post uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body)}))) true))
+  (io! (:body (http/post uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :content-type "application/json"}))) true))
 
 (defn put
   [^String uri &{:keys [body] :as options}]
-  (io! (:body (http/put uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions}))) true))
+  (io! (:body (http/put uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions :content-type "application/json"}))) true))
 
 (defn get
   ([^String uri]
-     (io! (json/decode (:body (http/get uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions})) true)))
+     (io! (json/decode (:body (http/get uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"})) true)))
   ([^String uri &{:as options}]
-     (io! (json/decode (:body (http/get uri (merge options {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions}))) true))))
+     (io! (json/decode (:body (http/get uri (merge options {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"}))) true))))
 
 (defn head
   [^String uri]
@@ -118,7 +118,7 @@
 
 (defn declare-exchange
   [^String vhost ^String exchange properties]
-  (post (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange))) :body (json/generate-string properties)))
+  (put (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange))) :body properties))
 
 (defn delete-exchange
   [^String vhost ^String exchange]
@@ -148,7 +148,7 @@
 
 (defn declare-queue
   [^String vhost ^String queue properties]
-  (post (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue))) :body (json/generate-string properties)))
+  (put (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue))) :body properties))
 
 (defn delete-queue
   [^String vhost ^String queue]
