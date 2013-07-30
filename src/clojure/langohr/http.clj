@@ -11,7 +11,7 @@
 
 ;; a good default for now. RabbitMQ 3.0 will redirect
 ;; from port 55672 to 15672.
-(def ^:dynamic *endpoint* "http://127.0.0.1:55672")
+(def ^:dynamic *endpoint* "http://127.0.0.1:15672")
 
 (def ^:dynamic *username* "guest")
 (def ^:dynamic *password* "guest")
