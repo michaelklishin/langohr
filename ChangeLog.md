@@ -1,3 +1,12 @@
+## Changes between Langohr 1.0.1 and 1.0.2
+
+### langohr.consumers/subscribe Options In Line with Docs
+
+The documentation says to use function handler keys ending in
+"-fn", but this code currently only recognizes the old form. This
+commit ensures that all keys that are used within
+`langohr.consumers/subscribe` can be used as a parameter.
+
 ## Changes between Langohr 1.0.0 and 1.0.1
 
 ### langohr.shutdown/sort-error? => langohr.shutdown/soft-error?
