@@ -1,5 +1,11 @@
 ## Changes between Langohr 1.0.0 and 1.1.0
 
+### Extended HTTP API Support
+
+`langohr.http` now provides more complete coverage of the RabbitMQ HTTP API.
+
+Contributed by Steffen Dienst.
+
 ### langohr.consumers/subscribe Options In Line with Docs
 
 The documentation says to use function handler keys ending in
