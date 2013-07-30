@@ -3,7 +3,7 @@
   (:use clojure.test
         [clojure.set :only [subset? superset?]]))
 
-(hc/connect! "http://127.0.0.1:55672" "guest" "guest")
+(hc/connect! "http://127.0.0.1:15672" "guest" "guest")
 
 ;;
 ;; These tests are pretty basic and make sure we don't
@@ -103,6 +103,8 @@
 (deftest ^{:http true} test-list-bindings
   (let [q  "langohr.http.queue"
         e  "langohr.http.fanout"
+        _ (hc/declare-exchange "/" e {:durable false :auto_delete true :internal false :arguments {}})
+        _ (hc/declare-queue "/" q {:durable false :auto_delete true :arguments {}})
         r1 (hc/bind "/" e q)
         xs (hc/list-bindings "/")
         m  (first xs)]
