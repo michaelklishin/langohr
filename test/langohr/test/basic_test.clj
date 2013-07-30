@@ -50,6 +50,25 @@
                                       :content-type content-type
                                       :headers { "see you soon" "à bientôt" }))) "publisher"))
     (.await latch)))
+;;
+;; make sure that `langohr.consumers/subscribe` takes both versions for handler functions:
+;; for example `:handle-consume-ok` as well as `:handle-consume-ok-fn`.
+;;
+
+(deftest test-subscribe-with-custom-handler
+  (let [channel    (lhc/create-channel conn)
+        exchange   ""
+        queue (lhq/declare-server-named channel)
+        latch        (java.util.concurrent.CountDownLatch. 1)
+        handler-called (atom #{}) 
+        msg-handler   (fn [ch metadata payload]
+                        (.countDown latch))
+        log-called (fn [tag] (fn [_] (swap! handler-called conj tag)))]
+    (lhcons/subscribe channel queue msg-handler :auto-ack true :handle-consume-ok-fn (log-called :handle-consume-ok-fn))
+    (lhcons/subscribe channel queue msg-handler :auto-ack true :handle-consume-ok (log-called :handle-consume-ok))
+    (lhb/publish channel exchange queue "dummy payload")
+    (.await latch)
+    (is (= #{:handle-consume-ok-fn :handle-consume-ok} @handler-called))))
 
 
 (deftest test-demonstrate-sender-selected-distribution-extension-support
