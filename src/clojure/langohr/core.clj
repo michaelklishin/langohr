@@ -8,8 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.core
-  (:import [com.rabbitmq.client Address ConnectionFactory ShutdownListener]
-           [com.novemberain.langohr Connection Channel])
+  (:import [com.rabbitmq.client Connection Channel Address ConnectionFactory ShutdownListener])
   (:require langohr.channel
             [clojure.string :as s]
             [clojure.walk   :as walk]))
@@ -37,12 +36,6 @@
   (close [this] (.close this))
 
   com.rabbitmq.client.Channel
-  (close [this] (.close this))
-
-  com.novemberain.langohr.Connection
-  (close [this] (.close this))
-
-  com.novemberain.langohr.Channel
   (close [this] (.close this)))
 
 
@@ -57,14 +50,6 @@
 
   com.rabbitmq.client.Channel
   (open? [ch] (.isOpen ch))
-  (closed? [ch] (not (.isOpen ch)))
-
-  com.novemberain.langohr.Connection
-  (open? [conn] (.isOpen conn))
-  (closed? [conn] (not (.isOpen conn)))
-
-  com.novemberain.langohr.Channel
-  (open? [ch] (.isOpen ch))
   (closed? [ch] (not (.isOpen ch))))
 
 
@@ -77,12 +62,12 @@
   ;; defaults
   ([]
      (let [^ConnectionFactory cf (create-connection-factory {})]
-       (doto (Connection. cf)
+       (doto (com.novemberain.langohr.Connection. cf)
          .init)))
   ;; settings
   ([settings]
      (let [^ConnectionFactory cf (create-connection-factory settings)]
-       (doto (Connection. cf (dissoc settings :password :username))
+       (doto (com.novemberain.langohr.Connection. cf (dissoc settings :password :username))
          .init))))
 
 (defn- create-address-array [addresses]

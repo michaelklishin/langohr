@@ -6,13 +6,13 @@
 (deftest test-open-a-channel
   (let [conn (lc/connect)
         ch   (lch/open conn)]
-    (is (instance? com.novemberain.langohr.Channel ch))
+    (is (instance? com.rabbitmq.client.Channel ch))
     (is (lc/open? ch))))
 
 (deftest test-open-a-channel-with-explicitly-given-id
   (let [conn (lc/connect)
         ch   (lc/create-channel conn 987)]
-    (is (instance? com.novemberain.langohr.Channel ch))
+    (is (instance? com.rabbitmq.client.Channel ch))
     (is (lc/open? ch))
     (is (= (.getChannelNumber ch) 987))
     (lc/close ch)))

@@ -1,5 +1,4 @@
 (ns langohr.test.core-test
-  (:import [com.rabbitmq.client Connection Channel])
   (:use clojure.test langohr.core))
 
 (set! *warn-on-reflection* true)
@@ -8,7 +7,7 @@
 
 (deftest t-connection-with-default-parameters
   (let [conn (connect)]
-    (is (instance? com.novemberain.langohr.Connection conn))
+    (is (instance? com.rabbitmq.client.Connection conn))
     (is (open? conn))))
 
 (deftest t-connection-with-overriden-parameters
