@@ -1,3 +1,12 @@
+## Changes between Langohr 1.1.0 and 1.2.0
+
+### Langohr Again Uses RabbitMQ Java Client Interfaces
+
+Langohr's implementation of connection and channel now implements
+RabbitMQ Java client's interfaces for connection and channel.
+
+
+
 ## Changes between Langohr 1.0.0 and 1.1.0
 
 ### Extended HTTP API Support
