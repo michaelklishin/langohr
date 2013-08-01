@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-public class Channel {
+public class Channel implements com.rabbitmq.client.Channel {
   private com.rabbitmq.client.Channel delegate;
   private Connection connection;
 

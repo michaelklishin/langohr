@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-public class Connection {
+public class Connection implements com.rabbitmq.client.Connection {
   private static final IPersistentMap DEFAULT_OPTIONS = buildDefaultOptions();
   public static final String AUTOMATICALLY_RECOVER_KEYWORD_NAME = "automatically-recover";
   public static final Keyword AUTOMATICALLY_RECOVER_KEYWORD = Keyword.intern(null, AUTOMATICALLY_RECOVER_KEYWORD_NAME);
