@@ -43,7 +43,7 @@ public class Connection implements com.rabbitmq.client.Connection {
     this.cf = cf;
     this.options = options;
 
-    this.channels      = new ConcurrentHashMap<Integer, Channel>();
+    this.channels = new ConcurrentHashMap<Integer, Channel>();
     this.shutdownHooks = new ConcurrentSkipListSet<ShutdownListener>();
   }
 
@@ -88,8 +88,8 @@ public class Connection implements com.rabbitmq.client.Connection {
 
   private void recoverChannels() throws IOException {
     Iterator it = this.channels.entrySet().iterator();
-    while(it.hasNext()) {
-      Map.Entry<Integer, Channel> e =(Map.Entry<Integer, Channel>)it.next();
+    while (it.hasNext()) {
+      Map.Entry<Integer, Channel> e = (Map.Entry<Integer, Channel>) it.next();
       Channel ch = e.getValue();
 
       ch.automaticallyRecover(this, this.delegate);
