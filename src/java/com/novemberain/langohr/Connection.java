@@ -149,6 +149,7 @@ public class Connection implements com.rabbitmq.client.Connection {
    */
   public void addShutdownListener(ShutdownListener listener) {
     delegate.addShutdownListener(listener);
+    this.shutdownHooks.add(listener);
   }
 
   /**
