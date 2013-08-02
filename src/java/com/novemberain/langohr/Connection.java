@@ -14,12 +14,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ExecutorService;
 
 public class Connection implements com.rabbitmq.client.Connection {
   private static final IPersistentMap DEFAULT_OPTIONS = buildDefaultOptions();
   public static final String AUTOMATICALLY_RECOVER_KEYWORD_NAME = "automatically-recover";
   public static final Keyword AUTOMATICALLY_RECOVER_KEYWORD = Keyword.intern(null, AUTOMATICALLY_RECOVER_KEYWORD_NAME);
   private static final long DEFAULT_NETWORK_RECOVERY_PERIOD = 5000;
+  private static final Keyword EXECUTOR_KEYWORD = Keyword.intern(null, "executor");
   private final IPersistentMap options;
   private final ConcurrentSkipListSet<ShutdownListener> shutdownHooks;
   private com.rabbitmq.client.Connection delegate;
@@ -48,7 +50,8 @@ public class Connection implements com.rabbitmq.client.Connection {
   }
 
   public Connection init() throws IOException {
-    this.delegate = cf.newConnection();
+    ExecutorService es = (ExecutorService)this.options.valAt(EXECUTOR_KEYWORD);
+    this.delegate = cf.newConnection(es);
 
     if (this.automaticRecoveryEnabled()) {
       this.addAutomaticRecoveryHook();
