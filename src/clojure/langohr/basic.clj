@@ -11,9 +11,8 @@
   (:refer-clojure :exclude [get])
   (:require langohr.util)
   (:use [langohr.conversion :only [to-bytes to-message-metadata]])
-  (:import [com.rabbitmq.client AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener]
-           [java.util Map Date]
-           com.novemberain.langohr.Channel))
+  (:import [com.rabbitmq.client Channel AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener]
+           [java.util Map Date]))
 
 
 ;;
