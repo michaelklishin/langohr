@@ -106,7 +106,8 @@ public class Connection implements com.rabbitmq.client.Connection {
   }
 
   private void recoverConnection() throws IOException {
-    this.delegate = this.cf.newConnection();
+    ExecutorService es = (ExecutorService)this.options.valAt(EXECUTOR_KEYWORD);
+    this.delegate = this.cf.newConnection(es);
   }
 
   public boolean automaticRecoveryEnabled() {
