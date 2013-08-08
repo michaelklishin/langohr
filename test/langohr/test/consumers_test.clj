@@ -25,6 +25,15 @@
     (lhb/consume channel queue consumer)
     (.await latch)))
 
+(deftest t-consume-ok-handler-with-queueing-consumer
+  (let [channel  (lch/open conn)
+        queue    (:queue (lhq/declare channel))
+        latch    (java.util.concurrent.CountDownLatch. 1)
+        consumer (lhcons/create-queueing channel :handle-consume-ok-fn (fn [consumer-tag]
+                                                                         (.countDown latch)))]
+    (lhb/consume channel queue consumer)
+    (.await latch)))
+
 
 (deftest t-cancel-ok-handler
   (let [channel  (lch/open conn)

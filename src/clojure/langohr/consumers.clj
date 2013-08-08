@@ -54,6 +54,26 @@
       (when handle-delivery-fn
         (handle-delivery-fn channel (to-message-metadata (QueueingConsumer$Delivery. envelope properties body)) body)))))
 
+
+(defn ^Consumer create-queueing
+  "Instantiates and returns a new queueing consumer that handles various consumer life cycle events. See also langohr.basic/consume."
+  [^Channel channel &{:keys [handle-consume-ok-fn
+                             handle-cancel-ok-fn
+                             handle-recover-ok-fn
+                             handle-delivery-fn]}]
+  (proxy [QueueingConsumer] [(.getDelegate ^Channel channel)]
+    (handleConsumeOk [^String consumer-tag]
+      (when handle-consume-ok-fn
+        (handle-consume-ok-fn consumer-tag)))
+
+    (handleCancelOk [^String consumer-tag]
+      (when handle-cancel-ok-fn
+        (handle-cancel-ok-fn consumer-tag)))
+
+    (handleRecoverOk []
+      (when handle-recover-ok-fn
+        (handle-recover-ok-fn)))))
+
 (defn subscribe
   "Adds new default consumer to a queue using basic.consume AMQP 0.9.1 method"
   [^Channel channel ^String queue f & {:as options}]
