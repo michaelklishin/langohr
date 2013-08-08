@@ -75,10 +75,10 @@
                                                                  (get cons-opts :handle-shutdown-signal)))]
     (apply lhb/consume channel queue consumer (flatten (vec options')))))
 
-(defn- consumer-seq
-  "Builds a lazy seq of Delivery instances from a QueueingConsumer."
+(defn deliveries-seq
+  "Builds a lazy seq of delivery instances from a queueing consumer."
   [^QueueingConsumer qcs]
-  (lazy-seq (cons (.nextDelivery qcs) (consumer-seq qcs))))
+  (lazy-seq (cons (.nextDelivery qcs) (deliveries-seq qcs))))
 
 (defn ack-unless-exception
   "Wrapper for delivery handlers which auto-acks messages.
@@ -96,5 +96,5 @@
   [^Channel channel ^String queue f & options]
   (let [consumer (QueueingConsumer. channel)]
     (apply lhb/consume channel queue consumer options)
-    (doseq [^QueueingConsumer$Delivery d (consumer-seq consumer)]
+    (doseq [^QueueingConsumer$Delivery d (deliveries-seq consumer)]
       (f channel (to-message-metadata d) (.getBody d)))))
