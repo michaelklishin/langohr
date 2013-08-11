@@ -142,9 +142,9 @@
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT}} (normalize-settings settings)
               cf   (ConnectionFactory.)
-              port' (if (and ssl (= port ConnectionFactory/DEFAULT_AMQP_PORT))
-                      ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT
-                      port)]
+              final-port (if (and ssl (= port ConnectionFactory/DEFAULT_AMQP_PORT))
+                           ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT
+                           port)]
     (when (or ssl
               (= port ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT))
       (.useSslProtocol cf))
@@ -154,7 +154,7 @@
       (.setPassword           password)
       (.setVirtualHost        vhost)
       (.setHost               host)
-      (.setPort               port')
+      (.setPort               final-port)
       (.setRequestedHeartbeat requested-heartbeat)
       (.setConnectionTimeout  connection-timeout))
     (when sasl-config
