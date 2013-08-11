@@ -8,7 +8,9 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.core
-  (:import [com.rabbitmq.client Connection Channel Address ConnectionFactory ShutdownListener])
+  (:import [com.rabbitmq.client Connection Channel Address ConnectionFactory ShutdownListener]
+           [com.novemberain.langohr Recoverable]
+           [clojure.lang IFn])
   (:require langohr.channel
             [clojure.string :as s]
             [clojure.walk   :as walk]))
@@ -88,6 +90,10 @@
     (shutdownCompleted [this cause]
       (f cause))))
 
+(defn on-recovery
+  "Registers a network recovery callback on a (Langohr) connection or channel"
+  [^Recoverable target ^IFn callback]
+  (.onRecovery target callback))
 
 (defn settings-from
   "Parses AMQP connection URI and returns a persistent map of settings"

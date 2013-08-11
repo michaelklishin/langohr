@@ -1,5 +1,6 @@
 package com.novemberain.langohr;
 
+import clojure.lang.IFn;
 import clojure.lang.IPersistentMap;
 import clojure.lang.Keyword;
 import clojure.lang.PersistentHashMap;
@@ -12,24 +13,30 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 
-public class Connection implements com.rabbitmq.client.Connection {
+public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static final IPersistentMap DEFAULT_OPTIONS = buildDefaultOptions();
   public static final String AUTOMATICALLY_RECOVER_KEYWORD_NAME = "automatically-recover";
   public static final Keyword AUTOMATICALLY_RECOVER_KEYWORD = Keyword.intern(null, AUTOMATICALLY_RECOVER_KEYWORD_NAME);
   private static final long DEFAULT_NETWORK_RECOVERY_PERIOD = 5000;
   private static final Keyword EXECUTOR_KEYWORD = Keyword.intern(null, "executor");
   private final IPersistentMap options;
-  private final ConcurrentSkipListSet<ShutdownListener> shutdownHooks;
+  private final Set<ShutdownListener> shutdownHooks;
+  private final Set<IFn> recoveryHooks;
   private com.rabbitmq.client.Connection delegate;
+  /**
+   * Shutdown listener that kicks off automatic connection recovery
+   * if it is enabled.
+   */
   private ShutdownListener automaticRecoveryListener;
   private Map<Integer, Channel> channels;
 
   private static IPersistentMap buildDefaultOptions() {
-    Map m = new HashMap();
+    Map<Keyword, Boolean> m = new HashMap<Keyword, Boolean>();
     m.put(AUTOMATICALLY_RECOVER_KEYWORD, true);
 
     return PersistentHashMap.create(m);
@@ -47,6 +54,8 @@ public class Connection implements com.rabbitmq.client.Connection {
 
     this.channels = new ConcurrentHashMap<Integer, Channel>();
     this.shutdownHooks = new ConcurrentSkipListSet<ShutdownListener>();
+    // network failure recovery hooks
+    this.recoveryHooks = new ConcurrentSkipListSet<IFn>();
   }
 
   public Connection init() throws IOException {
@@ -87,12 +96,27 @@ public class Connection implements com.rabbitmq.client.Connection {
     this.recoverConnection();
     this.recoverShutdownHooks();
     this.recoverChannels();
+
+    for (IFn f : recoveryHooks) {
+      f.invoke(this.delegate);
+    }
+    this.runChannelRecoveryHooks();
+  }
+
+  private void runChannelRecoveryHooks() {
+    Iterator<Map.Entry<Integer,Channel>> it = this.channels.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry<Integer, Channel> e = it.next();
+      Channel ch = e.getValue();
+
+      ch.runRecoveryHooks();
+    }
   }
 
   private void recoverChannels() throws IOException {
-    Iterator it = this.channels.entrySet().iterator();
+    Iterator<Map.Entry<Integer,Channel>> it = this.channels.entrySet().iterator();
     while (it.hasNext()) {
-      Map.Entry<Integer, Channel> e = (Map.Entry<Integer, Channel>) it.next();
+      Map.Entry<Integer, Channel> e = it.next();
       Channel ch = e.getValue();
 
       ch.automaticallyRecover(this, this.delegate);
@@ -112,6 +136,10 @@ public class Connection implements com.rabbitmq.client.Connection {
 
   public boolean automaticRecoveryEnabled() {
     return this.options.containsKey(AUTOMATICALLY_RECOVER_KEYWORD);
+  }
+
+  public void onRecovery(IFn f) {
+    this.recoveryHooks.add(f);
   }
 
   /**

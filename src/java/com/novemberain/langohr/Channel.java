@@ -1,14 +1,18 @@
 package com.novemberain.langohr;
 
+import clojure.lang.IFn;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeoutException;
 
-public class Channel implements com.rabbitmq.client.Channel {
+public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   private com.rabbitmq.client.Channel delegate;
   private Connection connection;
+  private Set<IFn> recoveryHooks = new ConcurrentSkipListSet<IFn>();
 
   public Channel(Connection connection, com.rabbitmq.client.Channel channel) {
     this.connection = connection;
@@ -936,5 +940,15 @@ public class Channel implements com.rabbitmq.client.Channel {
     this.connection = connection;
 
     this.delegate = delegate.createChannel(this.getChannelNumber());
+  }
+
+  public void runRecoveryHooks() {
+    for(IFn f : this.recoveryHooks) {
+      f.invoke(this.delegate);
+    }
+  }
+
+  public void onRecovery(IFn f) {
+    this.recoveryHooks.add(f);
   }
 }
