@@ -1,3 +1,22 @@
+## Changes between Langohr 1.3.0 and 1.4.0
+
+### Network Recovery Callbacks on Connections and Channels
+
+They can be used to re-declare necessary entities using `langohr.core/on-recovery`:
+
+``` clojure
+(langohr.core/on-recovery conn (fn [conn] (comment ...)))
+
+(langohr.core/on-recovery ch   (fn [ch] (comment ...)))
+```
+
+Unlike OO clients that represent queues and
+exchanges as objects, Langohr cannot be more
+aggressive about redeclaring entities during
+connection recovery.
+
+
+
 ## Changes between Langohr 1.1.0 and 1.2.0
 
 ### Langohr Again Uses RabbitMQ Java Client Interfaces
