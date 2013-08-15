@@ -90,6 +90,12 @@
     (shutdownCompleted [this cause]
       (f cause))))
 
+(defn automatically-recover?
+  "Returns true if provided connection uses automatic connection recovery
+   mode, false otherwise"
+  [^Connection c]
+  (.automaticRecoveryEnabled c))
+
 (defn on-recovery
   "Registers a network recovery callback on a (Langohr) connection or channel"
   [^Recoverable target ^IFn callback]
