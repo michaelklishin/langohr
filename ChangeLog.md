@@ -1,3 +1,10 @@
+## Changes between Langohr 1.4.0 and 1.5.0
+
+### Automatic Recovery Fix
+
+Automatic recovery now can be enabled without causing an exception.
+
+
 ## Changes between Langohr 1.3.0 and 1.4.0
 
 ### Network Recovery Callbacks on Connections and Channels
