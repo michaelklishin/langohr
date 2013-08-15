@@ -4,6 +4,8 @@ import clojure.lang.IFn;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -12,7 +14,7 @@ import java.util.concurrent.TimeoutException;
 public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   private com.rabbitmq.client.Channel delegate;
   private Connection connection;
-  private Set<IFn> recoveryHooks = new ConcurrentSkipListSet<IFn>();
+  private List<IFn> recoveryHooks = new ArrayList<IFn>();
 
   public Channel(Connection connection, com.rabbitmq.client.Channel channel) {
     this.connection = connection;
@@ -523,7 +525,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    *
    * @param listener {@link com.rabbitmq.client.ShutdownListener} to be removed
    */
-  public void removeShutdownListener(ShutdownListener listener) {
+  public synchronized void removeShutdownListener(ShutdownListener listener) {
     delegate.removeShutdownListener(listener);
   }
 
@@ -761,7 +763,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    *
    * @param listener {@link com.rabbitmq.client.ShutdownListener} to the component
    */
-  public void addShutdownListener(ShutdownListener listener) {
+  public synchronized void addShutdownListener(ShutdownListener listener) {
     delegate.addShutdownListener(listener);
   }
 
