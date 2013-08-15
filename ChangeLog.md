@@ -1,3 +1,50 @@
+## Changes between Langohr 1.4.0 and 1.4.1
+
+### Automatic Recovery Fix
+
+Automatic recovery now can be enabled without causing an exception.
+
+
+## Changes between Langohr 1.3.0 and 1.4.0
+
+### Network Recovery Callbacks on Connections and Channels
+
+They can be used to re-declare necessary entities using `langohr.core/on-recovery`:
+
+``` clojure
+(langohr.core/on-recovery conn (fn [conn] (comment ...)))
+
+(langohr.core/on-recovery ch   (fn [ch] (comment ...)))
+```
+
+Unlike OO clients that represent queues and
+exchanges as objects, Langohr cannot be more
+aggressive about redeclaring entities during
+connection recovery.
+
+
+## Changes between Langohr 1.2.0 and 1.3.0
+
+## Re-introduce langohr.consumers/create-queueing
+
+The function creates a `QueueingConsumer` instance and is very similar
+to `langohr.consumers/create-default` in purpose.
+
+Sometimes combining a queueing consumer with
+`langohr.consumers/deliveries-seq` is the best way to express a
+problem.
+
+### Rename langoh.consumers/consumers-seq to langoh.consumers/deliveries-seq, make it public
+
+`langoh.consumers/deliveries-seq` is a function that turns a `QueueingConsumer` instance
+into a lazy sequence of deliveries.
+
+### Use :executor During Connection Recovery
+
+Connection recovery after network failure will now respect the `:executor`
+option.
+
+
 ## Changes between Langohr 1.1.0 and 1.2.0
 
 ### Langohr Again Uses RabbitMQ Java Client Interfaces
