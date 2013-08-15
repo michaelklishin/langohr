@@ -10,6 +10,7 @@
 (deftest t-connection-with-default-parameters
   (let [conn (lc/connect)]
     (is (instance? com.rabbitmq.client.Connection conn))
+    (is (not (lc/automatically-recover? conn)))
     (is (lc/open? conn))))
 
 (deftest t-connection-with-overriden-parameters
@@ -19,6 +20,7 @@
                        :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
                        :requested-heartbeat 3 :connection-timeout 5 })]
     (is (lc/open? conn))
+    (is (not (lc/automatically-recover? conn)))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))
     (is (= 3           (.getHeartbeat conn)))))
@@ -35,6 +37,11 @@
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))
     (is (-> conn .getServerProperties (get "capabilities") (get "publisher_confirms")))))
+
+(deftest t-connection-with-connection-recovery-enabled
+  (let [conn (lc/connect {:automatically-recover true})]
+    (is (lc/automatically-recover? conn))
+    (is (lc/open? conn))))
 
 (deftest t-broker-capabilities
   (let [conn (lc/connect {:uri "amqp://127.0.0.1:5672"})
