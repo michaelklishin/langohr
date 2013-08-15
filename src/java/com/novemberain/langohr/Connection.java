@@ -10,10 +10,7 @@ import com.rabbitmq.client.ShutdownSignalException;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
@@ -25,8 +22,8 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static final long DEFAULT_NETWORK_RECOVERY_PERIOD = 5000;
   private static final Keyword EXECUTOR_KEYWORD = Keyword.intern(null, "executor");
   private final IPersistentMap options;
-  private final Set<ShutdownListener> shutdownHooks;
-  private final Set<IFn> recoveryHooks;
+  private final List<ShutdownListener> shutdownHooks;
+  private final List<IFn> recoveryHooks;
   private com.rabbitmq.client.Connection delegate;
   /**
    * Shutdown listener that kicks off automatic connection recovery
@@ -53,9 +50,9 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     this.options = options;
 
     this.channels = new ConcurrentHashMap<Integer, Channel>();
-    this.shutdownHooks = new ConcurrentSkipListSet<ShutdownListener>();
+    this.shutdownHooks = new ArrayList<ShutdownListener>();
     // network failure recovery hooks
-    this.recoveryHooks = new ConcurrentSkipListSet<IFn>();
+    this.recoveryHooks = new ArrayList<IFn>();
   }
 
   public Connection init() throws IOException {
@@ -86,8 +83,10 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
       }
     };
 
-    this.shutdownHooks.add(automaticRecoveryListener);
-    this.delegate.addShutdownListener(automaticRecoveryListener);
+    synchronized(this) {
+        this.shutdownHooks.add(automaticRecoveryListener);
+        this.delegate.addShutdownListener(automaticRecoveryListener);
+    }
   }
 
   private void beginAutomaticRecovery() throws InterruptedException, IOException {
