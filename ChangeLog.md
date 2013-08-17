@@ -1,5 +1,19 @@
 ## Changes between Langohr 1.4.0 and 1.5.0
 
+### Move Convenient Publisher Confirms Support
+
+`langohr.confirm/wait-for-confirms` is a new function that
+waits until all outstanding confirms for messages
+published on the given channel arrive. It optionally
+takes a timeout:
+
+``` clojure
+(langohr.confirm/wait-for-confirms ch)
+;; wait up to 200 milliseconds
+(langohr.confirm/wait-for-confirms ch 200)
+```
+
+
 ### Automatic Recovery Fix
 
 Automatic recovery now can be enabled without causing an exception.
