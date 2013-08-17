@@ -1,9 +1,10 @@
 (ns langohr.test.confirm-test
   (:import [com.rabbitmq.client Connection AMQP$Queue$DeclareOk AMQP$Confirm$SelectOk])
   (:require langohr.confirm
-            [langohr.core  :as lhc]
-            [langohr.basic :as lhb]
-            [langohr.queue :as lhq])
+            [langohr.core    :as lhc]
+            [langohr.channel :as lch]
+            [langohr.basic   :as lhb]
+            [langohr.queue   :as lhq])
   (:use clojure.test))
 
 (defonce ^Connection conn (lhc/connect))
@@ -39,3 +40,15 @@
     (.start (Thread. (fn []
                        (lhb/publish channel "" queue "")) "publisher"))
     (.await latch)))
+
+(deftest test-publishing-confirms
+  (with-open [conn (lhc/connect)
+              ch   (lhc/create-channel conn)]
+    (let [x     ""
+          q     "langohr.publisher.confirms"
+          _     (lhq/declare ch q :exclusive true)
+          body  (.getBytes "message" "UTF-8")]
+      (langohr.confirm/select ch)
+      (lhb/publish ch x q body :content-type "application-json")
+      (langohr.confirm/wait-for-confirms ch 200)
+      (is true))))

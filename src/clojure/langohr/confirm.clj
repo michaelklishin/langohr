@@ -44,3 +44,25 @@
            cl        (listener ack-handler nack-handler)]
        (.addConfirmListener channel cl)
        (SelectOk. select-ok))))
+
+(defn wait-for-confirms
+  "Wait until all messages published since the last call have been
+   either ack'd or nack'd by the broker. Note, when called on a
+   non-Confirm channel, waitForConfirms throws an IllegalStateException.
+
+   Returns true if all messages were acked successfully,
+   false otherwise."
+  ([^Channel channel]
+     (.waitForConfirms channel))
+  ([^Channel channel ^long timeout]
+     (.waitForConfirms channel timeout)))
+
+(defn wait-for-confirms-or-die
+  "Wait until all messages published since the last call have been
+   either ack'd or nack'd by the broker. If any of the messages were
+   nack'd, waitForConfirmsOrDie will throw an IOException. When called on
+   a non-Confirm channel, it will throw an IllegalStateException."
+  ([^Channel channel]
+     (.waitForConfirmsOrDie channel))
+  ([^Channel channel ^long timeout]
+     (.waitForConfirmsOrDie channel timeout)))
