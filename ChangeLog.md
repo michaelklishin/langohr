@@ -1,6 +1,6 @@
 ## Changes between Langohr 1.4.0 and 1.5.0
 
-### Move Convenient Publisher Confirms Support
+### More Convenient Publisher Confirms Support
 
 `langohr.confirm/wait-for-confirms` is a new function that
 waits until all outstanding confirms for messages
