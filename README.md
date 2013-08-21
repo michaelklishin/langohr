@@ -66,6 +66,8 @@ If you are only starting out, please see our [Getting Started guide](http://cloj
  * [Queues and Consumers](http://clojurerabbitmq.info/articles/queues.html)
  * [Exchanges and Publishing](http://clojurerabbitmq.info/articles/exchanges.html)
  * [Bindings](http://clojurerabbitmq.info/articles/bindings.html)
+ * [Durability](http://clojurerabbitmq.info/articles/durability.html)
+ * [TLS/SSL](http://clojurerabbitmq.info/articles/tls.html)
 
 The rest of the guides will be written eventually.
 
