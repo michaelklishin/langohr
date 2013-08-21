@@ -95,10 +95,7 @@ with RabbitMQ versions 2.0 and later.
 
 ## Project Maturity
 
-Langohr has been around since 2011 and is now a 1.0 project.
-
-There are some improvements planned in 1.1 but overall, Langohr
-is a battle tested library.
+Langohr has been around since 2011. The API is stable.
 
 
 
