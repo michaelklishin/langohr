@@ -53,3 +53,15 @@
     (is (lch/flow? ch))
     (lch/close ch)
     (is (not (lch/open? ch)))))
+
+(deftest test-channel-reconnects-automatically
+  (let [conn (lc/connect {:automatically-recover true})
+        ch (lch/open conn)
+        latch (java.util.concurrent.CountDownLatch. 1)]
+    (lc/on-recovery ch (fn [ch']
+                         (.countDown latch)))
+    (is (lch/open? ch))
+    (lc/close conn)
+    (is (not (lch/open? ch)))
+    (is (.await latch 10 java.util.concurrent.TimeUnit/SECONDS))
+    (is (lch/open? ch))))

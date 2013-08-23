@@ -226,6 +226,18 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   /**
+   * Create a Langohr channel from a RabbitMQ channel and register it.
+   *
+   * @param delegateChannel A RabbitMQ channel.
+   * @return The Langohr channel.
+   */
+  private Channel createChannel(com.rabbitmq.client.Channel delegateChannel) {
+    final Channel channel = new Channel(this, delegateChannel);
+    this.registerChannel(channel);
+    return channel;
+  }
+
+  /**
    * Create a new channel, using the specified channel number if possible.
    *
    * @param channelNumber the channel number to allocate
@@ -233,10 +245,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    * @throws java.io.IOException if an I/O problem is encountered
    */
   public Channel createChannel(int channelNumber) throws IOException {
-    final Channel channel = new Channel(this, delegate.createChannel(channelNumber));
-    this.registerChannel(channel);
-
-    return channel;
+    return this.createChannel(delegate.createChannel(channelNumber));
   }
 
   private void registerChannel(Channel channel) {
@@ -274,7 +283,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    * @throws java.io.IOException if an I/O problem is encountered
    */
   public Channel createChannel() throws IOException {
-    return new Channel(this, delegate.createChannel());
+    return this.createChannel(delegate.createChannel());
   }
 
   /**
