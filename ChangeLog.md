@@ -1,5 +1,23 @@
 ## Changes between Langohr 1.4.0 and 1.5.0
 
+### Automatic Recovery Improvements
+
+Automatic recovery of channels that are created without an explicit
+number now works correctly.
+
+Contributed by Joe Freeman.
+
+
+### clj-http Upgrade
+
+clj-http dependency has been updated to `0.7.6`.
+
+
+### Clojure 1.3 is No Longer Supported
+
+Langohr requires Clojure 1.4+ as of this version.
+
+
 ### More Convenient Publisher Confirms Support
 
 `langohr.confirm/wait-for-confirms` is a new function that
