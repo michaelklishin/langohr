@@ -9,8 +9,9 @@
 
 (ns langohr.basic
   (:refer-clojure :exclude [get])
-  (:require langohr.util)
-  (:use [langohr.conversion :only [to-bytes to-message-metadata]])
+  (:require langohr.util
+            [langohr.conversion :refer [to-message-metadata]]
+            [clojurewerkz.support.bytes :refer [to-byte-array]])
   (:import [com.rabbitmq.client AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener]
            [java.util Map Date]
            com.novemberain.langohr.Channel))
@@ -62,7 +63,7 @@
             ^Boolean persistent ^Integer priority ^String correlation-id ^String reply-to ^String expiration ^String message-id
             ^Date timestamp ^String type ^String user-id ^String app-id ^String cluster-id]
      :or {mandatory false immediate false}}]
-  (let [bytes (to-bytes payload)
+  (let [bytes (to-byte-array payload)
         pb    (doto (AMQP$BasicProperties$Builder.)
                 (.contentType     content-type)
                 (.contentEncoding content-encoding)

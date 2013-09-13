@@ -1,3 +1,14 @@
+## Changes between Langohr 1.5.0 and 1.6.0
+
+### Support Update
+
+Langohr now depends on ClojureWerkz Support `0.19.0`.
+
+`langohr.conversion/BytePayload` and `langohr.conversion/to-bytes`
+are replaced by `clojurewerkz.support.bytes/ByteSource` and
+`clojurewerkz.support.bytes/to-byte-array`, respectively.
+
+
 ## Changes between Langohr 1.4.0 and 1.5.0
 
 ### Automatic Recovery Improvements
