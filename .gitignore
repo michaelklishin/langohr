@@ -10,3 +10,4 @@ target/*
 .dir-locals.el
 debug/*
 tmp/*
+checkouts/*
