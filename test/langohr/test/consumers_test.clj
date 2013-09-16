@@ -5,7 +5,8 @@
             [langohr.channel   :as lch]
             [langohr.basic     :as lhb]
             [langohr.util      :as lhu]
-            [langohr.consumers :as lhcons])
+            [langohr.consumers :as lhcons]
+            [langohr.shutdown  :as lsh])
   (:use clojure.test))
 
 
@@ -39,7 +40,7 @@
 (deftest t-basic-cancel-with-exclusive-consumer
   (let [ch    (lch/open conn)
         q     (lhq/declare-server-named ch)
-        ctag  "langohr.consumer-tag1"
+        ctag  "langohr.consumer-tag"
         latch (java.util.concurrent.CountDownLatch. 1)]
     (lhcons/subscribe ch q (fn [_ _ _])
                       :consumer-tag ctag :handle-cancel-ok (fn [_]
@@ -47,6 +48,21 @@
                       :exclusive true)
     (lhb/cancel ch ctag)
     (.await latch)))
+
+(deftest t-basic-cancel-with-exclusive-consumer-on-different-connection
+  (let [c2    (lhc/connect)
+        ch    (lch/open conn)
+        ch2   (lch/open c2)
+        q     (:queue (lhq/declare ch "" :exclusive false))
+        ctag  "langohr.consumer-tag"]
+    (lhcons/subscribe ch q (fn [_ _ _])
+                      :consumer-tag ctag :exclusive true)
+    (is (thrown? java.io.IOException
+                 (lhb/cancel ch2 ctag)))
+    (try
+      (lhb/cancel ch2 ctag)
+      (catch java.io.IOException e
+        (is (= (.getMessage e) "Unknown consumerTag"))))))
 
 (deftest t-consume-ok-handler-with-queueing-consumer
   (let [channel  (lch/open conn)
