@@ -18,12 +18,20 @@
 
 (deftest t-consume-ok-handler
   (let [channel  (lch/open conn)
-        queue    (.getQueue (lhq/declare channel))
+        queue    (lhq/declare-server-named channel)
         latch    (java.util.concurrent.CountDownLatch. 1)
         consumer (lhcons/create-default channel :handle-consume-ok-fn (fn [consumer-tag]
                                                                         (.countDown latch)))]
     (lhb/consume channel queue consumer)
     (.await latch)))
+
+(deftest t-basic-cancel
+  (let [ch   (lch/open conn)
+        q    (lhq/declare-server-named ch)
+        ctag "langohr.consumer-tag1"]
+    (lhcons/subscribe ch q (fn [_ _ _])
+                      :consumer-tag ctag)
+    (lhb/cancel ch ctag)))
 
 (deftest t-consume-ok-handler-with-queueing-consumer
   (let [channel  (lch/open conn)
@@ -37,7 +45,7 @@
 
 (deftest t-cancel-ok-handler
   (let [channel  (lch/open conn)
-        queue    (.getQueue (lhq/declare channel))
+        queue    (lhq/declare-server-named channel)
         tag      (lhu/generate-consumer-tag "t-cancel-ok-handler")
         latch    (java.util.concurrent.CountDownLatch. 1)
         consumer (lhcons/create-default channel :handle-cancel-ok-fn (fn [consumer-tag]
@@ -50,7 +58,7 @@
 
 (deftest t-cancel-notification-handler
   (let [channel  (lch/open conn)
-        queue    (.getQueue (lhq/declare channel))
+        queue    (lhq/declare-server-named channel)
         latch    (java.util.concurrent.CountDownLatch. 1)
         consumer (lhcons/create-default channel :handle-cancel-fn (fn [consumer_tag]
                                                                     (.countDown latch)))]
@@ -63,7 +71,7 @@
   (let [channel    (lch/open conn)
         exchange   ""
         payload    ""
-        queue      (.getQueue (lhq/declare channel "" :auto-delete true))
+        queue      (lhq/declare-server-named channel)
         n          300
         latch      (java.util.concurrent.CountDownLatch. (inc n))
         consumer   (lhcons/create-default channel
