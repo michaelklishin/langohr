@@ -26,12 +26,15 @@
     (.await latch)))
 
 (deftest t-basic-cancel
-  (let [ch   (lch/open conn)
-        q    (lhq/declare-server-named ch)
-        ctag "langohr.consumer-tag1"]
+  (let [ch    (lch/open conn)
+        q     (lhq/declare-server-named ch)
+        ctag  "langohr.consumer-tag1"
+        latch (java.util.concurrent.CountDownLatch. 1)]
     (lhcons/subscribe ch q (fn [_ _ _])
-                      :consumer-tag ctag)
-    (lhb/cancel ch ctag)))
+                      :consumer-tag ctag :handle-cancel-ok (fn [_]
+                                                             (.countDown latch)))
+    (lhb/cancel ch ctag)
+    (.await latch)))
 
 (deftest t-consume-ok-handler-with-queueing-consumer
   (let [channel  (lch/open conn)
