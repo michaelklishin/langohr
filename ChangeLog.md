@@ -2,7 +2,7 @@
 
 ### Support Update
 
-Langohr now depends on ClojureWerkz Support `0.19.0`.
+Langohr now depends on ClojureWerkz Support `0.20.0`.
 
 `langohr.conversion/BytePayload` and `langohr.conversion/to-bytes`
 are replaced by `clojurewerkz.support.bytes/ByteSource` and
