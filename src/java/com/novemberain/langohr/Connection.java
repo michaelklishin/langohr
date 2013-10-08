@@ -71,7 +71,9 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     automaticRecoveryListener = new ShutdownListener() {
       public void shutdownCompleted(ShutdownSignalException cause) {
         try {
-          c.beginAutomaticRecovery();
+          if(!cause.isInitiatedByApplication()){
+            c.beginAutomaticRecovery();
+          }
         } catch (InterruptedException e) {
           // no-op, we cannot really do anything useful here,
           // doing nothing will prevent automatic recovery
