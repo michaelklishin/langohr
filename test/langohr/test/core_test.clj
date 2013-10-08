@@ -1,5 +1,6 @@
 (ns langohr.test.core-test
-  (:require [langohr.core :as lc])
+  (:require [langohr.core     :as lc]
+            [langohr.shutdown :as ls])
   (:use clojure.test)
   (:import java.util.concurrent.Executors))
 
@@ -103,3 +104,23 @@
     (let [uri "amqps://dev.rabbitmq.com"
           m   (lc/settings-from uri)]
       (is (= {:host "dev.rabbitmq.com" :port 5671 :username "guest" :vhost "/" :password "guest"} m)))))
+
+(deftest t-connection-after-recovery-is-wrapper
+  (let [conn  (lc/connect {:automatically-recover true})
+        conn-delegate (cast com.rabbitmq.client.impl.AMQConnection (.getDelegate conn))
+        ch    (lc/create-channel conn)
+        latch (java.util.concurrent.CountDownLatch. 3)]
+    (is (lc/automatically-recover? conn))
+    (lc/on-recovery conn (fn [new-conn] 
+                           (.countDown latch)
+                           (is (instance? com.novemberain.langohr.Connection new-conn)))) 
+    (lc/on-recovery ch (fn [new-channel] 
+                           (.countDown latch)
+                           (is (instance? com.novemberain.langohr.Channel new-channel))))
+    (.addShutdownListener conn 
+      (lc/shutdown-listener 
+        (fn [sse] 
+          (.countDown latch)
+          (is (not (ls/initiated-by-application? sse))))))
+    (.close conn-delegate 200 "simulated broken connection" false (RuntimeException.))
+    (is (.await latch 30 java.util.concurrent.TimeUnit/SECONDS) "timeout waiting for recovery hooks")))
