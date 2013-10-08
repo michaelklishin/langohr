@@ -26,7 +26,7 @@
                                        :snapshots true
                                        :releases {:checksum :fail :update :always}}}
   :aliases {"all" ["with-profile" "dev:dev,1.4:dev,1.6:dev,master"]}
-  :warn-on-reflection true
+  :global-vars {*warn-on-reflection* true}
   :jvm-opts ["-Xmx512m"]
   :test-selectors {:default        (fn [m]
                                      (and (not (:performance m))
