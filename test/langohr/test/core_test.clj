@@ -124,3 +124,19 @@
           (is (not (ls/initiated-by-application? sse))))))
     (.close conn-delegate 200 "simulated broken connection" false (RuntimeException.))
     (is (.await latch 30 java.util.concurrent.TimeUnit/SECONDS) "timeout waiting for recovery hooks")))
+
+(deftest t-no-connection-recovery-after-explicit-close
+  (let [conn  (lc/connect {:automatically-recover true})
+        ch    (lc/create-channel conn)
+        latch (java.util.concurrent.CountDownLatch. 1)]
+    (is (lc/automatically-recover? conn))
+    (lc/on-recovery conn (fn [new-conn] (is false  "should not start recovery after explicit shutdown"))) 
+    (.addShutdownListener conn 
+      (lc/shutdown-listener 
+        (fn [sse] 
+          (.countDown latch)
+          (is (ls/initiated-by-application? sse)))))
+    (lc/close conn)
+    (.await latch)
+    ;wait until recovery had a chance to kick in
+    (Thread/sleep 6000)))
