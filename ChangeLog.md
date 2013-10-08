@@ -1,5 +1,12 @@
 ## Changes between Langohr 1.5.0 and 1.6.0
 
+### Automatic Recovery Improvements
+
+Connections will only be recovered if shutdown was not application-initiated.
+
+Contributed by Stephen Dienst.
+
+
 ### Support Update
 
 Langohr now depends on ClojureWerkz Support `0.20.0`.
