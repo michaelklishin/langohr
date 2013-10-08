@@ -946,7 +946,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
 
   public void runRecoveryHooks() {
     for(IFn f : this.recoveryHooks) {
-      f.invoke(this.delegate);
+      f.invoke(this);
     }
   }
 

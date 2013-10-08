@@ -97,7 +97,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     this.recoverChannels();
 
     for (IFn f : recoveryHooks) {
-      f.invoke(this.delegate);
+      f.invoke(this);
     }
     this.runChannelRecoveryHooks();
   }
