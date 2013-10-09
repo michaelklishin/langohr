@@ -19,5 +19,5 @@ $RABBITMQCTL set_permissions -p langohr_testbed langohr ".*" ".*" ".*"
 
 $RABBITMQCTL set_permissions -p /               guest ".*" ".*" ".*"
 $RABBITMQCTL set_permissions -p langohr_testbed guest ".*" ".*" ".*"
-
+$RABBITMQ_PLUGINS enable rabbitmq_federation
 sleep 3

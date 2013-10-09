@@ -146,7 +146,7 @@
   (let [vhost "/"
         component "federation-upstream"
         name "test"
-        payload {:uri "amqp://localhost/" :ack-mode "on-confirm" :trust-user-id true}]
+        payload {:uri "amqp://localhost/" :ack-mode "on-confirm" :trust-user-id false}]
     (is (hc/declare-parameter component vhost name payload))
     (is (= payload (:value (hc/get-parameters component vhost name))))
     (is (hc/delete-parameter component vhost name))
