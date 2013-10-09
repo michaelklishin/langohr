@@ -8,3 +8,6 @@ jdk:
   - oraclejdk7
 services:
   - rabbitmq
+notifications:
+  recipients:
+    - michael@rabbitmq.com
