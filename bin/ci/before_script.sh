@@ -20,4 +20,7 @@ $RABBITMQCTL set_permissions -p langohr_testbed langohr ".*" ".*" ".*"
 $RABBITMQCTL set_permissions -p /               guest ".*" ".*" ".*"
 $RABBITMQCTL set_permissions -p langohr_testbed guest ".*" ".*" ".*"
 $RABBITMQ_PLUGINS enable rabbitmq_federation
+# need to restart RabbitMQ after changing the plugin configuration
+$RABBITMQCTL stop_app
+$RABBITMQCTL start_app
 sleep 3
