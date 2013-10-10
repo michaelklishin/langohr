@@ -2,6 +2,7 @@
 
 ${RABBITMQCTL:="sudo rabbitmqctl"}
 ${RABBITMQ_PLUGINS:="sudo rabbitmq-plugins"}
+${RABBITMQ_SERVER:="sudo rabbitmq-server"}
 
 # guest:guest has full access to /
 
@@ -19,5 +20,8 @@ $RABBITMQCTL set_permissions -p langohr_testbed langohr ".*" ".*" ".*"
 
 $RABBITMQCTL set_permissions -p /               guest ".*" ".*" ".*"
 $RABBITMQCTL set_permissions -p langohr_testbed guest ".*" ".*" ".*"
-
+$RABBITMQ_PLUGINS enable rabbitmq_federation
+# need to restart RabbitMQ after changing the plugin configuration
+$RABBITMQCTL stop
+$RABBITMQ_SERVER restart
 sleep 3

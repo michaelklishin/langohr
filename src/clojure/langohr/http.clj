@@ -250,6 +250,29 @@
   [^String vhost]
   (delete (url-with-path (format "/api/policies/%s" (URLEncoder/encode vhost)))))
 
+(defn list-parameters []
+  (get (url-with-path "/api/parameters")))
+
+(defn get-parameters 
+  ([^String component]
+    (get (url-with-path (format "/api/parameters/%s" (URLEncoder/encode component)))))
+  ([^String component ^String vhost]
+    (get (url-with-path (format "/api/parameters/%s/%s" (URLEncoder/encode component) (URLEncoder/encode vhost)))))
+  ([^String component ^String vhost ^String name]
+    (get (url-with-path (format "/api/parameters/%s/%s/%s" (URLEncoder/encode component) (URLEncoder/encode vhost) (URLEncoder/encode name))))))
+
+(defn declare-parameter
+  [^String component ^String vhost ^String name value]
+  (put (url-with-path (format "/api/parameters/%s/%s/%s" (URLEncoder/encode component) (URLEncoder/encode vhost) (URLEncoder/encode name))) 
+       :body {:value value
+              :name name
+              :vhost vhost
+              :component component}))
+
+(defn delete-parameter 
+  [^String component ^String vhost ^String name]
+  (delete (url-with-path (format "/api/parameters/%s/%s/%s" (URLEncoder/encode component) (URLEncoder/encode vhost) (URLEncoder/encode name)))))
+
 (defn whoami
   []
   (get (url-with-path "/api/whoami")))

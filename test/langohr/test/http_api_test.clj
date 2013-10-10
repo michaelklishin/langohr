@@ -141,3 +141,13 @@
     (is (hc/declare-permissions vhost user permissions))
     (is (= permissions (select-keys (hc/get-permissions vhost user) (keys permissions)))) 
     (is (hc/delete-user user))))
+
+(deftest ^{:http true} test-parameters-manipulations
+  (let [vhost "/"
+        component "federation-upstream"
+        name "test"
+        payload {:uri "amqp://localhost/" :ack-mode "on-confirm" :trust-user-id false}]
+    (is (hc/declare-parameter component vhost name payload))
+    (is (= payload (:value (hc/get-parameters component vhost name))))
+    (is (hc/delete-parameter component vhost name))
+    (is (empty? (hc/get-parameters component vhost)))))
