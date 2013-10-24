@@ -1,5 +1,10 @@
 ## Changes between Langohr 1.5.0 and 1.6.0
 
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.2.0`.
+
+
 ### Automatic Recovery Improvements
 
 Connections will only be recovered if shutdown was not application-initiated.
