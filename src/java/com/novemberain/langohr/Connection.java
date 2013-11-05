@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 
@@ -59,7 +58,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   public Connection init() throws IOException {
-    ExecutorService es = (ExecutorService)this.options.valAt(EXECUTOR_KEYWORD);
+    ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
     this.delegate = cf.newConnection(es);
 
     if (this.automaticRecoveryEnabled()) {
@@ -74,7 +73,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     automaticRecoveryListener = new ShutdownListener() {
       public void shutdownCompleted(ShutdownSignalException cause) {
         try {
-          if(!cause.isInitiatedByApplication()){
+          if (!cause.isInitiatedByApplication()) {
             c.beginAutomaticRecovery();
           }
         } catch (InterruptedException e) {
@@ -88,9 +87,9 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
       }
     };
 
-    synchronized(this) {
-        this.shutdownHooks.add(automaticRecoveryListener);
-        this.delegate.addShutdownListener(automaticRecoveryListener);
+    synchronized (this) {
+      this.shutdownHooks.add(automaticRecoveryListener);
+      this.delegate.addShutdownListener(automaticRecoveryListener);
     }
   }
 
@@ -108,7 +107,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   private void runChannelRecoveryHooks() {
-    Iterator<Map.Entry<Integer,Channel>> it = this.channels.entrySet().iterator();
+    Iterator<Map.Entry<Integer, Channel>> it = this.channels.entrySet().iterator();
     while (it.hasNext()) {
       Map.Entry<Integer, Channel> e = it.next();
       Channel ch = e.getValue();
@@ -118,7 +117,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   private void recoverChannels() throws IOException {
-    Iterator<Map.Entry<Integer,Channel>> it = this.channels.entrySet().iterator();
+    Iterator<Map.Entry<Integer, Channel>> it = this.channels.entrySet().iterator();
     while (it.hasNext()) {
       Map.Entry<Integer, Channel> e = it.next();
       Channel ch = e.getValue();
@@ -134,7 +133,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   private void recoverConnection() throws IOException {
-    ExecutorService es = (ExecutorService)this.options.valAt(EXECUTOR_KEYWORD);
+    ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
     this.delegate = this.cf.newConnection(es);
   }
 
