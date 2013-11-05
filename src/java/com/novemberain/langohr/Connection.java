@@ -4,6 +4,7 @@ import clojure.lang.IFn;
 import clojure.lang.IPersistentMap;
 import clojure.lang.Keyword;
 import clojure.lang.PersistentHashMap;
+import com.rabbitmq.client.BlockedListener;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
@@ -13,6 +14,7 @@ import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 
 public class Connection implements com.rabbitmq.client.Connection, Recoverable {
@@ -31,6 +33,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    */
   private ShutdownListener automaticRecoveryListener;
   private Map<Integer, Channel> channels;
+  private final Collection<BlockedListener> blockedListeners = new CopyOnWriteArrayList<BlockedListener>();
 
   private static IPersistentMap buildDefaultOptions() {
     Map<Keyword, Boolean> m = new HashMap<Keyword, Boolean>();
@@ -419,5 +422,17 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    */
   public void abort(int closeCode, String closeMessage, int timeout) {
     delegate.abort(closeCode, closeMessage, timeout);
+  }
+
+  public void addBlockedListener(BlockedListener listener) {
+    blockedListeners.add(listener);
+  }
+
+  public boolean removeBlockedListener(BlockedListener listener) {
+    return blockedListeners.remove(listener);
+  }
+
+  public void clearBlockedListeners() {
+    blockedListeners.clear();
   }
 }
