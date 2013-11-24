@@ -1,7 +1,7 @@
 (ns langohr.test.channel-test
   (:require [langohr.core    :as lc]
-            [langohr.channel :as lch])
-  (:use clojure.test))
+            [langohr.channel :as lch]
+            [clojure.test :refer :all]))
 
 (deftest test-open-a-channel
   (let [conn (lc/connect)
