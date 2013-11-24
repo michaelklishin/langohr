@@ -6,16 +6,16 @@
 
 (defonce ^Connection conn (lhc/connect))
 
-(deftest t-tx-select-is-isolation
+(deftest t-tx-select-in-isolation
   (let [channel (lhc/create-channel conn)]
     (is (instance? AMQP$Tx$SelectOk (langohr.tx/select channel)))))
 
-(deftest t-tx-commit-is-isolation
+(deftest t-tx-commit-in-isolation
   (let [channel (lhc/create-channel conn)]
     (is (instance? AMQP$Tx$SelectOk (langohr.tx/select channel)))
     (is (instance? AMQP$Tx$CommitOk (langohr.tx/commit channel)))))
 
-(deftest t-tx-rollback-is-isolation
+(deftest t-tx-rollback-in-isolation
   (let [channel (lhc/create-channel conn)]
     (is (instance? AMQP$Tx$SelectOk   (langohr.tx/select channel)))
     (is (instance? AMQP$Tx$RollbackOk (langohr.tx/rollback channel)))))
