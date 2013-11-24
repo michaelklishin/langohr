@@ -4,8 +4,8 @@
             [langohr.core    :as lhc]
             [langohr.channel :as lch]
             [langohr.basic   :as lhb]
-            [langohr.queue   :as lhq])
-  (:use clojure.test))
+            [langohr.queue   :as lhq]
+            [clojure.test    :refer :all]))
 
 (defonce ^Connection conn (lhc/connect))
 
