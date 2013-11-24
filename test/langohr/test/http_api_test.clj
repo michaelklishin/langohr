@@ -1,7 +1,7 @@
 (ns langohr.test.http-api-test
-  (:require [langohr.http :as hc])
-  (:use clojure.test
-        [clojure.set :only [subset? superset?]]))
+  (:require [langohr.http :as hc]
+            [clojure.test :refer :all]
+            [clojure.set :refer [subset? superset?]]))
 
 (hc/connect! "http://127.0.0.1:15672" "guest" "guest")
 
