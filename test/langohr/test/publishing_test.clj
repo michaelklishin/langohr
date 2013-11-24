@@ -1,10 +1,10 @@
 (ns langohr.test.publishing-test
-  (:use clojure.test)
   (:require [langohr.core      :as lhc]
             [langohr.queue     :as lhq]
             [langohr.exchange  :as lhe]
             [langohr.basic     :as lhb]
-            [clojure.java.io   :as io]))
+            [clojure.java.io   :as io]
+            [clojure.test      :refer :all]))
 
 ;;
 ;; Tries to reproduce various edge cases around basic.publish
