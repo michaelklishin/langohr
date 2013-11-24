@@ -4,9 +4,11 @@
             [langohr.exchange :as lhe]
             [langohr.queue    :as lhq]
             [langohr.consumers :as lhcons]
-            [langohr.basic    :as lhb])
-  (:use     clojure.test)
-  (:import [com.rabbitmq.client Connection Channel AMQP  AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Queue$DeclareOk ShutdownSignalException]
+            [langohr.basic    :as lhb]
+            [clojure.test     :refer :all])
+  (:import [com.rabbitmq.client Connection Channel
+            AMQP AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk
+            AMQP$Queue$DeclareOk ShutdownSignalException]
            java.io.IOException
            java.util.UUID))
 
