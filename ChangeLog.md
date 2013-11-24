@@ -1,3 +1,10 @@
+## Changes between Langohr 1.6.0 and 1.7.0-beta1
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.2.1`.
+
+
 ## Changes between Langohr 1.5.0 and 1.6.0
 
 ### RabbitMQ Java Client Upgrade
