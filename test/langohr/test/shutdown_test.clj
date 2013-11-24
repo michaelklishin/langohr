@@ -5,8 +5,8 @@
             [langohr.channel   :as lch]
             [langohr.basic     :as lhb]
             [langohr.consumers :as lhcons]
-            [langohr.shutdown  :as lh])
-  (:use clojure.test))
+            [langohr.shutdown  :as lh]
+            [clojure.test      :refer :all]))
 
 
 (defonce ^Connection conn (lhc/connect))
