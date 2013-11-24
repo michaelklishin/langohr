@@ -1,8 +1,8 @@
 (ns langohr.test.tls-test
   (:require [langohr.core  :as lc]
             [langohr.queue :as lq]
-            [langohr.basic :as lb])
-  (:use clojure.test)
+            [langohr.basic :as lb]
+            [clojure.test  :refer :all])
   (:import [java.io File FileInputStream]
            java.security.KeyStore
            [javax.net.ssl TrustManagerFactory KeyManagerFactory SSLContext]))
