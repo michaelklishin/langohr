@@ -6,8 +6,8 @@
             [langohr.basic     :as lhb]
             [langohr.util      :as lhu]
             [langohr.consumers :as lhcons]
-            [langohr.shutdown  :as lsh])
-  (:use clojure.test))
+            [langohr.shutdown  :as lsh]
+            [clojure.test      :refer :all]))
 
 
 ;;
