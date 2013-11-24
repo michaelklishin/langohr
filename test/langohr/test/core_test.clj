@@ -1,7 +1,7 @@
 (ns langohr.test.core-test
   (:require [langohr.core     :as lc]
-            [langohr.shutdown :as ls])
-  (:use clojure.test)
+            [langohr.shutdown :as ls]
+            [clojure.test     :refer :all])
   (:import java.util.concurrent.Executors))
 
 (set! *warn-on-reflection* true)
