@@ -2,8 +2,8 @@
   (:refer-clojure :exclude [declare get])
   (:require [langohr.core  :as lhc]
             [langohr.queue :as lhq]
-            [langohr.basic :as lhb])
-  (:use clojure.test)
+            [langohr.basic :as lhb]
+            [clojure.test  :refer :all])
   (:import [com.rabbitmq.client Connection Channel AMQP AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk]
            java.io.IOException))
 
