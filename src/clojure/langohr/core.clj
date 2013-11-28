@@ -130,14 +130,19 @@
   (merge (settings-from (:uri config (System/getenv "RABBITMQ_URL")))
          config))
 
+(defn- platform-string
+  []
+  (let []
+    (format "Clojure %s on %s %s"
+      (clojure-version)
+      (System/getProperty "java.vm.name")
+      (System/getProperty "java.version"))))
+
 (def ^{:private true}
   client-properties {"product"      "Langohr"
                      "information"  "See http://clojurerabbitmq.info/"
-                     "platform"     "Java"
-                     "capabilities" {"exchange_exchange_bindings" true
-                                     "consumer_cancel_notify" true
-                                     "basic.nack" true
-                                     "publisher_confirms" true}
+                     "platform"     (platform-string)
+                     "capabilities" (AMQConnection/defaultClientProperties)
                      "copyright" "Copyright (C) 2011-2013 Michael S. Klishin, Alex Petrov"
                      "version"   version})
 
@@ -169,3 +174,4 @@
     (when ssl-context
       (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context))
     cf))
+
