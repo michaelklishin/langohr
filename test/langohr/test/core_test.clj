@@ -2,7 +2,8 @@
   (:require [langohr.core     :as lc]
             [langohr.shutdown :as ls]
             [clojure.test     :refer :all])
-  (:import java.util.concurrent.Executors))
+  (:import java.util.concurrent.Executors
+           java.util.UUID))
 
 (set! *warn-on-reflection* true)
 (println (str "Using Clojure version " *clojure-version*))
@@ -54,13 +55,16 @@
 
 
 (deftest t-connection-failure-due-to-misconfigured-port
-  (is (thrown? java.net.ConnectException (lc/connect { :host "127.0.0.1" :port 2887 }))))
+  (is (thrown? java.net.ConnectException
+               (lc/connect { :host "127.0.0.1" :port 2887 }))))
 
 (deftest t-connection-failure-due-to-unknown-host
-  (is (thrown? java.net.UnknownHostException (lc/connect { :host "skdjhfkjshfglkashfklajshdf.local" :port 2887 }))))
+  (is (thrown? java.net.UnknownHostException
+               (lc/connect { :host "skdjhfkjshfglkashfklajshdf.local" :port 2887 }))))
 
 (deftest t-connection-failure-due-to-invalid-credentials
-  (is (thrown? com.rabbitmq.client.PossibleAuthenticationFailureException (lc/connect { :username "skdjhfkjshFGLKASHFKlajshdf" :password "HFKlajshdf" }))))
+  (is (thrown? com.rabbitmq.client.PossibleAuthenticationFailureException
+               (lc/connect { :username "skdjhfkjshFGLKASHFKlajshdf" :password "HFKlajshdf" }))))
 
 
 (deftest t-close-connection
