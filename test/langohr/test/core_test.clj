@@ -56,15 +56,15 @@
 
 (deftest t-connection-failure-due-to-misconfigured-port
   (is (thrown? java.net.ConnectException
-               (lc/connect { :host "127.0.0.1" :port 2887 }))))
+               (lc/connect {:host "127.0.0.1" :port 2887}))))
 
 (deftest t-connection-failure-due-to-unknown-host
   (is (thrown? java.net.UnknownHostException
-               (lc/connect { :host "skdjhfkjshfglkashfklajshdf.local" :port 2887 }))))
+               (lc/connect {:host "skdjhfkjshfglkashfklajshdf.local" :port 2887}))))
 
 (deftest t-connection-failure-due-to-invalid-credentials
   (is (thrown? com.rabbitmq.client.PossibleAuthenticationFailureException
-               (lc/connect { :username "skdjhfkjshFGLKASHFKlajshdf" :password "HFKlajshdf" }))))
+               (lc/connect {:username "skdjhfkjshFGLKASHFKlajshdf" :password "HFKlajshdf"}))))
 
 
 (deftest t-close-connection
