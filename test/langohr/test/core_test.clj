@@ -111,15 +111,15 @@
         ch    (lc/create-channel conn)
         latch (java.util.concurrent.CountDownLatch. 3)]
     (is (lc/automatically-recover? conn))
-    (lc/on-recovery conn (fn [new-conn] 
+    (lc/on-recovery conn (fn [new-conn]
                            (.countDown latch)
-                           (is (instance? com.novemberain.langohr.Connection new-conn)))) 
-    (lc/on-recovery ch (fn [new-channel] 
+                           (is (instance? com.novemberain.langohr.Connection new-conn))))
+    (lc/on-recovery ch (fn [new-channel]
                            (.countDown latch)
                            (is (instance? com.novemberain.langohr.Channel new-channel))))
-    (.addShutdownListener conn 
-      (lc/shutdown-listener 
-        (fn [sse] 
+    (.addShutdownListener conn
+      (lc/shutdown-listener
+        (fn [sse]
           (.countDown latch)
           (is (not (ls/initiated-by-application? sse))))))
     (.close conn-delegate 200 "simulated broken connection" false (RuntimeException.))
@@ -130,10 +130,10 @@
         ch    (lc/create-channel conn)
         latch (java.util.concurrent.CountDownLatch. 1)]
     (is (lc/automatically-recover? conn))
-    (lc/on-recovery conn (fn [new-conn] (is false  "should not start recovery after explicit shutdown"))) 
-    (.addShutdownListener conn 
-      (lc/shutdown-listener 
-        (fn [sse] 
+    (lc/on-recovery conn (fn [new-conn] (is false  "should not start recovery after explicit shutdown")))
+    (.addShutdownListener conn
+      (lc/shutdown-listener
+        (fn [sse]
           (.countDown latch)
           (is (ls/initiated-by-application? sse)))))
     (lc/close conn)
