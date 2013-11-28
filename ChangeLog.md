@@ -1,3 +1,18 @@
+## Changes between Langohr 1.7.0 and 1.8.0
+
+### langohr.core/add-shutdown-listener
+
+`langohr.core/add-shutdown-listener` is a helper function that
+reifies and registers a shutdown signal listener on a connection.
+
+### langohr.core/add-blocked-listener
+
+`langohr.core/add-blocked-listener` is a helper function that
+reifies and registers a `connection.blocked` and `connection.unblocked`
+listener on a connection.
+
+
+
 ## Changes between Langohr 1.6.0 and 1.7.0
 
 ### Retries for Connection Recovery
