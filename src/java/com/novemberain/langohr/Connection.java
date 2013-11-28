@@ -446,6 +446,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   public void addBlockedListener(BlockedListener listener) {
+    delegate.addBlockedListener(listener);
     blockedListeners.add(listener);
   }
 
