@@ -11,3 +11,4 @@ target/*
 debug/*
 tmp/*
 checkouts/*
+.nrepl-*
