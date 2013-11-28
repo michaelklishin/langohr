@@ -92,11 +92,14 @@
       (f cause))))
 
 (defn ^Connection add-shutdown-listener
+  "Adds a shutdown listener on connection"
   [^Connection c ^IFn f]
   (.addShutdownListener c (shutdown-listener f))
   c)
 
 (defn ^BlockedListener blocked-listener
+  "Reifies connection.blocked and connection.unblocked listener from Clojure
+   functions"
   [^IFn on-blocked ^IFn on-unblocked]
   (reify BlockedListener
     (^void handleBlocked [this ^String reason]
