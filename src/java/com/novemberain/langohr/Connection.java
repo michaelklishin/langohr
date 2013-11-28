@@ -10,6 +10,7 @@ import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   public static final Keyword AUTOMATICALLY_RECOVER_KEYWORD = Keyword.intern(null, AUTOMATICALLY_RECOVER_KEYWORD_NAME);
   private static final long DEFAULT_NETWORK_RECOVERY_PERIOD = 5000;
   private static final Keyword EXECUTOR_KEYWORD = Keyword.intern(null, "executor");
+  private static final long DEFAULT_RECONNECTION_PERIOD = 5000;
   private final IPersistentMap options;
   private final List<ShutdownListener> shutdownHooks;
   private final List<IFn> recoveryHooks;
@@ -94,16 +96,24 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   private void beginAutomaticRecovery() throws InterruptedException, IOException {
-    Thread.sleep(DEFAULT_NETWORK_RECOVERY_PERIOD);
+    try {
+      Thread.sleep(DEFAULT_NETWORK_RECOVERY_PERIOD);
+      // System.out.println("About to recover connection...");
+      this.recoverConnection();
+      // System.out.println("About to recover shutdown hooks...");
+      this.recoverShutdownHooks();
+      // System.out.println("About to recover channels...");
+      this.recoverChannels();
 
-    this.recoverConnection();
-    this.recoverShutdownHooks();
-    this.recoverChannels();
-
-    for (IFn f : recoveryHooks) {
-      f.invoke(this);
+      for (IFn f : recoveryHooks) {
+        f.invoke(this);
+      }
+      this.runChannelRecoveryHooks();
+    } catch (Throwable t) {
+      System.err.println("Caught an exception during connection recovery!");
+      t.printStackTrace();
     }
-    this.runChannelRecoveryHooks();
+
   }
 
   private void runChannelRecoveryHooks() {
@@ -122,7 +132,12 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
       Map.Entry<Integer, Channel> e = it.next();
       Channel ch = e.getValue();
 
-      ch.automaticallyRecover(this, this.delegate);
+      try {
+        ch.automaticallyRecover(this, this.delegate);
+      } catch (Throwable t) {
+        System.err.println("Caught an exception when recovering channel " + ch.getChannelNumber());
+        t.printStackTrace();
+      }
     }
   }
 
@@ -132,9 +147,16 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     }
   }
 
-  private void recoverConnection() throws IOException {
-    ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
-    this.delegate = this.cf.newConnection(es);
+  private void recoverConnection() throws IOException, InterruptedException {
+    try {
+      ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
+      this.delegate = this.cf.newConnection(es);
+    } catch (ConnectException ce) {
+      System.err.println("Failed to reconnect: " + ce.getMessage());
+      // TODO: exponential back-off
+      Thread.sleep(DEFAULT_RECONNECTION_PERIOD);
+      recoverConnection();
+    }
   }
 
   public boolean automaticRecoveryEnabled() {
