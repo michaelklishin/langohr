@@ -451,7 +451,9 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   public boolean removeBlockedListener(BlockedListener listener) {
-    return blockedListeners.remove(listener);
+      boolean result = blockedListeners.remove(listener);
+      delegate.removeBlockedListener(listener);
+      return result;
   }
 
   public void clearBlockedListeners() {
