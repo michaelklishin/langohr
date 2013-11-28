@@ -10,7 +10,8 @@
 (ns langohr.core
   (:import [com.rabbitmq.client Connection Channel Address ConnectionFactory ShutdownListener]
            [com.novemberain.langohr Recoverable]
-           [clojure.lang IFn])
+           [clojure.lang IFn]
+           [com.rabbitmq.client.impl AMQConnection])
   (:require langohr.channel
             [clojure.string :as s]
             [clojure.walk   :as walk]))
@@ -93,7 +94,7 @@
 (defn automatically-recover?
   "Returns true if provided connection uses automatic connection recovery
    mode, false otherwise"
-  [^Connection c]
+  [^com.novemberain.langohr.Connection c]
   (.automaticRecoveryEnabled c))
 
 (defn on-recovery
