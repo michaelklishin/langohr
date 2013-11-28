@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.core
-  (:import [com.rabbitmq.client Connection Channel Address ConnectionFactory ShutdownListener]
+  (:import [com.rabbitmq.client Connection Channel Address ConnectionFactory ShutdownListener BlockedListener]
            [com.novemberain.langohr Recoverable]
            [clojure.lang IFn]
            [com.rabbitmq.client.impl AMQConnection])
@@ -84,12 +84,30 @@
   (apply langohr.channel/open args))
 
 
-(defn shutdown-listener
+(defn ^ShutdownListener shutdown-listener
   "Adds new shutdown signal listener that delegates to given function"
   [^clojure.lang.IFn f]
   (reify ShutdownListener
     (shutdownCompleted [this cause]
       (f cause))))
+
+(defn ^Connection add-shutdown-listener
+  [^Connection c ^IFn f]
+  (.addShutdownListener c (shutdown-listener f))
+  c)
+
+(defn ^BlockedListener blocked-listener
+  [^IFn on-blocked ^IFn on-unblocked]
+  (reify BlockedListener
+    (^void handleBlocked [this ^String reason]
+      (on-blocked reason))
+    (^void handleUnblocked [this]
+      (on-unblocked))))
+
+(defn ^Connection add-blocked-listener
+  [^Connection c ^IFn on-blocked ^IFn on-unblocked]
+  (.addBlockedListener c (blocked-listener on-blocked on-unblocked))
+  c)
 
 (defn automatically-recover?
   "Returns true if provided connection uses automatic connection recovery
