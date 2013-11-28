@@ -91,8 +91,8 @@
     (shutdownCompleted [this cause]
       (f cause))))
 
-(defn ^Connection add-shutdown-listener
-  "Adds a shutdown listener on connection"
+(defn ^ShutdownListener add-shutdown-listener
+  "Adds a shutdown listener on connection and returns it"
   [^Connection c ^IFn f]
   (let [lnr (shutdown-listener f)]
     (.addShutdownListener c lnr)
@@ -108,7 +108,9 @@
     (^void handleUnblocked [this]
       (on-unblocked))))
 
-(defn ^Connection add-blocked-listener
+(defn ^BlockedListener add-blocked-listener
+  "Adds a connection.blocked and connection.unblocked listener
+   on connection and returns it"
   [^Connection c ^IFn on-blocked ^IFn on-unblocked]
   (let [lnr (blocked-listener on-blocked on-unblocked)]
     (.addBlockedListener c lnr)
