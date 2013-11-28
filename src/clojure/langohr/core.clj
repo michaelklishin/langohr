@@ -94,8 +94,9 @@
 (defn ^Connection add-shutdown-listener
   "Adds a shutdown listener on connection"
   [^Connection c ^IFn f]
-  (.addShutdownListener c (shutdown-listener f))
-  c)
+  (let [lnr (shutdown-listener f)]
+    (.addShutdownListener c lnr)
+    lnr))
 
 (defn ^BlockedListener blocked-listener
   "Reifies connection.blocked and connection.unblocked listener from Clojure
@@ -109,8 +110,9 @@
 
 (defn ^Connection add-blocked-listener
   [^Connection c ^IFn on-blocked ^IFn on-unblocked]
-  (.addBlockedListener c (blocked-listener on-blocked on-unblocked))
-  c)
+  (let [lnr (blocked-listener on-blocked on-unblocked)]
+    (.addBlockedListener c lnr)
+    lnr))
 
 (defn automatically-recover?
   "Returns true if provided connection uses automatic connection recovery
