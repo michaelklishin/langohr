@@ -1,4 +1,9 @@
-## Changes between Langohr 1.6.0 and 1.7.0-beta1
+## Changes between Langohr 1.6.0 and 1.7.0
+
+### Retries for Connection Recovery
+
+Langohr will now make sure to handle network I/O-related exceptions
+during recovery and reconnect every N seconds.
 
 ### RabbitMQ Java Client Upgrade
 
