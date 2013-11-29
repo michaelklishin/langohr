@@ -117,9 +117,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   private void runChannelRecoveryHooks() {
-    Iterator<Map.Entry<Integer, Channel>> it = this.channels.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry<Integer, Channel> e = it.next();
+    for (Map.Entry<Integer, Channel> e : this.channels.entrySet()) {
       Channel ch = e.getValue();
 
       ch.runRecoveryHooks();
@@ -127,9 +125,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   private void recoverChannels() throws IOException {
-    Iterator<Map.Entry<Integer, Channel>> it = this.channels.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry<Integer, Channel> e = it.next();
+    for (Map.Entry<Integer, Channel> e : this.channels.entrySet()) {
       Channel ch = e.getValue();
 
       try {
