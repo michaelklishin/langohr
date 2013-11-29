@@ -59,6 +59,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     this.recoveryHooks = new ArrayList<IFn>();
   }
 
+  @SuppressWarnings(value = "unused")
   public Connection init() throws IOException {
     ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
     this.delegate = cf.newConnection(es);
@@ -294,6 +295,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     delegate.abort(timeout);
   }
 
+  @SuppressWarnings(value = "unused")
   public com.rabbitmq.client.Connection getDelegate() {
     return delegate;
   }
