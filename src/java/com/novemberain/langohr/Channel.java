@@ -1,13 +1,15 @@
 package com.novemberain.langohr;
 
 import clojure.lang.IFn;
+import com.novemberain.langohr.recovery.RecordedBinding;
+import com.novemberain.langohr.recovery.RecordedConsumer;
+import com.novemberain.langohr.recovery.RecordedQueue;
+import com.novemberain.langohr.recovery.RecordedQueueBinding;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeoutException;
 
@@ -15,6 +17,9 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   private com.rabbitmq.client.Channel delegate;
   private Connection connection;
   private List<IFn> recoveryHooks = new ArrayList<IFn>();
+  private final Map<String, RecordedQueue> queues = new ConcurrentHashMap<String, RecordedQueue>();
+  private final Map<String, RecordedConsumer> consumers = new ConcurrentHashMap<String, RecordedConsumer>();
+  private final Set<RecordedBinding> bindings = new ConcurrentSkipListSet<RecordedBinding>();
 
   public Channel(Connection connection, com.rabbitmq.client.Channel channel) {
     this.connection = connection;
@@ -61,7 +66,17 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @throws java.io.IOException if an error is encountered
    */
   public AMQP.Queue.DeclareOk queueDeclare(String queue, boolean durable, boolean exclusive, boolean autoDelete, Map<String, Object> arguments) throws IOException {
-    return delegate.queueDeclare(queue, durable, exclusive, autoDelete, arguments);
+    final AMQP.Queue.DeclareOk ok = delegate.queueDeclare(queue, durable, exclusive, autoDelete, arguments);
+    RecordedQueue q = new RecordedQueue(this, ok.getQueue()).
+        durable(durable).
+        exclusive(exclusive).
+        autoDelete(autoDelete).
+        arguments(arguments);
+    if(queue.equals(RecordedQueue.EMPTY_STRING)) {
+      q.serverNamed(true);
+    }
+    this.queues.put(ok.getQueue(), q);
+    return ok;
   }
 
   /**
@@ -184,7 +199,14 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Basic.ConsumeOk
    */
   public String basicConsume(String queue, boolean autoAck, String consumerTag, boolean noLocal, boolean exclusive, Map<String, Object> arguments, Consumer callback) throws IOException {
-    return delegate.basicConsume(queue, autoAck, consumerTag, noLocal, exclusive, arguments, callback);
+    final String result = delegate.basicConsume(queue, autoAck, consumerTag, noLocal, exclusive, arguments, callback);
+    RecordedConsumer consumer = new RecordedConsumer(this, queue).
+        autoAck(autoAck).
+        consumerTag(result).
+        exclusive(exclusive).
+        arguments(arguments).consumer(callback);
+    this.consumers.put(result, consumer);
+    return result;
   }
 
   /**
@@ -314,7 +336,14 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @throws java.io.IOException if an error is encountered
    */
   public AMQP.Queue.BindOk queueBind(String queue, String exchange, String routingKey, Map<String, Object> arguments) throws IOException {
-    return delegate.queueBind(queue, exchange, routingKey, arguments);
+    final AMQP.Queue.BindOk ok = delegate.queueBind(queue, exchange, routingKey, arguments);
+    RecordedBinding binding = new RecordedQueueBinding(this).
+        source(exchange).
+        destination(queue).
+        routingKey(routingKey).
+        arguments(arguments);
+    this.bindings.add(binding);
+    return ok;
   }
 
   /**
@@ -942,6 +971,10 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     this.connection = connection;
 
     this.delegate = delegate.createChannel(this.getChannelNumber());
+
+    if(this.connection.automaticTopologyRecoveryEnabled()) {
+      this.recoverEntites();
+    }
   }
 
   public void runRecoveryHooks() {
@@ -952,5 +985,67 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
 
   public void onRecovery(IFn f) {
     this.recoveryHooks.add(f);
+  }
+
+  public void recoverEntites() {
+    // The recovery sequence is the following:
+    //
+    // 1. Recover exchanges
+    // 2. Recover exchange bindings
+    // 3. Recover queues
+    // 4. Recover bindings
+    // 5. Recover consumers
+    recoverQueues();
+    recoverQueueBindings();
+    recoverConsumers();
+  }
+
+  public void recoverQueues() {
+    for (Map.Entry<String, RecordedQueue> entry : this.queues.entrySet()) {
+      String oldName = entry.getKey();
+      RecordedQueue q = entry.getValue();
+      try {
+        q.recover();
+        // make sure server-named queues are re-added with
+        // their new names. MK.
+        synchronized (this.queues) {
+          this.queues.remove(oldName);
+          this.queues.put(q.getName(), q);
+        }
+      } catch (Exception e) {
+        System.err.println("Caught an exception while recovering queue " + q.getName());
+        e.printStackTrace(System.err);
+      }
+    }
+  }
+
+  public void recoverQueueBindings() {
+    for (RecordedBinding b : this.bindings) {
+      try {
+        b.recover();
+      }  catch (Exception e) {
+        System.err.println("Caught an exception while recovering binding between " + b.getSource() + " and " + b.getDestination());
+        e.printStackTrace(System.err);
+      }
+    }
+  }
+
+  public void recoverConsumers() {
+    for (Map.Entry<String, RecordedConsumer> entry : this.consumers.entrySet()) {
+      String tag = entry.getKey();
+      RecordedConsumer consumer = entry.getValue();
+
+      try {
+        String newTag = (String) consumer.recover();
+        // make sure server-generated tags are re-added. MK.
+        synchronized (this.consumers) {
+          this.consumers.remove(tag);
+          this.consumers.put(newTag, consumer);
+        }
+      } catch (Exception e) {
+        System.err.println("Caught an exception while recovering consumer " + tag);
+        e.printStackTrace(System.err);
+      }
+    }
   }
 }

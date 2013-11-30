@@ -21,6 +21,8 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static final IPersistentMap DEFAULT_OPTIONS = buildDefaultOptions();
   public static final String AUTOMATICALLY_RECOVER_KEYWORD_NAME = "automatically-recover";
   public static final Keyword AUTOMATICALLY_RECOVER_KEYWORD = Keyword.intern(null, AUTOMATICALLY_RECOVER_KEYWORD_NAME);
+  public static final String AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD_NAME = "automatically-recover-topology";
+  public static final Keyword AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD = Keyword.intern(null, AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD_NAME);
   private static final long DEFAULT_NETWORK_RECOVERY_PERIOD = 5000;
   private static final Keyword EXECUTOR_KEYWORD = Keyword.intern(null, "executor");
   private static final long DEFAULT_RECONNECTION_PERIOD = 5000;
@@ -158,6 +160,10 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
 
   public boolean automaticRecoveryEnabled() {
     return this.options.containsKey(AUTOMATICALLY_RECOVER_KEYWORD);
+  }
+
+  public boolean automaticTopologyRecoveryEnabled() {
+    return this.options.containsKey(AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD);
   }
 
   public void onRecovery(IFn f) {
