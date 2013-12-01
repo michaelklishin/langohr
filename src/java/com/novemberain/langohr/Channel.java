@@ -1,10 +1,7 @@
 package com.novemberain.langohr;
 
 import clojure.lang.IFn;
-import com.novemberain.langohr.recovery.RecordedBinding;
-import com.novemberain.langohr.recovery.RecordedConsumer;
-import com.novemberain.langohr.recovery.RecordedQueue;
-import com.novemberain.langohr.recovery.RecordedQueueBinding;
+import com.novemberain.langohr.recovery.*;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
@@ -20,6 +17,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   private final Map<String, RecordedQueue> queues = new ConcurrentHashMap<String, RecordedQueue>();
   private final Map<String, RecordedConsumer> consumers = new ConcurrentHashMap<String, RecordedConsumer>();
   private final Set<RecordedBinding> bindings = new ConcurrentSkipListSet<RecordedBinding>();
+  private Map<String, RecordedExchange> exchanges = new ConcurrentHashMap<String, RecordedExchange>();
 
   public Channel(Connection connection, com.rabbitmq.client.Channel channel) {
     this.connection = connection;
@@ -105,7 +103,14 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @throws java.io.IOException if an error is encountered
    */
   public AMQP.Exchange.BindOk exchangeBind(String destination, String source, String routingKey, Map<String, Object> arguments) throws IOException {
-    return delegate.exchangeBind(destination, source, routingKey, arguments);
+    final AMQP.Exchange.BindOk ok = delegate.exchangeBind(destination, source, routingKey, arguments);
+    RecordedBinding binding = new RecordedExchangeBinding(this).
+        source(source).
+        destination(destination).
+        routingKey(routingKey).
+        arguments(arguments);
+    this.bindings.add(binding);
+    return ok;
   }
 
   /**
@@ -494,7 +499,16 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @throws java.io.IOException if an error is encountered
    */
   public AMQP.Exchange.DeclareOk exchangeDeclare(String exchange, String type, boolean durable, boolean autoDelete, boolean internal, Map<String, Object> arguments) throws IOException {
-    return delegate.exchangeDeclare(exchange, type, durable, autoDelete, internal, arguments);
+    final AMQP.Exchange.DeclareOk ok = delegate.exchangeDeclare(exchange, type, durable, autoDelete, internal, arguments);
+    if(!RecordedExchange.isPredefined(exchange)) {
+      RecordedExchange x = new RecordedExchange(this, exchange).
+          type(type).
+          durable(durable).
+          autoDelete(autoDelete).
+          arguments(arguments);
+      this.exchanges.put(exchange, x);
+    }
+    return ok;
   }
 
   /**
@@ -995,9 +1009,26 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     // 3. Recover queues
     // 4. Recover bindings
     // 5. Recover consumers
+    recoverExchanges();
     recoverQueues();
     recoverQueueBindings();
     recoverConsumers();
+  }
+
+  private void recoverExchanges() {
+    // recorded exchanges are guaranteed to be
+    // non-predefined (we filter out predefined ones
+    // in exchangeDeclare). MK.
+    for (Map.Entry<String, RecordedExchange> entry : this.exchanges.entrySet()) {
+      RecordedExchange x = entry.getValue();
+
+      try {
+        x.recover();
+      } catch (Exception e) {
+        System.err.println("Caught an exception while recovering exchange " + x.getName());
+        e.printStackTrace(System.err);
+      }
+    }
   }
 
   public void recoverQueues() {
