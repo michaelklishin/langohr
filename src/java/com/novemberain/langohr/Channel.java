@@ -682,6 +682,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * redelivered to the same consumer.
    */
   @Deprecated
+  @SuppressWarnings("deprecation")
   public void basicRecoverAsync(boolean requeue) throws IOException {
     delegate.basicRecoverAsync(requeue);
   }
@@ -977,6 +978,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     return delegate.exchangeUnbind(destination, source, routingKey, arguments);
   }
 
+  @SuppressWarnings("unused")
   public com.rabbitmq.client.Channel getDelegate() {
     return delegate;
   }
