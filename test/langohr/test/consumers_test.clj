@@ -25,7 +25,7 @@
         consumer (lhcons/create-default channel :handle-consume-ok-fn (fn [consumer-tag]
                                                                         (.countDown latch)))]
     (lhb/consume channel queue consumer)
-    (.await latch 1000 TimeUnit/MILLISECONDS)))
+    (is (.await latch 1000 TimeUnit/MILLISECONDS))))
 
 (deftest t-basic-cancel
   (let [ch    (lch/open conn)
@@ -36,7 +36,7 @@
                       :consumer-tag ctag :handle-cancel-ok (fn [_]
                                                              (.countDown latch)))
     (lhb/cancel ch ctag)
-    (.await latch 1000 TimeUnit/MILLISECONDS)))
+    (is (.await latch 1000 TimeUnit/MILLISECONDS))))
 
 (deftest t-basic-cancel-with-exclusive-consumer
   (let [ch    (lch/open conn)
@@ -48,7 +48,7 @@
                                                              (.countDown latch))
                       :exclusive true)
     (lhb/cancel ch ctag)
-    (.await latch 1000 TimeUnit/MILLISECONDS)))
+    (is (.await latch 1000 TimeUnit/MILLISECONDS))))
 
 (deftest t-basic-cancel-with-exclusive-consumer-on-different-connection
   (let [c2    (lhc/connect)
@@ -72,7 +72,7 @@
         consumer (lhcons/create-queueing channel :handle-consume-ok-fn (fn [consumer-tag]
                                                                          (.countDown latch)))]
     (lhb/consume channel queue consumer)
-    (.await latch 700 TimeUnit/MILLISECONDS)))
+    (is (.await latch 700 TimeUnit/MILLISECONDS))))
 
 
 (deftest t-cancel-ok-handler
@@ -85,7 +85,7 @@
         ret-tag  (lhb/consume channel queue consumer :consumer-tag tag)]
     (is (= tag ret-tag))
     (lhb/cancel channel tag)
-    (.await latch 700 TimeUnit/MILLISECONDS)))
+    (is (.await latch 1200 TimeUnit/MILLISECONDS))))
 
 
 (deftest t-cancel-notification-handler
@@ -96,7 +96,7 @@
                                                                     (.countDown latch)))]
     (lhb/consume channel queue consumer)
     (lhq/delete channel queue)
-    (.await latch 700 TimeUnit/MILLISECONDS)))
+    (is (.await latch 700 TimeUnit/MILLISECONDS))))
 
 
 (deftest t-delivery-handler
@@ -115,7 +115,7 @@
     (.start (Thread. (fn []
                        (dotimes [i n]
                          (lhb/publish channel exchange queue payload))) "publisher"))
-    (.await latch 700 TimeUnit/MILLISECONDS)))
+    (is (.await latch 700 TimeUnit/MILLISECONDS))))
 
 (deftest t-shutdown-notification-handler
   (let [ch    (lch/open conn)
@@ -131,4 +131,4 @@
                          (lhq/bind ch "ugggggh" "amq.fanout")
                          (catch Exception e
                            (comment "Do nothing"))))))
-    (.await latch 700 TimeUnit/MILLISECONDS)))
+    (is (.await latch 700 TimeUnit/MILLISECONDS))))
