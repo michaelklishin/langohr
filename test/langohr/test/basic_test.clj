@@ -9,7 +9,9 @@
             [clojure.test :refer :all])
   (:import [com.rabbitmq.client Connection Channel AMQP
             AMQP$BasicProperties AMQP$BasicProperties$Builder
-            QueueingConsumer GetResponse AMQP$Queue$DeclareOk] java.util.UUID))
+            QueueingConsumer GetResponse AMQP$Queue$DeclareOk]
+           java.util.UUID
+           java.util.concurrent.TimeUnit))
 
 ;;
 ;; basic.publish, basic.consume
@@ -48,7 +50,7 @@
                                       :message-id msg-id
                                       :content-type content-type
                                       :headers { "see you soon" "à bientôt" }))) "publisher"))
-    (.await latch)))
+    (.await latch 700 TimeUnit/MILLISECONDS)))
 ;;
 ;; make sure that `langohr.consumers/subscribe` takes both versions for handler functions:
 ;; for example `:handle-consume-ok` as well as `:handle-consume-ok-fn`.
@@ -66,7 +68,7 @@
         (lhcons/subscribe channel queue msg-handler :auto-ack true :handle-consume-ok-fn (log-called :handle-consume-ok-fn))
         (lhcons/subscribe channel queue msg-handler :auto-ack true :handle-consume-ok (log-called :handle-consume-ok))
         (lhb/publish channel exchange queue "dummy payload")
-        (.await latch)
+        (.await latch 700 TimeUnit/MILLISECONDS)
         (is (= #{:handle-consume-ok-fn :handle-consume-ok} @handler-called))))
 
 
@@ -277,7 +279,7 @@
     (.addReturnListener channel rl)
     (lhe/declare channel exchange "direct" :auto-delete true)
     (lhb/publish channel exchange (str (UUID/randomUUID)) "return-me" :mandatory true)
-    (.await latch)))
+    (.await latch 700 TimeUnit/MILLISECONDS)))
 
 
 
