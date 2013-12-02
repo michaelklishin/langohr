@@ -11,6 +11,6 @@ public class RecordedQueueBinding extends RecordedBinding implements Recoverable
   }
 
   public Object recover() throws IOException {
-    return this.channel.queueBind(this.getDestination(), this.getSource(), this.routingKey, this.arguments);
+    return this.channel.getDelegate().queueBind(this.getDestination(), this.getSource(), this.routingKey, this.arguments);
   }
 }

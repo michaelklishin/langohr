@@ -10,6 +10,6 @@ public class RecordedExchangeBinding extends RecordedBinding implements Recovera
   }
 
   public Object recover() throws IOException {
-    return this.channel.exchangeBind(this.source, this.destination, this.routingKey, this.arguments);
+    return this.channel.getDelegate().exchangeBind(this.source, this.destination, this.routingKey, this.arguments);
   }
 }

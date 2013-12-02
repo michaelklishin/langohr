@@ -72,6 +72,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     if(queue.equals(RecordedQueue.EMPTY_STRING)) {
       q.serverNamed(true);
     }
+    System.out.println("Declared queue " + ok.getQueue());
     this.queues.put(ok.getQueue(), q);
     return ok;
   }
@@ -347,7 +348,9 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
           destination(queue).
           routingKey(routingKey).
           arguments(arguments);
-      this.bindings.add(binding);
+      if(!this.bindings.contains(binding)) {
+        this.bindings.add(binding);
+      }
     }
     return ok;
   }
@@ -1033,10 +1036,12 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   }
 
   public void recoverQueues() {
+    System.out.println("Recovering " + this.queues.size() + " queues");
     for (Map.Entry<String, RecordedQueue> entry : this.queues.entrySet()) {
       String oldName = entry.getKey();
       RecordedQueue q = entry.getValue();
       try {
+        System.out.println("Recovering queue " + oldName);
         q.recover();
         String newName = q.getName();
         // make sure server-named queues are re-added with
