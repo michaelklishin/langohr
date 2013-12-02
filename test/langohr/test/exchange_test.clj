@@ -10,7 +10,8 @@
             AMQP AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk
             AMQP$Queue$DeclareOk ShutdownSignalException]
            java.io.IOException
-           java.util.UUID))
+           java.util.UUID
+           java.util.concurrent.TimeUnit))
 
 
 ;;
@@ -273,4 +274,4 @@
     (.start (Thread. #(lhcons/subscribe channel queue msg-handler :auto-ack true) "subscriber"))
     (.start (Thread. (fn []
                        (lhb/publish channel de "" "1010" :mandatory true)) "publisher"))
-    (.await latch)))
+    (.await latch 700 TimeUnit/MILLISECONDS)))
