@@ -135,7 +135,7 @@
         latch (java.util.concurrent.CountDownLatch. 1)]
     (is (lc/automatically-recover? conn))
     (lc/on-recovery conn (fn [new-conn] (is false  "should not start recovery after explicit shutdown")))
-    (lc/shutdown-listener conn
+    (lc/add-shutdown-listener conn
      (fn [sse]
        (.countDown latch)
        (is (ls/initiated-by-application? sse))))
