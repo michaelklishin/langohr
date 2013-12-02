@@ -16,7 +16,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   private List<IFn> recoveryHooks = new ArrayList<IFn>();
   private final Map<String, RecordedQueue> queues = new ConcurrentHashMap<String, RecordedQueue>();
   private final Map<String, RecordedConsumer> consumers = new ConcurrentHashMap<String, RecordedConsumer>();
-  private final Set<RecordedBinding> bindings = new ConcurrentSkipListSet<RecordedBinding>();
+  private final List<RecordedBinding> bindings = new ArrayList<RecordedBinding>();
   private Map<String, RecordedExchange> exchanges = new ConcurrentHashMap<String, RecordedExchange>();
 
   public Channel(Connection connection, com.rabbitmq.client.Channel channel) {
@@ -342,12 +342,14 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    */
   public AMQP.Queue.BindOk queueBind(String queue, String exchange, String routingKey, Map<String, Object> arguments) throws IOException {
     final AMQP.Queue.BindOk ok = delegate.queueBind(queue, exchange, routingKey, arguments);
-    RecordedBinding binding = new RecordedQueueBinding(this).
-        source(exchange).
-        destination(queue).
-        routingKey(routingKey).
-        arguments(arguments);
-    this.bindings.add(binding);
+    synchronized (this) {
+      RecordedBinding binding = new RecordedQueueBinding(this).
+          source(exchange).
+          destination(queue).
+          routingKey(routingKey).
+          arguments(arguments);
+      this.bindings.add(binding);
+    }
     return ok;
   }
 
