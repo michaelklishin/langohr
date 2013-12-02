@@ -1,11 +1,12 @@
 (ns langohr.test.confirm-test
-  (:import [com.rabbitmq.client Connection AMQP$Queue$DeclareOk AMQP$Confirm$SelectOk])
   (:require langohr.confirm
             [langohr.core    :as lhc]
             [langohr.channel :as lch]
             [langohr.basic   :as lhb]
             [langohr.queue   :as lhq]
-            [clojure.test    :refer :all]))
+            [clojure.test    :refer :all])
+  (:import [com.rabbitmq.client Connection AMQP$Queue$DeclareOk AMQP$Confirm$SelectOk]
+           java.util.concurrent.TimeUnit))
 
 (defonce ^Connection conn (lhc/connect))
 
@@ -25,7 +26,7 @@
     (langohr.confirm/add-listener channel listener)
     (.start (Thread. (fn []
                        (lhb/publish channel "" queue "")) "publisher"))
-    (.await latch)))
+    (.await latch 700 TimeUnit/MILLISECONDS)))
 
 
 (deftest t-confirm-select-with-callback-functions
@@ -39,7 +40,7 @@
                               (.countDown latch)))
     (.start (Thread. (fn []
                        (lhb/publish channel "" queue "")) "publisher"))
-    (.await latch)))
+    (.await latch 700 TimeUnit/MILLISECONDS)))
 
 (deftest test-publishing-confirms
   (with-open [conn (lhc/connect)
