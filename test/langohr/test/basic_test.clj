@@ -1,15 +1,15 @@
 (ns langohr.test.basic-test
   (:refer-clojure :exclude [get declare])
-  (:import [com.rabbitmq.client Connection Channel AMQP
-            AMQP$BasicProperties AMQP$BasicProperties$Builder
-            QueueingConsumer GetResponse AMQP$Queue$DeclareOk] java.util.UUID)
-  (:use clojure.test)
   (:require [langohr.core      :as lhc]
             [langohr.consumers :as lhcons]
             [langohr.queue     :as lhq]
             [langohr.exchange  :as lhe]
             [langohr.basic     :as lhb]
-            [langohr.util      :as lhu]))
+            [langohr.util      :as lhu]
+            [clojure.test :refer :all])
+  (:import [com.rabbitmq.client Connection Channel AMQP
+            AMQP$BasicProperties AMQP$BasicProperties$Builder
+            QueueingConsumer GetResponse AMQP$Queue$DeclareOk] java.util.UUID))
 
 ;;
 ;; basic.publish, basic.consume
@@ -63,11 +63,11 @@
         msg-handler   (fn [ch metadata payload]
                         (.countDown latch))
         log-called (fn [tag] (fn [_] (swap! handler-called conj tag)))]
-    (lhcons/subscribe channel queue msg-handler :auto-ack true :handle-consume-ok-fn (log-called :handle-consume-ok-fn))
-    (lhcons/subscribe channel queue msg-handler :auto-ack true :handle-consume-ok (log-called :handle-consume-ok))
-    (lhb/publish channel exchange queue "dummy payload")
-    (.await latch)
-    (is (= #{:handle-consume-ok-fn :handle-consume-ok} @handler-called))))
+        (lhcons/subscribe channel queue msg-handler :auto-ack true :handle-consume-ok-fn (log-called :handle-consume-ok-fn))
+        (lhcons/subscribe channel queue msg-handler :auto-ack true :handle-consume-ok (log-called :handle-consume-ok))
+        (lhb/publish channel exchange queue "dummy payload")
+        (.await latch)
+        (is (= #{:handle-consume-ok-fn :handle-consume-ok} @handler-called))))
 
 
 (deftest test-demonstrate-sender-selected-distribution-extension-support
