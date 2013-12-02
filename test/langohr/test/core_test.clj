@@ -2,8 +2,9 @@
   (:require [langohr.core     :as lc]
             [langohr.shutdown :as ls]
             [clojure.test     :refer :all])
-  (:import java.util.concurrent.Executors
-           java.util.UUID))
+  (:import [java.util.concurrent TimeUnit Executors]
+           java.util.UUID
+           ))
 
 (set! *warn-on-reflection* true)
 (println (str "Using Clojure version " *clojure-version*))
@@ -121,13 +122,12 @@
     (lc/on-recovery ch (fn [new-channel]
                            (.countDown latch)
                            (is (instance? com.novemberain.langohr.Channel new-channel))))
-    (.addShutdownListener conn
-      (lc/shutdown-listener
-        (fn [sse]
-          (.countDown latch)
-          (is (not (ls/initiated-by-application? sse))))))
+    (lc/add-shutdown-listener conn
+     (fn [sse]
+       (.countDown latch)
+       (is (not (ls/initiated-by-application? sse)))))
     (.close conn-delegate 200 "simulated broken connection" false (RuntimeException.))
-    (is (.await latch 30 java.util.concurrent.TimeUnit/SECONDS) "timeout waiting for recovery hooks")))
+    (is (.await latch 10 TimeUnit/SECONDS) "timeout waiting for recovery hooks")))
 
 (deftest t-no-connection-recovery-after-explicit-close
   (let [conn  (lc/connect {:automatically-recover true})
