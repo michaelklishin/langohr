@@ -8,7 +8,7 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public class RecordedConsumer extends RecordedEntity implements RecoverableEntity {
-  private final String queue;
+  private String queue;
   private String consumerTag;
   private Consumer consumer;
   private boolean exclusive;
@@ -48,5 +48,13 @@ public class RecordedConsumer extends RecordedEntity implements RecoverableEntit
   public RecordedConsumer arguments(Map<String, Object> value) {
     this.arguments = value;
     return this;
+  }
+
+  public String getQueue() {
+    return queue;
+  }
+
+  public void setQueue(String queue) {
+    this.queue = queue;
   }
 }

@@ -7,7 +7,6 @@ import com.rabbitmq.client.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeoutException;
 
 public class Channel implements com.rabbitmq.client.Channel, Recoverable {
@@ -1023,9 +1022,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     // recorded exchanges are guaranteed to be
     // non-predefined (we filter out predefined ones
     // in exchangeDeclare). MK.
-    for (Map.Entry<String, RecordedExchange> entry : this.exchanges.entrySet()) {
-      RecordedExchange x = entry.getValue();
-
+    for (RecordedExchange x : this.exchanges.values()) {
       try {
         x.recover();
       } catch (Exception e) {
@@ -1041,15 +1038,25 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
       RecordedQueue q = entry.getValue();
       try {
         q.recover();
+        String newName = q.getName();
         // make sure server-named queues are re-added with
         // their new names. MK.
         synchronized (this.queues) {
           this.queues.remove(oldName);
-          this.queues.put(q.getName(), q);
+          this.queues.put(newName, q);
+          this.propagateQueueNameChangeToConsumers(oldName, newName);
         }
       } catch (Exception e) {
-        System.err.println("Caught an exception while recovering queue " + q.getName());
+        System.err.println("Caught an exception while recovering queue " + oldName);
         e.printStackTrace(System.err);
+      }
+    }
+  }
+
+  private void propagateQueueNameChangeToConsumers(String oldName, String newName) {
+    for (RecordedConsumer consumer : this.consumers.values()) {
+      if(consumer.getQueue().equals(oldName)) {
+        consumer.setQueue(newName);
       }
     }
   }
