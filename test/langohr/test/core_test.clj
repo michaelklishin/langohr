@@ -135,12 +135,11 @@
         latch (java.util.concurrent.CountDownLatch. 1)]
     (is (lc/automatically-recover? conn))
     (lc/on-recovery conn (fn [new-conn] (is false  "should not start recovery after explicit shutdown")))
-    (.addShutdownListener conn
-      (lc/shutdown-listener
-        (fn [sse]
-          (.countDown latch)
-          (is (ls/initiated-by-application? sse)))))
+    (lc/shutdown-listener conn
+     (fn [sse]
+       (.countDown latch)
+       (is (ls/initiated-by-application? sse))))
     (lc/close conn)
-    (.await latch)
+    (.await latch 700 TimeUnit/MILLISECONDS)
     ;wait until recovery had a chance to kick in
     (Thread/sleep 6000)))
