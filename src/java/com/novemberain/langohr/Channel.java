@@ -1036,12 +1036,10 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   }
 
   public void recoverQueues() {
-    System.out.println("Recovering " + this.queues.size() + " queues");
     for (Map.Entry<String, RecordedQueue> entry : this.queues.entrySet()) {
       String oldName = entry.getKey();
       RecordedQueue q = entry.getValue();
       try {
-        System.out.println("Recovering queue " + oldName);
         q.recover();
         String newName = q.getName();
         // make sure server-named queues are re-added with
