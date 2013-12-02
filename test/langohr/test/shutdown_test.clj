@@ -1,12 +1,13 @@
 (ns langohr.test.shutdown-test
-  (:import [com.rabbitmq.client Connection Channel Consumer ShutdownSignalException])
   (:require [langohr.queue     :as lhq]
             [langohr.core      :as lhc]
             [langohr.channel   :as lch]
             [langohr.basic     :as lhb]
             [langohr.consumers :as lhcons]
             [langohr.shutdown  :as lh]
-            [clojure.test      :refer :all]))
+            [clojure.test      :refer :all])
+  (:import [com.rabbitmq.client Connection Channel Consumer ShutdownSignalException]
+           java.util.concurrent.TimeUnit))
 
 
 (defonce ^Connection conn (lhc/connect))
@@ -26,7 +27,7 @@
                          (lhq/bind ch "ugggggh" "amq.fanout")
                          (catch Exception e
                            (comment "Do nothing"))))))
-    (.await latch)
+    (.await latch 700 TimeUnit/MILLISECONDS)
     (is (= @cha (.getDelegate ch)))))
 
 (deftest test-connection-of
@@ -44,7 +45,7 @@
                          (lhq/bind ch "ugggggh" "amq.fanout")
                          (catch Exception e
                            (comment "Do nothing"))))))
-    (.await latch)
+    (.await latch 700 TimeUnit/MILLISECONDS)
     (is (= @conn' (.getDelegate conn)))))
 
 (deftest test-initiator-with-a-channel-exception
@@ -62,7 +63,7 @@
                          (lhq/bind ch "ugggggh" "amq.fanout")
                          (catch Exception e
                            (comment "Do nothing"))))))
-    (.await latch)
+    (.await latch 700 TimeUnit/MILLISECONDS)
     (is (lh/initiated-by-broker? @sse))
     (is (not (lh/initiated-by-application? @sse)))))
 
@@ -78,7 +79,7 @@
     (lhb/consume ch q consumer)
     (Thread/sleep 250)
     (lhc/close ch)
-    (.await latch)
+    (.await latch 700 TimeUnit/MILLISECONDS)
     (is (not (lh/initiated-by-broker? @sse)))
     (is (lh/initiated-by-application? @sse))))
 
@@ -97,6 +98,6 @@
     (lhb/consume ch q consumer)
     (Thread/sleep 250)
     (lhb/publish ch "" q "message")
-    (.await latch)
+    (.await latch 700 TimeUnit/MILLISECONDS)
     (is (not (lh/initiated-by-broker? @sse)))
     (is (lh/initiated-by-application? @sse))))
