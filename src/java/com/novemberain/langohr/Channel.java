@@ -1011,10 +1011,9 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     // The recovery sequence is the following:
     //
     // 1. Recover exchanges
-    // 2. Recover exchange bindings
-    // 3. Recover queues
-    // 4. Recover bindings
-    // 5. Recover consumers
+    // 2. Recover queues
+    // 3. Recover bindings
+    // 4. Recover consumers
     recoverExchanges();
     recoverQueues();
     recoverQueueBindings();
@@ -1036,10 +1035,12 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   }
 
   public void recoverQueues() {
+    System.out.println("Recovering " + this.queues.size() + " queues");
     for (Map.Entry<String, RecordedQueue> entry : this.queues.entrySet()) {
       String oldName = entry.getKey();
       RecordedQueue q = entry.getValue();
       try {
+        System.out.println("Recovering queue " + oldName);
         q.recover();
         String newName = q.getName();
         // make sure server-named queues are re-added with
