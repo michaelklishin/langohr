@@ -140,6 +140,6 @@
        (.countDown latch)
        (is (ls/initiated-by-application? sse))))
     (lc/close conn)
-    (.await latch 700 TimeUnit/MILLISECONDS)
+    (is (.await latch 700 TimeUnit/MILLISECONDS))
     ;wait until recovery had a chance to kick in
     (Thread/sleep 6000)))

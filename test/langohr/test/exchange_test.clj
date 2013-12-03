@@ -274,4 +274,4 @@
     (.start (Thread. #(lhcons/subscribe channel queue msg-handler :auto-ack true) "subscriber"))
     (.start (Thread. (fn []
                        (lhb/publish channel de "" "1010" :mandatory true)) "publisher"))
-    (.await latch 700 TimeUnit/MILLISECONDS)))
+    (is (.await latch 700 TimeUnit/MILLISECONDS))))

@@ -26,7 +26,7 @@
     (langohr.confirm/add-listener channel listener)
     (.start (Thread. (fn []
                        (lhb/publish channel "" queue "")) "publisher"))
-    (.await latch 700 TimeUnit/MILLISECONDS)))
+    (is (.await latch 700 TimeUnit/MILLISECONDS))))
 
 
 (deftest t-confirm-select-with-callback-functions
@@ -40,7 +40,7 @@
                               (.countDown latch)))
     (.start (Thread. (fn []
                        (lhb/publish channel "" queue "")) "publisher"))
-    (.await latch 700 TimeUnit/MILLISECONDS)))
+    (is (.await latch 700 TimeUnit/MILLISECONDS))))
 
 (deftest test-publishing-confirms
   (with-open [conn (lhc/connect)

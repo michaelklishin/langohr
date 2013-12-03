@@ -8,20 +8,20 @@
             [langohr.shutdown  :as lsh]
             [clojure.test      :refer :all])
     (:import [com.rabbitmq.client Consumer AMQP$Queue$DeclareOk]
-             java.util.concurrent.TimeUnit))
+             [java.util.concurrent TimeUnit CountDownLatch]))
 
 
 ;;
 ;; API
 ;;
 
-(defonce conn (lhc/connect))
+(defonce conn (lhc/connect {:port 5673}))
 
 
 (deftest t-consume-ok-handler
   (let [channel  (lch/open conn)
         queue    (lhq/declare-server-named channel)
-        latch    (java.util.concurrent.CountDownLatch. 1)
+        latch    (CountDownLatch. 1)
         consumer (lhcons/create-default channel :handle-consume-ok-fn (fn [consumer-tag]
                                                                         (.countDown latch)))]
     (lhb/consume channel queue consumer)
@@ -31,7 +31,7 @@
   (let [ch    (lch/open conn)
         q     (lhq/declare-server-named ch)
         ctag  "langohr.consumer-tag1"
-        latch (java.util.concurrent.CountDownLatch. 1)]
+        latch (CountDownLatch. 1)]
     (lhcons/subscribe ch q (fn [_ _ _])
                       :consumer-tag ctag :handle-cancel-ok (fn [_]
                                                              (.countDown latch)))
@@ -42,7 +42,7 @@
   (let [ch    (lch/open conn)
         q     (lhq/declare-server-named ch)
         ctag  "langohr.consumer-tag"
-        latch (java.util.concurrent.CountDownLatch. 1)]
+        latch (CountDownLatch. 1)]
     (lhcons/subscribe ch q (fn [_ _ _])
                       :consumer-tag ctag :handle-cancel-ok (fn [_]
                                                              (.countDown latch))
@@ -68,7 +68,7 @@
 (deftest t-consume-ok-handler-with-queueing-consumer
   (let [channel  (lch/open conn)
         queue    (:queue (lhq/declare channel))
-        latch    (java.util.concurrent.CountDownLatch. 1)
+        latch    (CountDownLatch. 1)
         consumer (lhcons/create-queueing channel :handle-consume-ok-fn (fn [consumer-tag]
                                                                          (.countDown latch)))]
     (lhb/consume channel queue consumer)
@@ -79,24 +79,24 @@
   (let [channel  (lch/open conn)
         queue    (lhq/declare-server-named channel)
         tag      (lhu/generate-consumer-tag "t-cancel-ok-handler")
-        latch    (java.util.concurrent.CountDownLatch. 1)
+        latch    (CountDownLatch. 1)
         consumer (lhcons/create-default channel :handle-cancel-ok-fn (fn [consumer-tag]
                                                                        (.countDown latch)))
         ret-tag  (lhb/consume channel queue consumer :consumer-tag tag)]
     (is (= tag ret-tag))
     (lhb/cancel channel tag)
-    (is (.await latch 1200 TimeUnit/MILLISECONDS))))
+    (is (.await latch 2 TimeUnit/SECONDS))))
 
 
 (deftest t-cancel-notification-handler
-  (let [channel  (lch/open conn)
-        queue    (lhq/declare-server-named channel)
-        latch    (java.util.concurrent.CountDownLatch. 1)
-        consumer (lhcons/create-default channel :handle-cancel-fn (fn [consumer_tag]
+  (let [channel         (lch/open conn)
+        {:keys [queue]} (lhq/declare channel "to-be-deleted")
+        latch           (CountDownLatch. 1)
+        consumer        (lhcons/create-default channel :handle-cancel-fn (fn [consumer_tag]
                                                                     (.countDown latch)))]
-    (lhb/consume channel queue consumer)
+    (lhb/consume channel queue consumer :consumer-tag "will-be-cancelled-by-rmq")
     (lhq/delete channel queue)
-    (is (.await latch 700 TimeUnit/MILLISECONDS))))
+    (is (.await latch 1 TimeUnit/SECONDS))))
 
 
 (deftest t-delivery-handler
@@ -105,7 +105,7 @@
         payload    ""
         queue      (lhq/declare-server-named channel)
         n          300
-        latch      (java.util.concurrent.CountDownLatch. (inc n))
+        latch      (CountDownLatch. (inc n))
         consumer   (lhcons/create-default channel
                                           :handle-delivery-fn   (fn [ch metadata ^bytes payload]
                                                                   (.countDown latch))
@@ -120,7 +120,7 @@
 (deftest t-shutdown-notification-handler
   (let [ch    (lch/open conn)
         q     (:queue (lhq/declare ch))
-        latch    (java.util.concurrent.CountDownLatch. 1)
+        latch    (CountDownLatch. 1)
         consumer (lhcons/create-default ch :handle-shutdown-signal-fn (fn [consumer_tag reason]
                                                                         (.countDown latch)))]
     (lhb/consume ch q consumer)
