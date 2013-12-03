@@ -15,7 +15,7 @@
 ;; API
 ;;
 
-(defonce conn (lhc/connect {:port 5673}))
+(defonce conn (lhc/connect))
 
 
 (deftest t-consume-ok-handler
