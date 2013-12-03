@@ -167,7 +167,7 @@
   client-properties {"product"      "Langohr"
                      "information"  "See http://clojurerabbitmq.info/"
                      "platform"     (platform-string)
-                     "capabilities" (AMQConnection/defaultClientProperties)
+                     "capabilities" (get (AMQConnection/defaultClientProperties) "capabilities")
                      "copyright" "Copyright (C) 2011-2013 Michael S. Klishin, Alex Petrov"
                      "version"   version})
 
