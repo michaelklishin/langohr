@@ -8,6 +8,8 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.core
+  "Functions that work with connections and shared features between connections
+   and channels (e.g. shutdown listeners)"
   (:import [com.rabbitmq.client Connection Channel Address ConnectionFactory ShutdownListener BlockedListener]
            [com.novemberain.langohr Recoverable]
            [clojure.lang IFn]
