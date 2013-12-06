@@ -279,7 +279,7 @@
     (.addReturnListener channel rl)
     (lhe/declare channel exchange "direct" :auto-delete true)
     (lhb/publish channel exchange (str (UUID/randomUUID)) "return-me" :mandatory true)
-    (is (.await latch 700 TimeUnit/MILLISECONDS))))
+    (is (.await latch 1 TimeUnit/SECONDS))))
 
 
 
