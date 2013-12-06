@@ -48,7 +48,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see #basicConsume(String, boolean, String, boolean, boolean, java.util.Map, com.rabbitmq.client.Consumer)
    */
   public String basicConsume(String queue, Consumer callback) throws IOException {
-    return delegate.basicConsume(queue, callback);
+    return basicConsume(queue, false, callback);
   }
 
   /**
@@ -249,7 +249,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Exchange.DeclareOk
    */
   public AMQP.Exchange.DeclareOk exchangeDeclare(String exchange, String type, boolean durable) throws IOException {
-    return delegate.exchangeDeclare(exchange, type, durable);
+    return exchangeDeclare(exchange, type, durable, false, null);
   }
 
   /**
@@ -277,7 +277,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Queue.DeleteOk
    */
   public AMQP.Queue.DeleteOk queueDelete(String queue) throws IOException {
-    return delegate.queueDelete(queue);
+    return queueDelete(queue, false, false);
   }
 
   /**
@@ -299,7 +299,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Queue.UnbindOk
    */
   public AMQP.Queue.UnbindOk queueUnbind(String queue, String exchange, String routingKey) throws IOException {
-    return delegate.queueUnbind(queue, exchange, routingKey);
+    return queueUnbind(queue, exchange, routingKey, null);
   }
 
   /**
@@ -413,8 +413,9 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Exchange.Declare
    * @see com.rabbitmq.client.AMQP.Exchange.DeclareOk
    */
-  public AMQP.Exchange.DeclareOk exchangeDeclare(String exchange, String type, boolean durable, boolean autoDelete, Map<String, Object> arguments) throws IOException {
-    return delegate.exchangeDeclare(exchange, type, durable, autoDelete, arguments);
+  public AMQP.Exchange.DeclareOk exchangeDeclare(String exchange, String type, boolean durable, boolean autoDelete,
+                                                 Map<String, Object> arguments) throws IOException {
+    return exchangeDeclare(exchange, type, durable, autoDelete, false, arguments);
   }
 
   /**
@@ -665,7 +666,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Queue.DeclareOk
    */
   public AMQP.Queue.DeclareOk queueDeclare() throws IOException {
-    return delegate.queueDeclare();
+    return queueDeclare("", false, true, true, null);
   }
 
   /**
@@ -942,7 +943,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Exchange.DeclareOk
    */
   public AMQP.Exchange.DeclareOk exchangeDeclare(String exchange, String type) throws IOException {
-    return delegate.exchangeDeclare(exchange, type);
+    return exchangeDeclare(exchange, type, false, false, null);
   }
 
   /**
@@ -989,7 +990,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see #basicConsume(String, boolean, String, boolean, boolean, java.util.Map, com.rabbitmq.client.Consumer)
    */
   public String basicConsume(String queue, boolean autoAck, String consumerTag, Consumer callback) throws IOException {
-    return delegate.basicConsume(queue, autoAck, consumerTag, callback);
+    return basicConsume(queue, autoAck, consumerTag, false, false, null, callback);
   }
 
   /**
