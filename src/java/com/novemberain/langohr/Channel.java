@@ -1016,7 +1016,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     // 4. Recover consumers
     recoverExchanges();
     recoverQueues();
-    recoverQueueBindings();
+    recoverBindings();
     recoverConsumers();
   }
 
@@ -1072,7 +1072,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     }
   }
 
-  public void recoverQueueBindings() {
+  public void recoverBindings() {
     for (RecordedBinding b : this.bindings) {
       try {
         b.recover();
