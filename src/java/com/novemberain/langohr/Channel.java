@@ -1065,9 +1065,9 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   }
 
   private void propagateQueueNameChangeToConsumers(String oldName, String newName) {
-    for (RecordedConsumer consumer : this.consumers.values()) {
-      if(consumer.getQueue().equals(oldName)) {
-        consumer.setQueue(newName);
+    for (RecordedConsumer c : this.consumers.values()) {
+      if(c.getQueue().equals(oldName)) {
+        c.setQueue(newName);
       }
     }
   }
