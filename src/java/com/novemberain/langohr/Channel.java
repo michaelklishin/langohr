@@ -1027,6 +1027,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Queue.DeleteOk
    */
   public AMQP.Queue.DeleteOk queueDelete(String queue, boolean ifUnused, boolean ifEmpty) throws IOException {
+    this.queues.remove(queue);
     return delegate.queueDelete(queue, ifUnused, ifEmpty);
   }
 
