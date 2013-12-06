@@ -47,4 +47,7 @@ public abstract class RecordedBinding extends RecordedEntity implements Recovera
     return arguments;
   }
 
+  public void setDestination(String destination) {
+    this.destination = destination;
+  }
 }

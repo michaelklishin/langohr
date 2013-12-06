@@ -1046,11 +1046,20 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
         synchronized (this.queues) {
           this.queues.remove(oldName);
           this.queues.put(newName, q);
+          this.propagateQueueNameChangeToBindings(oldName, newName);
           this.propagateQueueNameChangeToConsumers(oldName, newName);
         }
       } catch (Exception e) {
         System.err.println("Caught an exception while recovering queue " + oldName);
         e.printStackTrace(System.err);
+      }
+    }
+  }
+
+  private void propagateQueueNameChangeToBindings(String oldName, String newName) {
+    for (RecordedBinding b : this.bindings) {
+      if(b.getDestination().equals(oldName)) {
+        b.setDestination(newName);
       }
     }
   }

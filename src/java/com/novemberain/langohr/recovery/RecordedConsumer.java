@@ -57,4 +57,8 @@ public class RecordedConsumer extends RecordedEntity implements RecoverableEntit
   public void setQueue(String queue) {
     this.queue = queue;
   }
+
+  public String getConsumerTag() {
+    return consumerTag;
+  }
 }
