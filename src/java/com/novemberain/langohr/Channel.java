@@ -679,6 +679,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Basic.CancelOk
    */
   public void basicCancel(String consumerTag) throws IOException {
+    this.consumers.remove(consumerTag);
     delegate.basicCancel(consumerTag);
   }
 
