@@ -514,7 +514,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Exchange.BindOk
    */
   public AMQP.Exchange.UnbindOk exchangeUnbind(String destination, String source, String routingKey) throws IOException {
-    return delegate.exchangeUnbind(destination, source, routingKey);
+    return exchangeUnbind(destination, source, routingKey, null);
   }
 
   /**
@@ -1055,7 +1055,17 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Exchange.BindOk
    */
   public AMQP.Exchange.UnbindOk exchangeUnbind(String destination, String source, String routingKey, Map<String, Object> arguments) throws IOException {
+    deleteRecordedExchangeBinding(destination, source, routingKey, arguments);
     return delegate.exchangeUnbind(destination, source, routingKey, arguments);
+  }
+
+  private boolean deleteRecordedExchangeBinding(String destination, String source, String routingKey, Map<String, Object> arguments) {
+    RecordedBinding b = new RecordedExchangeBinding(this).
+        source(source).
+        destination(destination).
+        routingKey(routingKey).
+        arguments(arguments);
+    return this.bindings.remove(b);
   }
 
   @SuppressWarnings("unused")
