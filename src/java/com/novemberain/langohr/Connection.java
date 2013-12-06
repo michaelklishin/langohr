@@ -98,7 +98,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     }
   }
 
-  private void beginAutomaticRecovery() throws InterruptedException, IOException {
+  synchronized private void beginAutomaticRecovery() throws InterruptedException, IOException {
     try {
       Thread.sleep(DEFAULT_NETWORK_RECOVERY_PERIOD);
       // System.out.println("About to recover connection...");
