@@ -696,7 +696,17 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Queue.UnbindOk
    */
   public AMQP.Queue.UnbindOk queueUnbind(String queue, String exchange, String routingKey, Map<String, Object> arguments) throws IOException {
+    deleteRecordedQueueBinding(queue, exchange, routingKey, arguments);
     return delegate.queueUnbind(queue, exchange, routingKey, arguments);
+  }
+
+  private boolean deleteRecordedQueueBinding(String queue, String exchange, String routingKey, Map<String, Object> arguments) {
+    RecordedBinding b = new RecordedQueueBinding(this).
+        source(exchange).
+        destination(queue).
+        routingKey(routingKey).
+        arguments(arguments);
+    return this.bindings.remove(b);
   }
 
   /**
