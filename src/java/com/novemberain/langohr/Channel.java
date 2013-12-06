@@ -72,7 +72,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     if(queue.equals(RecordedQueue.EMPTY_STRING)) {
       q.serverNamed(true);
     }
-    System.out.println("Declared queue " + ok.getQueue());
     this.queues.put(ok.getQueue(), q);
     return ok;
   }
