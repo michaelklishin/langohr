@@ -190,7 +190,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Exchange.DeleteOk
    */
   public AMQP.Exchange.DeleteOk exchangeDelete(String exchange) throws IOException {
-    return delegate.exchangeDelete(exchange);
+    return exchangeDelete(exchange, false);
   }
 
   /**
@@ -813,6 +813,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Exchange.DeleteOk
    */
   public AMQP.Exchange.DeleteOk exchangeDelete(String exchange, boolean ifUnused) throws IOException {
+    this.exchanges.remove(exchange);
     return delegate.exchangeDelete(exchange, ifUnused);
   }
 
