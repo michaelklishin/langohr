@@ -1,4 +1,4 @@
-## Changes between Langohr 1.7.0 and 1.8.0
+## Changes between Langohr 1.7.0 and 2.0.0
 
 ### langohr.core/add-shutdown-listener
 
