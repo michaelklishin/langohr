@@ -4,18 +4,19 @@
             [langohr.core :as lhc]
             [clojure.test :refer :all]))
 
-(defonce ^Connection conn (lhc/connect))
-
 (deftest t-tx-select-in-isolation
-  (let [channel (lhc/create-channel conn)]
-    (is (instance? AMQP$Tx$SelectOk (langohr.tx/select channel)))))
+  (with-open [^Connection conn (lhc/connect)]
+    (let [ch (lhc/create-channel conn)]
+      (is (instance? AMQP$Tx$SelectOk (langohr.tx/select ch))))))
 
 (deftest t-tx-commit-in-isolation
-  (let [channel (lhc/create-channel conn)]
-    (is (instance? AMQP$Tx$SelectOk (langohr.tx/select channel)))
-    (is (instance? AMQP$Tx$CommitOk (langohr.tx/commit channel)))))
+  (with-open [^Connection conn (lhc/connect)]
+    (let [ch (lhc/create-channel conn)]
+      (is (instance? AMQP$Tx$SelectOk (langohr.tx/select ch)))
+      (is (instance? AMQP$Tx$CommitOk (langohr.tx/commit ch))))))
 
 (deftest t-tx-rollback-in-isolation
-  (let [channel (lhc/create-channel conn)]
-    (is (instance? AMQP$Tx$SelectOk   (langohr.tx/select channel)))
-    (is (instance? AMQP$Tx$RollbackOk (langohr.tx/rollback channel)))))
+  (with-open [^Connection conn (lhc/connect)]
+    (let [ch (lhc/create-channel conn)]
+      (is (instance? AMQP$Tx$SelectOk   (langohr.tx/select ch)))
+      (is (instance? AMQP$Tx$RollbackOk (langohr.tx/rollback ch))))))
