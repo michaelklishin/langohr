@@ -19,11 +19,16 @@ import java.util.concurrent.ExecutorService;
 
 public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static final IPersistentMap DEFAULT_OPTIONS = buildDefaultOptions();
+  // :automatically-recover
   public static final String AUTOMATICALLY_RECOVER_KEYWORD_NAME = "automatically-recover";
   public static final Keyword AUTOMATICALLY_RECOVER_KEYWORD = Keyword.intern(null, AUTOMATICALLY_RECOVER_KEYWORD_NAME);
+  // :automatically-recover-topology
   public static final String AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD_NAME = "automatically-recover-topology";
   public static final Keyword AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD = Keyword.intern(null, AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD_NAME);
-  private static final long DEFAULT_NETWORK_RECOVERY_PERIOD = 5000;
+  // :network-recovery-delay
+  private static final String NETWORK_RECOVERY_DELAY_KEYWORD_NAME = "network-recovery-delay";
+  private static final Keyword NETWORK_RECOVERY_DELAY_KEYWORD = Keyword.intern(null, NETWORK_RECOVERY_DELAY_KEYWORD_NAME);
+  private static final long DEFAULT_NETWORK_RECOVERY_DELAY = 5000;
   private static final Keyword EXECUTOR_KEYWORD = Keyword.intern(null, "executor");
   private static final long DEFAULT_RECONNECTION_PERIOD = 5000;
   private final IPersistentMap options;
@@ -37,6 +42,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private ShutdownListener automaticRecoveryListener;
   private Map<Integer, Channel> channels;
   private final Collection<BlockedListener> blockedListeners = new CopyOnWriteArrayList<BlockedListener>();
+  private long networkRecoveryDelay;
 
   private static IPersistentMap buildDefaultOptions() {
     Map<Keyword, Boolean> m = new HashMap<Keyword, Boolean>();
@@ -59,6 +65,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     this.shutdownHooks = new ArrayList<ShutdownListener>();
     // network failure recovery hooks
     this.recoveryHooks = new ArrayList<IFn>();
+    this.networkRecoveryDelay = (Long)options.valAt(NETWORK_RECOVERY_DELAY_KEYWORD, DEFAULT_NETWORK_RECOVERY_DELAY);
   }
 
   @SuppressWarnings("unused")
@@ -100,7 +107,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
 
   synchronized private void beginAutomaticRecovery() throws InterruptedException, IOException {
     try {
-      Thread.sleep(DEFAULT_NETWORK_RECOVERY_PERIOD);
+      Thread.sleep(networkRecoveryDelay);
       // System.out.println("About to recover connection...");
       this.recoverConnection();
       // System.out.println("About to recover shutdown hooks...");
