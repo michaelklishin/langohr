@@ -12,15 +12,15 @@
 ;;
 
 (deftest ^{:tls true} test-connection-without-peer-verification
-  (let [conn (lc/connect {:host "127.0.0.1" :ssl true})
-        ch   (lc/create-channel conn)
-        q    (format "langohr.test.tls-test.%s" (str (java.util.UUID/randomUUID)))]
-    (is (lc/open? conn))
-    (lq/declare ch q :exclusive true)
-    (lb/publish ch "" q "TLS")
-    (let [[_ payload] (lb/get ch q)]
-      (is (= (String. ^bytes payload) "TLS")))
-    (lc/close conn)))
+  (with-open [conn (lc/connect {:host "127.0.0.1" :ssl true})
+              ch   (lc/create-channel conn)]
+    (let [q (format "langohr.test.tls-test.%s" (str (java.util.UUID/randomUUID)))]
+      (is (lc/open? conn))
+      (lq/declare ch q :exclusive true)
+      (lb/publish ch "" q "TLS")
+      (let [[_ payload] (lb/get ch q)]
+        (is (= (String. ^bytes payload) "TLS")))
+      (lc/close conn))))
 
 ;;
 ;; Verified
