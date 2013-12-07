@@ -1,5 +1,12 @@
 ## Changes between Langohr 1.7.0 and 2.0.0
 
+### Topology (Queues, Exchanges, Bindings, Consumers) Recovery
+
+Connection recovery now supports entity recovery. Queues, exchanges,
+bindings and consumers can be recovered automatically after channel
+recovery. This feature is enabled by default and can be disabled
+using the `:automatically-recover-topology` option.
+
 ### langohr.core/add-shutdown-listener
 
 `langohr.core/add-shutdown-listener` is a helper function that
