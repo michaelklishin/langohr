@@ -3,8 +3,7 @@
             [langohr.shutdown :as ls]
             [clojure.test     :refer :all])
   (:import [java.util.concurrent TimeUnit Executors]
-           java.util.UUID
-           ))
+           java.util.UUID))
 
 (set! *warn-on-reflection* true)
 (println (str "Using Clojure version " *clojure-version*))
