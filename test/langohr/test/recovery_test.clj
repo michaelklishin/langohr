@@ -27,6 +27,6 @@
     (is (not (rmq/open? ch1)))
     (is (not (rmq/open? ch2)))
     ;; wait for recovery to finish
-    (Thread/sleep 2000)
+    (Thread/sleep 1000)
     (is (rmq/open? ch1))
     (is (rmq/open? ch2))))
