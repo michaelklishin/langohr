@@ -4,20 +4,20 @@
             [langohr.exchange  :as lhe]
             [langohr.basic     :as lhb]
             [clojure.java.io   :as io]
-            [clojure.test      :refer :all]))
+            [clojure.test      :refer :all])
+  (:import com.rabbitmq.client.Connection))
 
 ;;
 ;; Tries to reproduce various edge cases around basic.publish
 ;;
-
-(defonce conn (lhc/connect))
 
 (defn resource-as-bytes
   [^String path]
   (.getBytes ^String (slurp (io/resource path)) "UTF-8"))
 
 (deftest test-publishing-large-payload1
-  (with-open [ch (lhc/create-channel conn)]
+  (with-open [^Connection conn (lhc/connect)
+              ch (lhc/create-channel conn)]
     (let [x     ""
           q     ""
           qd-ok (lhq/declare ch q :exclusive true)
