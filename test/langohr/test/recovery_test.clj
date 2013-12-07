@@ -14,6 +14,19 @@
   (doseq [x (map :name (mgmt/list-connections))]
     (mgmt/close-connection x)))
 
+(deftest test-basic-connection-recovery
+  (let [conn (rmq/connect {:automatically-recover true
+                           :automatically-recover-topology false
+                           :network-recovery-delay 500})]
+    (is (rmq/open? conn))
+    (close-all-connections)
+    (Thread/sleep 200)
+    (is (not (rmq/open? conn)))
+    ;; wait for recovery to finish
+    (Thread/sleep 1000)
+    (is (rmq/open? conn))))
+
+
 (deftest test-basic-channel-recovery
   (let [conn (rmq/connect {:automatically-recover true
                            :automatically-recover-topology false
