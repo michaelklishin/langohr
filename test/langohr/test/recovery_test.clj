@@ -9,10 +9,24 @@
             [clojure.test :refer :all]
             [langohr.http      :as mgmt]))
 
+;;
+;; Helpers
+;;
+
 (defn close-all-connections
   []
   (doseq [x (map :name (mgmt/list-connections))]
     (mgmt/close-connection x)))
+
+(defn ensure-queue-recovery
+  [ch ^String q]
+  (lb/publish ch "" q "a message")
+  (Thread/sleep 50)
+  (is (not (lq/empty? ch q))))
+
+;;
+;; Tests
+;;
 
 (deftest test-basic-connection-recovery
   (let [conn (rmq/connect {:automatically-recover true
@@ -23,7 +37,7 @@
     (Thread/sleep 200)
     (is (not (rmq/open? conn)))
     ;; wait for recovery to finish
-    (Thread/sleep 1000)
+    (Thread/sleep 800)
     (is (rmq/open? conn))
     (rmq/close conn)))
 
@@ -41,7 +55,7 @@
     (is (not (rmq/open? ch1)))
     (is (not (rmq/open? ch2)))
     ;; wait for recovery to finish
-    (Thread/sleep 1000)
+    (Thread/sleep 800)
     (is (rmq/open? ch1))
     (is (rmq/open? ch2))
     (rmq/close conn)))
@@ -56,8 +70,7 @@
     (lq/purge ch q)
     (is (lq/empty? ch q))
     (close-all-connections)
-    (Thread/sleep 1000)
+    (Thread/sleep 800)
     (is (rmq/open? ch))
-    (lb/publish ch "" q "a message")
-    (is (not (lq/empty? ch q)))
+    (ensure-queue-recovery ch q)
     (rmq/close conn)))
