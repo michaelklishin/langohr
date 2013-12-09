@@ -36,75 +36,75 @@
 
     :arguments: other properties for the Queue.
   "
-  ([^Channel channel]
-     (DeclareOk. (.queueDeclare channel)))
-  ([^Channel channel ^String queue]
-     (DeclareOk. (.queueDeclare channel queue false false true nil)))
-  ([^Channel channel ^String queue &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false exclusive false auto-delete true}}]
-     (DeclareOk. (.queueDeclare channel queue durable exclusive auto-delete arguments))))
+  ([^Channel ch]
+     (DeclareOk. (.queueDeclare ch)))
+  ([^Channel ch ^String queue]
+     (DeclareOk. (.queueDeclare ch queue false false true nil)))
+  ([^Channel ch ^String queue &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false exclusive false auto-delete true}}]
+     (DeclareOk. (.queueDeclare ch queue durable exclusive auto-delete arguments))))
 
 
 (defn ^com.novemberain.langohr.queue.DeclareOk declare-passive
   "Declares a queue passively (checks that it is there) using queue.declare AMQP method"
-  [^Channel channel ^String queue]
-  (DeclareOk. (.queueDeclarePassive channel queue)))
+  [^Channel ch ^String queue]
+  (DeclareOk. (.queueDeclarePassive ch queue)))
 
 (defn ^String declare-server-named
   "Declares a server-named queue and returns its name."
-  ([^Channel channel]
-     (-> channel .queueDeclare .getQueue))
-  ([^Channel channel &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false exclusive false auto-delete true}}]
-     (-> channel
+  ([^Channel ch]
+     (-> ch .queueDeclare .getQueue))
+  ([^Channel ch &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false exclusive false auto-delete true}}]
+     (-> ch
          (.queueDeclare "" durable exclusive auto-delete arguments)
          .getQueue)))
 
 (defn ^com.novemberain.langohr.queue.BindOk bind
   "Binds a queue to an exchange using queue.bind AMQP method"
-  ([^Channel channel ^String queue ^String exchange]
-     (BindOk. (.queueBind channel queue exchange "")))
-  ([^Channel channel ^String queue ^String exchange &{:keys [routing-key arguments] :or {routing-key "" arguments nil}}]
-     (BindOk. (.queueBind channel queue exchange routing-key arguments))))
+  ([^Channel ch ^String queue ^String exchange]
+     (BindOk. (.queueBind ch queue exchange "")))
+  ([^Channel ch ^String queue ^String exchange &{:keys [routing-key arguments] :or {routing-key "" arguments nil}}]
+     (BindOk. (.queueBind ch queue exchange routing-key arguments))))
 
 
 (defn ^com.novemberain.langohr.queue.UnbindOk unbind
   "Unbinds a queue from an exchange using queue.bind AMQP method"
-  ([^Channel channel ^String queue ^String exchange ^String routing-key]
-     (UnbindOk. (.queueUnbind channel queue exchange routing-key)))
-  ([^Channel channel ^String queue ^String exchange ^String routing-key ^Map arguments]
-     (UnbindOk. (.queueUnbind channel queue exchange routing-key arguments))))
+  ([^Channel ch ^String queue ^String exchange ^String routing-key]
+     (UnbindOk. (.queueUnbind ch queue exchange routing-key)))
+  ([^Channel ch ^String queue ^String exchange ^String routing-key ^Map arguments]
+     (UnbindOk. (.queueUnbind ch queue exchange routing-key arguments))))
 
 
 (defn ^com.novemberain.langohr.queue.DeleteOk delete
   "Deletes a queue using queue.delete AMQP method"
-  ([^Channel channel ^String queue]
-     (DeleteOk. (.queueDelete channel queue)))
-  ([^Channel channel ^String queue if-unused if-empty]
-     (DeleteOk. (.queueDelete channel queue if-unused if-empty))))
+  ([^Channel ch ^String queue]
+     (DeleteOk. (.queueDelete ch queue)))
+  ([^Channel ch ^String queue if-unused if-empty]
+     (DeleteOk. (.queueDelete ch queue if-unused if-empty))))
 
 
 (defn ^com.novemberain.langohr.queue.PurgeOk purge
   "Purges a queue using queue.purge AMQP method"
-  [^Channel channel ^String queue]
-  (PurgeOk. (.queuePurge channel queue)))
+  [^Channel ch ^String queue]
+  (PurgeOk. (.queuePurge ch queue)))
 
 
 (defn status
   "Returns a map with two keys: message-count and :consumer-count, for the given queue.
    Uses queue.declare AMQP method with the :passive attribute set."
-  [^Channel channel ^String queue]
-  (let [declare-ok ^AMQP$Queue$DeclareOk (.queueDeclarePassive channel queue)]
+  [^Channel ch ^String queue]
+  (let [declare-ok ^AMQP$Queue$DeclareOk (.queueDeclarePassive ch queue)]
     {:message-count (.getMessageCount declare-ok) :consumer-count (.getConsumerCount declare-ok)}))
 
 (defn message-count
   "Returns a number of messages that are ready for delivery (e.g. not pending acknowledgements)
    in the queue"
-  [^Channel channel ^String queue]
-  (:message-count (status channel queue)))
+  [^Channel ch ^String queue]
+  (:message-count (status ch queue)))
 
 (defn consumer-count
   "Returns a number of active consumers on the queue"
-  [^Channel channel ^String queue]
-  (:consumer-count (status channel queue)))
+  [^Channel ch ^String queue]
+  (:consumer-count (status ch queue)))
 
 (defn ^boolean empty?
   "Returns true if queue is empty (has no messages ready), false otherwise"
