@@ -15,7 +15,8 @@
 ;; Helpers
 ;;
 
-(def ^:const expected-recovery-period 800)
+(def ^:const expected-recovery-period 500)
+(def ^:const recovery-delay           200)
 (defn wait-for-recovery
   []
   (Thread/sleep expected-recovery-period))
@@ -42,10 +43,10 @@
 (deftest test-basic-connection-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology false
-                                 :network-recovery-delay 500})]
+                                 :network-recovery-delay recovery-delay})]
     (is (rmq/open? conn))
     (close-all-connections)
-    (Thread/sleep 200)
+    (Thread/sleep 100)
     (is (not (rmq/open? conn)))
     ;; wait for recovery to finish
     (wait-for-recovery)
@@ -55,7 +56,7 @@
 (deftest test-basic-channel-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology false
-                                 :network-recovery-delay 500})]
+                                 :network-recovery-delay recovery-delay})]
     (let [ch1  (lch/open conn)
           ch2  (lch/open conn)]
       (is (rmq/open? ch1))
@@ -72,7 +73,7 @@
 (deftest test-basic-client-named-queue-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology true
-                                 :network-recovery-delay 500})]
+                                 :network-recovery-delay recovery-delay})]
     (let [ch   (lch/open conn)
           q    "langohr.test.recovery.q1"]
       (lq/declare ch q :durable true)
@@ -86,7 +87,7 @@
 (deftest test-basic-server-named-queue-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology true
-                                 :network-recovery-delay 500})]
+                                 :network-recovery-delay recovery-delay})]
     (let [ch   (lch/open conn)
           x    "langohr.test.recovery.direct1"
           latch (CountDownLatch. 1)
@@ -106,7 +107,7 @@
 (deftest test-server-named-queue-recovery-with-multiple-queues
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology true
-                                 :network-recovery-delay 500})]
+                                 :network-recovery-delay recovery-delay})]
     (let [ch   (lch/open conn)
           x    "langohr.test.recovery.fanout1"
           latch (CountDownLatch. 2)
@@ -130,7 +131,7 @@
 (deftest test-e2e-binding-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology true
-                                 :network-recovery-delay 500})]
+                                 :network-recovery-delay recovery-delay})]
     (let [ch   (lch/open conn)
           x1   "langohr.test.recovery.fanout1"
           x2   "langohr.test.recovery.fanout2"
