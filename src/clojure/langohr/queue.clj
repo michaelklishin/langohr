@@ -105,3 +105,7 @@
   "Returns a number of active consumers on the queue"
   [^Channel channel ^String queue]
   (:consumer-count (status channel queue)))
+
+(defn ^boolean empty?
+  [^Channel ch ^String queue]
+  (zero? (message-count ch queue)))
