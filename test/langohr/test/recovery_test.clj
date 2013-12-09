@@ -24,7 +24,8 @@
     (is (not (rmq/open? conn)))
     ;; wait for recovery to finish
     (Thread/sleep 1000)
-    (is (rmq/open? conn))))
+    (is (rmq/open? conn))
+    (rmq/close conn)))
 
 
 (deftest test-basic-channel-recovery
@@ -42,4 +43,5 @@
     ;; wait for recovery to finish
     (Thread/sleep 1000)
     (is (rmq/open? ch1))
-    (is (rmq/open? ch2))))
+    (is (rmq/open? ch2))
+    (rmq/close conn)))
