@@ -7,6 +7,19 @@ bindings and consumers can be recovered automatically after channel
 recovery. This feature is enabled by default and can be disabled
 using the `:automatically-recover-topology` option.
 
+### langohr.queue/empty?
+
+`langohr.queue/empty?` is a new function that returns true if provided
+queue is empty (has 0 messages ready):
+
+``` clojure
+(require '[langohr.queue :as lq])
+
+(lq/empty? ch "a.queue")
+;= true
+```
+
+
 ### langohr.core/add-shutdown-listener
 
 `langohr.core/add-shutdown-listener` is a helper function that
