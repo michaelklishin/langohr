@@ -126,3 +126,26 @@
       (is (rmq/open? ch))
       (lb/publish ch x "" "a message")
       (await latch))))
+
+(deftest test-e2e-binding-recovery
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology true
+                                 :network-recovery-delay 500})]
+    (let [ch   (lch/open conn)
+          x1   "langohr.test.recovery.fanout1"
+          x2   "langohr.test.recovery.fanout2"
+          latch (CountDownLatch. 1)
+          f     (fn [_ _ _]
+                  (.countDown latch))
+          q     (lq/declare-server-named ch :exclusive true)]
+      (lx/fanout ch x1 :durable true)
+      (lx/fanout ch x2 :durable true)
+      (lx/bind ch x2 x1)
+      (lq/bind ch q x2)
+      (lc/subscribe ch q f)
+      (is (lq/empty? ch q))
+      (close-all-connections)
+      (wait-for-recovery)
+      (is (rmq/open? ch))
+      (lb/publish ch x1 "" "a message")
+      (await latch))))
