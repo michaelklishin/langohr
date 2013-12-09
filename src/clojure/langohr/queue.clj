@@ -107,5 +107,6 @@
   (:consumer-count (status channel queue)))
 
 (defn ^boolean empty?
+  "Returns true if queue is empty (has no messages ready), false otherwise"
   [^Channel ch ^String queue]
   (zero? (message-count ch queue)))
