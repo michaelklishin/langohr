@@ -7,7 +7,9 @@
             [langohr.basic     :as lb]
             [langohr.consumers :as lc]
             [clojure.test :refer :all]
-            [langohr.http      :as mgmt]))
+            [langohr.http      :as mgmt])
+  (:import [java.util.concurrent CountDownLatch
+            TimeUnit]))
 
 ;;
 ;; Helpers
@@ -23,6 +25,10 @@
   (lb/publish ch "" q "a message")
   (Thread/sleep 50)
   (is (not (lq/empty? ch q))))
+
+(defn await
+  [^CountDownLatch latch]
+  (is (.await latch 500 TimeUnit/MILLISECONDS)))
 
 ;;
 ;; Tests
@@ -73,4 +79,50 @@
     (Thread/sleep 800)
     (is (rmq/open? ch))
     (ensure-queue-recovery ch q)
+    (rmq/close conn)))
+
+(deftest test-basic-server-named-queue-recovery
+  (let [conn (rmq/connect {:automatically-recover true
+                           :automatically-recover-topology true
+                           :network-recovery-delay 500})
+        ch   (lch/open conn)
+        x    "langohr.test.recovery.direct1"
+        latch (CountDownLatch. 1)
+        f     (fn [_ _ _]
+                (.countDown latch))
+        q     (lq/declare-server-named ch :exclusive true)]
+    (lx/direct ch x :durable true)
+    (lq/bind ch q x :routing-key "test-basic-server-named-queue-recovery")
+    (lc/subscribe ch q f)
+    (is (lq/empty? ch q))
+    (close-all-connections)
+    (Thread/sleep 800)
+    (is (rmq/open? ch))
+    (lb/publish ch x "test-basic-server-named-queue-recovery" "a message")
+    (await latch)
+    (rmq/close conn)))
+
+(deftest test-server-named-queue-recovery-with-multiple-queues
+  (let [conn (rmq/connect {:automatically-recover true
+                           :automatically-recover-topology true
+                           :network-recovery-delay 500})
+        ch   (lch/open conn)
+        x    "langohr.test.recovery.fanout1"
+        latch (CountDownLatch. 2)
+        f     (fn [_ _ _]
+                (.countDown latch))
+        q1    (lq/declare-server-named ch :exclusive true)
+        q2    (lq/declare-server-named ch :exclusive true)]
+    (lx/fanout ch x :durable true)
+    (lq/bind ch q1 x)
+    (lq/bind ch q2 x)
+    (lc/subscribe ch q1 f)
+    (lc/subscribe ch q2 f)
+    (is (lq/empty? ch q1))
+    (is (lq/empty? ch q2))
+    (close-all-connections)
+    (Thread/sleep 800)
+    (is (rmq/open? ch))
+    (lb/publish ch x "" "a message")
+    (await latch)
     (rmq/close conn)))
