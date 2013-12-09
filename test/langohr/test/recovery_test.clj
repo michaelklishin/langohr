@@ -15,6 +15,11 @@
 ;; Helpers
 ;;
 
+(def ^:const expected-recovery-period 800)
+(defn wait-for-recovery
+  []
+  (Thread/sleep expected-recovery-period))
+
 (defn close-all-connections
   []
   (doseq [x (map :name (mgmt/list-connections))]
@@ -43,7 +48,7 @@
     (Thread/sleep 200)
     (is (not (rmq/open? conn)))
     ;; wait for recovery to finish
-    (Thread/sleep 800)
+    (wait-for-recovery)
     (is (rmq/open? conn))))
 
 
@@ -60,7 +65,7 @@
       (is (not (rmq/open? ch1)))
       (is (not (rmq/open? ch2)))
       ;; wait for recovery to finish
-      (Thread/sleep 800)
+      (wait-for-recovery)
       (is (rmq/open? ch1))
       (is (rmq/open? ch2)))))
 
@@ -74,7 +79,7 @@
       (lq/purge ch q)
       (is (lq/empty? ch q))
       (close-all-connections)
-      (Thread/sleep 800)
+      (wait-for-recovery)
       (is (rmq/open? ch))
       (ensure-queue-recovery ch q))))
 
@@ -93,7 +98,7 @@
       (lc/subscribe ch q f)
       (is (lq/empty? ch q))
       (close-all-connections)
-      (Thread/sleep 800)
+      (wait-for-recovery)
       (is (rmq/open? ch))
       (lb/publish ch x "test-basic-server-named-queue-recovery" "a message")
       (await latch))))
@@ -117,7 +122,7 @@
       (is (lq/empty? ch q1))
       (is (lq/empty? ch q2))
       (close-all-connections)
-      (Thread/sleep 800)
+      (wait-for-recovery)
       (is (rmq/open? ch))
       (lb/publish ch x "" "a message")
       (await latch))))
