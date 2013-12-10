@@ -1,5 +1,6 @@
 (ns langohr.test.core-test
   (:require [langohr.core     :as lc]
+            [langohr.channel  :as lch]
             [langohr.shutdown :as ls]
             [clojure.test     :refer :all])
   (:import [java.util.concurrent TimeUnit Executors]
@@ -20,7 +21,7 @@
   (let [conn (lc/connect {
                        :host "127.0.0.1" :port 5672
                        :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
-                       :requested-heartbeat 3 :connection-timeout 5 })]
+                       :requested-heartbeat 3 :connection-timeout 5})]
     (is (lc/open? conn))
     (is (not (lc/automatically-recover? conn)))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
@@ -32,6 +33,13 @@
     (is (lc/open? conn))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))))
+
+(deftest t-connection-with-overriden-channel-max
+  (let [conn (lc/connect {:requested-channel-max 16})]
+    (is (lc/open? conn))
+    (dotimes [x 16]
+      (lch/open conn))
+    (is (nil? (lch/open conn)))))
 
 (deftest t-connection-with-uri
   (let [conn (lc/connect {:uri "amqp://127.0.0.1:5672"})]
