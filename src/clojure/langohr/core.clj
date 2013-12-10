@@ -9,7 +9,12 @@
 
 (ns langohr.core
   "Functions that work with connections and shared features between connections
-   and channels (e.g. shutdown listeners)"
+   and channels (e.g. shutdown listeners).
+
+   Relevant guides:
+
+    * http://clojurerabbitmq.info/articles/connecting.html
+    * http://clojurerabbitmq.info/articles/tls.html"
   (:import [com.rabbitmq.client Connection Channel Address ConnectionFactory ShutdownListener BlockedListener]
            [com.novemberain.langohr Recoverable]
            [clojure.lang IFn]
