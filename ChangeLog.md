@@ -4,7 +4,7 @@
 
 Connection recovery now supports entity recovery. Queues, exchanges,
 bindings and consumers can be recovered automatically after channel
-recovery. This feature can be disabled
+recovery. This feature is enabled by default and can be disabled
 by setting the `:automatically-recover-topology` option to `false`.
 
 ### :requested-channel-max Connection Option
