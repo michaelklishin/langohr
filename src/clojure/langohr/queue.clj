@@ -8,7 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.queue
-  (:refer-clojure :exclude [declare])
+  (:refer-clojure :exclude [declare empty?])
   (:import [com.rabbitmq.client AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk AMQP$Queue$DeleteOk AMQP$Queue$PurgeOk]
            java.util.Map [com.novemberain.langohr.queue DeclareOk BindOk UnbindOk DeleteOk PurgeOk]
            com.novemberain.langohr.Channel))
