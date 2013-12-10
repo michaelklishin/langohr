@@ -269,8 +269,12 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    */
   private Channel wrapChannel(com.rabbitmq.client.Channel delegateChannel) {
     final Channel channel = new Channel(this, delegateChannel);
-    this.registerChannel(channel);
-    return channel;
+    if(channel == null) {
+      return null;
+    } else {
+      this.registerChannel(channel);
+      return channel;
+    }
   }
 
   /**
@@ -320,7 +324,12 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    * @throws java.io.IOException if an I/O problem is encountered
    */
   public Channel createChannel() throws IOException {
-    return this.wrapChannel(delegate.createChannel());
+    com.rabbitmq.client.Channel ch = delegate.createChannel();
+    if(ch == null) {
+      return null;
+    } else {
+      return this.wrapChannel(ch);
+    }
   }
 
   /**
