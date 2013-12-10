@@ -7,6 +7,15 @@ bindings and consumers can be recovered automatically after channel
 recovery. This feature is enabled by default and can be disabled
 using the `:automatically-recover-topology` option.
 
+### :requested-channel-max Connection Option
+
+`:requested-channel-max` is a new option accepted by
+`langohr.core/connect` that configures how many channels
+this connection may have. The limit is enforced on the client
+side. `0` means "no limit" and is the default.
+
+Contributed by Glophindale.
+
 ### langohr.queue/empty?
 
 `langohr.queue/empty?` is a new function that returns true if provided
