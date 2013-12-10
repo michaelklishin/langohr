@@ -33,7 +33,7 @@
   (Thread/sleep 50)
   (is (not (lq/empty? ch q))))
 
-(defn await
+(defn await-on
   [^CountDownLatch latch]
   (is (.await latch 500 TimeUnit/MILLISECONDS)))
 
@@ -63,7 +63,7 @@
       (is (rmq/open? ch1))
       (is (rmq/open? ch2))
       (close-all-connections)
-      (Thread/sleep 200)
+      (Thread/sleep 50)
       (is (not (rmq/open? ch1)))
       (is (not (rmq/open? ch2)))
       ;; wait for recovery to finish
@@ -103,7 +103,7 @@
       (wait-for-recovery)
       (is (rmq/open? ch))
       (lb/publish ch x "test-basic-server-named-queue-recovery" "a message")
-      (await latch))))
+      (await-on latch))))
 
 (deftest test-server-named-queue-recovery-with-multiple-queues
   (with-open [conn (rmq/connect {:automatically-recover true
@@ -127,7 +127,7 @@
       (wait-for-recovery)
       (is (rmq/open? ch))
       (lb/publish ch x "" "a message")
-      (await latch))))
+      (await-on latch))))
 
 (deftest test-e2e-binding-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
@@ -150,4 +150,4 @@
       (wait-for-recovery)
       (is (rmq/open? ch))
       (lb/publish ch x1 "" "a message")
-      (await latch))))
+      (await-on latch))))
