@@ -47,6 +47,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static IPersistentMap buildDefaultOptions() {
     Map<Keyword, Boolean> m = new HashMap<Keyword, Boolean>();
     m.put(AUTOMATICALLY_RECOVER_KEYWORD, true);
+    m.put(AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD, true);
 
     return PersistentHashMap.create(m);
   }
