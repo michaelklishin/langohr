@@ -177,9 +177,11 @@
   "Creates connection factory from given attributes"
   [settings]
   (let [{:keys [host port username password vhost
-                requested-heartbeat connection-timeout ssl ssl-context socket-factory sasl-config]
+                requested-heartbeat connection-timeout ssl ssl-context socket-factory sasl-config
+                requested-channel-max]
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
-              connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT}} (normalize-settings settings)
+              connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT
+              requested-channel-max ConnectionFactory/DEFAULT_CHANNEL_MAX}} (normalize-settings settings)
               cf   (ConnectionFactory.)
               final-port (if (and ssl (= port ConnectionFactory/DEFAULT_AMQP_PORT))
                            ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT
@@ -195,7 +197,8 @@
       (.setHost               host)
       (.setPort               final-port)
       (.setRequestedHeartbeat requested-heartbeat)
-      (.setConnectionTimeout  connection-timeout))
+      (.setConnectionTimeout  connection-timeout)
+      (.setRequestedChannelMax requested-channel-max))
     (when sasl-config
       (.setSaslConfig cf sasl-config))
     (when ssl-context
