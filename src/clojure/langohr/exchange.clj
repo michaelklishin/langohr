@@ -8,7 +8,11 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.exchange
-  "Exchanges are the entities to which messages are sent. Exchanges match and distribute messages across queues."
+  "Functions that provide operations on exchanges.
+
+   Relevant guides:
+
+   http://clojurerabbitmq.info/articles/exchanges.html"
   (:refer-clojure :exclude [declare])
   (:import [com.rabbitmq.client AMQP$Exchange$DeclareOk AMQP$Exchange$DeleteOk AMQP$Exchange$BindOk]
            [com.novemberain.langohr.exchange DeclareOk DeleteOk BindOk UnbindOk]
