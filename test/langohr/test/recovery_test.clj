@@ -1,5 +1,6 @@
 (ns langohr.test.recovery-test
   "Connection recovery tests"
+  (:refer-clojure :exclude [await])
   (:require [langohr.core      :as rmq]
             [langohr.channel   :as lch]
             [langohr.queue     :as lq]
