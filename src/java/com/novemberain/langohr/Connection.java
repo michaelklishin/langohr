@@ -154,14 +154,17 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   private void recoverConnection() throws IOException, InterruptedException {
-    try {
-      ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
-      this.delegate = this.cf.newConnection(es);
-    } catch (ConnectException ce) {
-      System.err.println("Failed to reconnect: " + ce.getMessage());
-      // TODO: exponential back-off
-      Thread.sleep(DEFAULT_RECONNECTION_PERIOD);
-      recoverConnection();
+    boolean recovering = true;
+    while (recovering) {
+        try {
+            ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
+            this.delegate = this.cf.newConnection(es);
+            recovering = false;
+        } catch (ConnectException ce) {
+            System.err.println("Failed to reconnect: " + ce.getMessage());
+            // TODO: exponential back-off
+            Thread.sleep(DEFAULT_RECONNECTION_PERIOD);
+        }
     }
   }
 
