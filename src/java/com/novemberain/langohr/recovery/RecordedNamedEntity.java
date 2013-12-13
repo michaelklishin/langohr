@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("unused")
 public class RecordedNamedEntity extends RecordedEntity {
   protected String name;
 

@@ -5,7 +5,6 @@ import com.novemberain.langohr.Channel;
 import java.io.IOException;
 import java.util.Map;
 
-@SuppressWarnings("unused")
 public class RecordedExchange extends RecordedNamedEntity implements RecoverableEntity {
   public static final String EMPTY_STRING = "";
   private static final String DEFAULT_EXCHANGE_NAME = "";

@@ -4,7 +4,6 @@ import com.novemberain.langohr.Channel;
 
 import java.io.IOException;
 
-@SuppressWarnings("unused")
 public class RecordedQueueBinding extends RecordedBinding implements RecoverableEntity {
   public RecordedQueueBinding(Channel channel) {
     super(channel);

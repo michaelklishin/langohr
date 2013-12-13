@@ -6,7 +6,6 @@ import com.rabbitmq.client.AMQP;
 import java.io.IOException;
 import java.util.Map;
 
-@SuppressWarnings("unused")
 public class RecordedQueue extends RecordedNamedEntity implements RecoverableEntity {
   public static final String EMPTY_STRING = "";
   private boolean durable;

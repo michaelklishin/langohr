@@ -4,7 +4,6 @@ import com.novemberain.langohr.Channel;
 
 import java.util.Map;
 
-@SuppressWarnings("unused")
 public abstract class RecordedBinding extends RecordedEntity implements RecoverableEntity {
   protected String source;
   protected String destination;

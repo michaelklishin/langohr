@@ -6,7 +6,6 @@ import com.rabbitmq.client.Consumer;
 import java.io.IOException;
 import java.util.Map;
 
-@SuppressWarnings("unused")
 public class RecordedConsumer extends RecordedEntity implements RecoverableEntity {
   private String queue;
   private String consumerTag;
