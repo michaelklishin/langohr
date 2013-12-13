@@ -136,9 +136,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   private void recoverChannels() throws IOException {
-    for (Map.Entry<Integer, Channel> e : this.channels.entrySet()) {
-      Channel ch = e.getValue();
-
+    for (Channel ch : this.channels.values()) {
       try {
         ch.automaticallyRecover(this, this.delegate);
       } catch (Throwable t) {
