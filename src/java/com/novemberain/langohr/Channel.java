@@ -456,7 +456,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see #basicConsume(String, boolean, String, boolean, boolean, java.util.Map, com.rabbitmq.client.Consumer)
    */
   public String basicConsume(String queue, boolean autoAck, Consumer callback) throws IOException {
-    return delegate.basicConsume(queue, autoAck, callback);
+    return basicConsume(queue, autoAck, "", callback);
   }
 
   /**
