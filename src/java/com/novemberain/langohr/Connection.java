@@ -66,7 +66,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     this.shutdownHooks = new ArrayList<ShutdownListener>();
     // network failure recovery hooks
     this.recoveryHooks = new ArrayList<IFn>();
-    this.networkRecoveryDelay = (Long)options.valAt(NETWORK_RECOVERY_DELAY_KEYWORD, DEFAULT_NETWORK_RECOVERY_DELAY);
+    this.networkRecoveryDelay = (Long) options.valAt(NETWORK_RECOVERY_DELAY_KEYWORD, DEFAULT_NETWORK_RECOVERY_DELAY);
   }
 
   @SuppressWarnings("unused")
@@ -157,15 +157,15 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private void recoverConnection() throws IOException, InterruptedException {
     boolean recovering = true;
     while (recovering) {
-        try {
-            ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
-            this.delegate = this.cf.newConnection(es);
-            recovering = false;
-        } catch (ConnectException ce) {
-            System.err.println("Failed to reconnect: " + ce.getMessage());
-            // TODO: exponential back-off
-            Thread.sleep(DEFAULT_RECONNECTION_PERIOD);
-        }
+      try {
+        ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
+        this.delegate = this.cf.newConnection(es);
+        recovering = false;
+      } catch (ConnectException ce) {
+        System.err.println("Failed to reconnect: " + ce.getMessage());
+        // TODO: exponential back-off
+        Thread.sleep(DEFAULT_RECONNECTION_PERIOD);
+      }
     }
   }
 
@@ -273,7 +273,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    */
   private Channel wrapChannel(com.rabbitmq.client.Channel delegateChannel) {
     final Channel channel = new Channel(this, delegateChannel);
-    if(channel == null) {
+    if (delegateChannel == null) {
       return null;
     } else {
       this.registerChannel(channel);
@@ -329,7 +329,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    */
   public Channel createChannel() throws IOException {
     com.rabbitmq.client.Channel ch = delegate.createChannel();
-    if(ch == null) {
+    if (ch == null) {
       return null;
     } else {
       return this.wrapChannel(ch);
@@ -475,9 +475,9 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   public boolean removeBlockedListener(BlockedListener listener) {
-      boolean result = blockedListeners.remove(listener);
-      delegate.removeBlockedListener(listener);
-      return result;
+    boolean result = blockedListeners.remove(listener);
+    delegate.removeBlockedListener(listener);
+    return result;
   }
 
   public void clearBlockedListeners() {
