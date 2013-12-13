@@ -122,7 +122,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
       this.runChannelRecoveryHooks();
     } catch (Throwable t) {
       System.err.println("Caught an exception during connection recovery!");
-      t.printStackTrace();
+      t.printStackTrace(System.err);
     }
 
   }
