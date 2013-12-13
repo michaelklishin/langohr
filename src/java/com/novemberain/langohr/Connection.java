@@ -143,7 +143,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
         ch.automaticallyRecover(this, this.delegate);
       } catch (Throwable t) {
         System.err.println("Caught an exception when recovering channel " + ch.getChannelNumber());
-        t.printStackTrace();
+        t.printStackTrace(System.err);
       }
     }
   }
