@@ -1,4 +1,5 @@
 (ns langohr.http
+  "RabbitMQ HTTP API client"
   (:refer-clojure :exclude [get])
   (:require [clj-http.client :as http]
             [cheshire.core   :as json]
