@@ -8,8 +8,8 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.consumers
-  (:require [langohr.basic :as lhb])
-  (:use langohr.conversion)
+  (:require [langohr.basic :as lhb]
+            [langohr.conversion :refer :all])
   (:import [com.rabbitmq.client Consumer DefaultConsumer QueueingConsumer QueueingConsumer$Delivery ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery]
            com.novemberain.langohr.Channel))
 
