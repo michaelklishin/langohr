@@ -22,7 +22,10 @@
 ;;
 
 (defn ^Channel open
-  "Opens a new channel on given connection using channel.open AMQP method."
+  "Opens a new channel on given connection using channel.open AMQP method.
+
+   Returns nil if channel cannot be open because the number of open channel
+   would surpass negotiated channel_max connection setting."
   ([^Connection connection]
      (.createChannel connection))
   ([^Connection connection id]
