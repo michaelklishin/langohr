@@ -8,6 +8,12 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.consumers
+  "Functions that instantiate consumers and provide convenient ways of
+   registering them.
+
+   Relevant guides:
+
+   * http://clojurerabbitmq.info/articles/queues.html"
   (:require [langohr.basic :as lhb]
             [langohr.conversion :refer :all])
   (:import [com.rabbitmq.client Consumer DefaultConsumer QueueingConsumer QueueingConsumer$Delivery ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery]
