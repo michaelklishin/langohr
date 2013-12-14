@@ -28,7 +28,6 @@
           queue      "langohr.examples.publishing.using-default-exchange"
           declare-ok (lhq/declare channel queue :auto-delete true)
           tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")
-
           content-type "text/plain"
           msg-id       (.toString (java.util.UUID/randomUUID))
           n            3000
@@ -48,7 +47,7 @@
                                         :message-id msg-id
                                         :content-type content-type
                                         :headers { "see you soon" "à bientôt" }))) "publisher"))
-      (is (.await latch 700 TimeUnit/MILLISECONDS)))))
+      (is (.await latch 3 TimeUnit/SECONDS)))))
 
 ;;
 ;; make sure that `langohr.consumers/subscribe` takes both versions for handler functions:
