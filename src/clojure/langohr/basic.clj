@@ -8,6 +8,13 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.basic
+  "Functions that cover basic.* protocol methods: publishing and consumption
+   of messages, acknowledgements.
+
+   Relevant guides:
+
+   * http://clojurerabbitmq.info/articles/queues.html
+   * http://clojurerabbitmq.info/articles/exchanges.html"
   (:refer-clojure :exclude [get])
   (:require langohr.util
             [langohr.conversion :refer [to-message-metadata]]
