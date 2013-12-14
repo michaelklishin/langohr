@@ -8,7 +8,11 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.channel
-  "Operations on channels"
+  "Operations on channels.
+
+   Relevant guides:
+
+   * http://clojurerabbitmq.info/articles/connecting.html"
   (:import [com.rabbitmq.client Connection Channel]
            com.novemberain.langohr.channel.FlowOk))
 
@@ -18,7 +22,7 @@
 ;;
 
 (defn ^Channel open
-  "Opens a new channel on given connection using channel.open AMQP method"
+  "Opens a new channel on given connection using channel.open AMQP method."
   ([^Connection connection]
      (.createChannel connection))
   ([^Connection connection id]
