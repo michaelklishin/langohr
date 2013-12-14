@@ -8,6 +8,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.tx
+  "Transaction operations"
   (:import com.novemberain.langohr.Channel
            [com.novemberain.langohr.tx SelectOk CommitOk RollbackOk]))
 
