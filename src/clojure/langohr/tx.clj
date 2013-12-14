@@ -25,10 +25,12 @@
 
 
 (defn ^com.novemberain.langohr.tx.CommitOk commit
+  "Commits current transaction"
   [^Channel channel]
   (CommitOk. (.txCommit channel)))
 
 
 (defn ^com.novemberain.langohr.tx.CommitOk rollback
+  "Rolls current transaction back"
   [^Channel channel]
   (RollbackOk. (.txRollback channel)))
