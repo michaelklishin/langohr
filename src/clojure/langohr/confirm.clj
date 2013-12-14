@@ -8,6 +8,11 @@
 ;; You must not remove this notice, or any other from this software.
 
 (ns langohr.confirm
+  "Functions that work with publisher confirms.
+
+   Relevant guides:
+
+   * http://clojurerabbitmq.info/articles/exchanges.html"
   (:import [com.rabbitmq.client ConfirmListener]
            com.novemberain.langohr.confirm.SelectOk
            com.novemberain.langohr.Channel))
