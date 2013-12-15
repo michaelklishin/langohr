@@ -35,11 +35,6 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private final List<ShutdownListener> shutdownHooks;
   private final List<IFn> recoveryHooks;
   private com.rabbitmq.client.Connection delegate;
-  /**
-   * Shutdown listener that kicks off automatic connection recovery
-   * if it is enabled.
-   */
-  private ShutdownListener automaticRecoveryListener;
   private Map<Integer, Channel> channels;
   private final Collection<BlockedListener> blockedListeners = new CopyOnWriteArrayList<BlockedListener>();
   private long networkRecoveryDelay;
@@ -83,7 +78,11 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
 
   private void addAutomaticRecoveryHook() {
     final Connection c = this;
-    automaticRecoveryListener = new ShutdownListener() {
+    /*
+    Shutdown listener that kicks off automatic connection recovery
+    if it is enabled.
+   */
+    ShutdownListener automaticRecoveryListener = new ShutdownListener() {
       public void shutdownCompleted(ShutdownSignalException cause) {
         try {
           if (!cause.isInitiatedByApplication()) {
