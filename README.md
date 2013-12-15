@@ -10,6 +10,7 @@ Langohr is a [Clojure RabbitMQ client](http://clojurerabbitmq.info) that embrace
  * Be well tested.
  * Error handling and recovery should be well covered
  * Support all of the RabbitMQ features, include [extensions to AMQP 0.9.1](http://www.rabbitmq.com/extensions.html).
+ * Make error handling and recovery easier
 
 We've learned a lot from ~ 5 years history of the [Ruby amqp
 gem](http://rubyamqp.info) and [Bunny](http://rubybunny.info)
