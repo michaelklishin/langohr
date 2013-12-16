@@ -127,9 +127,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   private void runChannelRecoveryHooks() {
-    for (Map.Entry<Integer, Channel> e : this.channels.entrySet()) {
-      Channel ch = e.getValue();
-
+    for (Channel ch : this.channels.values()) {
       ch.runRecoveryHooks();
     }
   }
