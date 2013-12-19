@@ -467,11 +467,8 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @throws java.io.IOException if an error is encountered
    */
   public void close(int closeCode, String closeMessage) throws IOException {
-    try {
-      delegate.close(closeCode, closeMessage);
-    } finally {
-      this.connection.unregisterChannel(this);
-    }
+    this.connection.unregisterChannel(this);
+    delegate.close(closeCode, closeMessage);
   }
 
   /**
@@ -807,11 +804,8 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @throws java.io.IOException if an error is encountered
    */
   public void close() throws IOException {
-    try {
-      delegate.close();
-    } finally {
-      this.connection.unregisterChannel(this);
-    }
+    this.connection.unregisterChannel(this);
+    delegate.close();
   }
 
   /**
@@ -1040,11 +1034,8 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Queue.DeleteOk
    */
   public AMQP.Queue.DeleteOk queueDelete(String queue, boolean ifUnused, boolean ifEmpty) throws IOException {
-    try {
-      this.queues.remove(queue);
-    } finally {
-      return delegate.queueDelete(queue, ifUnused, ifEmpty);
-    }
+    this.queues.remove(queue);
+    return delegate.queueDelete(queue, ifUnused, ifEmpty);
   }
 
   /**
