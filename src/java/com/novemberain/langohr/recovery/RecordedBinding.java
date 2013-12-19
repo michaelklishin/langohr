@@ -60,9 +60,8 @@ public abstract class RecordedBinding extends RecordedEntity implements Recovera
     if (arguments != null ? !arguments.equals(that.arguments) : that.arguments != null) return false;
     if (!destination.equals(that.destination)) return false;
     if (!routingKey.equals(that.routingKey)) return false;
-    if (!source.equals(that.source)) return false;
 
-    return true;
+    return source.equals(that.source);
   }
 
   @Override
