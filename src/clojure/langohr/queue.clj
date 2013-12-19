@@ -74,7 +74,7 @@
 (defn ^com.novemberain.langohr.queue.UnbindOk unbind
   "Unbinds a queue from an exchange using queue.bind AMQP method"
   ([^Channel ch ^String queue ^String exchange]
-     (UnbindOk. (.queueUnbind ch queue exchange)))
+     (UnbindOk. (.queueUnbind ch queue exchange "")))
   ([^Channel ch ^String queue ^String exchange ^String routing-key]
      (UnbindOk. (.queueUnbind ch queue exchange routing-key)))
   ([^Channel ch ^String queue ^String exchange ^String routing-key ^Map arguments]
