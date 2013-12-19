@@ -97,6 +97,8 @@
 
 (defn ^com.novemberain.langohr.exchange.UnbindOk unbind
   "Unbinds an exchange from another exchange using exchange.unbind AMQP method (a RabbitMQ-specific extension)"
+  ([^Channel channel ^String destination ^String source]
+    (UnbindOk. (.exchangeUnbind channel destination source "")))
   ([^Channel channel ^String destination ^String source ^String routing-key]
     (UnbindOk. (.exchangeUnbind channel destination source routing-key)))
   ([^Channel channel ^String destination ^String source ^String routing-key ^Map arguments]
