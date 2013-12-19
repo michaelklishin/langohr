@@ -49,4 +49,27 @@ public abstract class RecordedBinding extends RecordedEntity implements Recovera
   public void setDestination(String destination) {
     this.destination = destination;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    RecordedBinding that = (RecordedBinding) o;
+
+    if (arguments != null ? !arguments.equals(that.arguments) : that.arguments != null) return false;
+    if (!destination.equals(that.destination)) return false;
+    if (!routingKey.equals(that.routingKey)) return false;
+
+    return source.equals(that.source);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = source.hashCode();
+    result = 31 * result + destination.hashCode();
+    result = 31 * result + routingKey.hashCode();
+    result = 31 * result + (arguments != null ? arguments.hashCode() : 0);
+    return result;
+  }
 }

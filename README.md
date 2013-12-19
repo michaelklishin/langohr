@@ -10,8 +10,9 @@ Langohr is a [Clojure RabbitMQ client](http://clojurerabbitmq.info) that embrace
  * Be well tested.
  * Error handling and recovery should be well covered
  * Support all of the RabbitMQ features, include [extensions to AMQP 0.9.1](http://www.rabbitmq.com/extensions.html).
+ * Make error handling and recovery easier
 
-We've learned a lot from ~ 4 years history of the [Ruby amqp
+We've learned a lot from ~ 5 years history of the [Ruby amqp
 gem](http://rubyamqp.info) and [Bunny](http://rubybunny.info)
 development and try to apply this experience to Langohr design.
 
@@ -41,7 +42,7 @@ definition to your `pom.xml`:
 With [Leiningen](http://leiningen.org):
 
 ``` clojure
-[com.novemberain/langohr "2.0.0-rc4"]
+[com.novemberain/langohr "2.0.0"]
 ```
 
 With Maven:
@@ -50,7 +51,7 @@ With Maven:
 <dependency>
   <groupId>com.novemberain</groupId>
   <artifactId>langohr</artifactId>
-  <version>2.0.0-rc4</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
@@ -140,3 +141,7 @@ Copyright (C) 2011-2013 Michael S. Klishin
 
 Double licensed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html) (the same as Clojure) or
 the [Apache Public License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/michaelklishin/langohr/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+

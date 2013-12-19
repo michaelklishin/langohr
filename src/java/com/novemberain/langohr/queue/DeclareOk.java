@@ -1,6 +1,7 @@
 package com.novemberain.langohr.queue;
 
 import clojure.lang.IPersistentMap;
+import clojure.lang.Keyword;
 import clojure.lang.PersistentHashMap;
 import clojure.lang.RT;
 import com.novemberain.langohr.PersistentMapLike;
@@ -20,7 +21,7 @@ public class DeclareOk extends PersistentMapLike implements AMQP.Queue.DeclareOk
   }
 
   public static IPersistentMap mapFrom(AMQP.Queue.DeclareOk method) {
-    Map m = new HashMap();
+    Map<Keyword, Object> m = new HashMap<Keyword, Object>();
     m.put(RT.keyword(null, "queue"), method.getQueue());
     m.put(RT.keyword(null, "message-count"), method.getMessageCount());
     m.put(RT.keyword(null, "consumer-count"), method.getConsumerCount());
