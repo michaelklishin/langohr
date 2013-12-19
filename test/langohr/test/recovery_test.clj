@@ -178,6 +178,53 @@
       (lb/publish ch x1 "" "a message")
       (is (not (.await latch 100 TimeUnit/MILLISECONDS))))))
 
+(deftest test-queue-binding-recovery
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology true
+                                 :network-recovery-delay recovery-delay})]
+    (let [ch    (lch/open conn)
+          x     "langohr.test.recovery.fanout1"
+          q     "langohr.test.recovery.q1"
+          latch (CountDownLatch. 1)
+          f     (fn [_ _ _]
+                  (.countDown latch))]
+      (lx/fanout ch x :durable true)
+      (lq/declare ch q :durable true)
+      (lq/purge ch q)
+      (lq/bind ch q x)
+      (close-all-connections)
+      (wait-for-recovery)
+      (lc/subscribe ch q f)
+      (close-all-connections)
+      (wait-for-recovery)
+      (lb/publish ch x "" "a message")
+      (is (.await latch 100 TimeUnit/MILLISECONDS))
+      (lx/delete ch x))))
+
+(deftest test-removed-queue-binding-does-not-reappear-after-recovery
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology true
+                                 :network-recovery-delay recovery-delay})]
+    (let [ch    (lch/open conn)
+          x     "langohr.test.recovery.fanout1"
+          q     "langohr.test.recovery.q1"
+          latch (CountDownLatch. 1)
+          f     (fn [_ _ _]
+                  (.countDown latch))]
+      (lx/fanout ch x :durable true)
+      (lq/declare ch q :durable true)
+      (lq/purge ch q)
+      (lq/bind ch q x)
+      (lq/unbind ch q x)
+      (close-all-connections)
+      (wait-for-recovery)
+      (lc/subscribe ch q f)
+      (close-all-connections)
+      (wait-for-recovery)
+      (lb/publish ch x "" "a message")
+      (is (not (.await latch 100 TimeUnit/MILLISECONDS)))
+      (lx/delete ch x))))
+
 ;; q1 => q2 => ... => q(n-1) => q(n)
 (deftest test-merry-go-around-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
