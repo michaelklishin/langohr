@@ -1,3 +1,12 @@
+## Changes between Langohr 2.0.0 and 2.1.0
+
+### No Zombie Bindings After Recovery
+
+Langohr now correctly removes bindings from the list of
+bindings to recover when a binding is removed using `queue.unbind`
+or `exchange.unbind`.
+
+
 ## Changes between Langohr 1.7.0 and 2.0.0
 
 ### Topology (Queues, Exchanges, Bindings, Consumers) Recovery
