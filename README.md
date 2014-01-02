@@ -86,7 +86,7 @@ Our [test suite](https://github.com/michaelklishin/langohr/tree/master/test/lang
 
 ## Supported Clojure Versions
 
-Langohr is built from the ground up for Clojure 1.3+. The most recent
+Langohr requires Clojure 1.4. The most recent
 stable release is highly recommended.
 
 
