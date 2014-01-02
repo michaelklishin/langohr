@@ -104,9 +104,13 @@ Langohr has been around since 2011. The API is stable.
 
 ## Community
 
-[Langohr has a mailing list](https://groups.google.com/forum/#!forum/clojure-rabbitmq). Feel free to join it and ask any questions you may have.
+[Langohr has a mailing
+list](https://groups.google.com/forum/#!forum/clojure-rabbitmq). Feel
+free to join it and ask any questions you may have.
 
-To subscribe for announcements of releases, important changes and so on, please follow [@ClojureWerkz](https://twitter.com/#!/clojurewerkz) on Twitter.
+To subscribe for announcements of releases, important changes and so
+on, please follow [@ClojureWerkz](https://twitter.com/#!/clojurewerkz)
+on Twitter.
 
 
 ## Langohr Is a ClojureWerkz Project
