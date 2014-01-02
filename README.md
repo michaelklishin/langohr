@@ -116,7 +116,13 @@ on Twitter.
 ## Langohr Is a ClojureWerkz Project
 
 Langohr is part of the group of libraries known as [ClojureWerkz](http://clojurewerkz.org), together with
-[Monger](https://github.com/michaelklishin/monger), [Neocons](https://github.com/michaelklishin/neocons), [Elastisch](https://github.com/clojurewerkz/elastisch), [Quartzite](https://github.com/michaelklishin/quartzite) and several others.
+
+ * [Monger](https://clojuremongodb.info)
+ * [Cassaforte](https://clojurecassandra.info)
+ * [Welle](https://clojureriak.info)
+ * [Neocons](https://clojureneo4j.info)
+ * [Quartzite](https://clojurequartz.info)
+ * [Titanium](https://titanium.clojurewerkz.org)
 
 
 
