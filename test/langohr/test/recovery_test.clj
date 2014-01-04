@@ -7,6 +7,7 @@
             [langohr.exchange  :as lx]
             [langohr.basic     :as lb]
             [langohr.consumers :as lc]
+            [langohr.confirm   :as lcnf]
             [clojure.test :refer :all]
             [langohr.http      :as mgmt])
   (:import [java.util.concurrent CountDownLatch
@@ -72,6 +73,21 @@
       (wait-for-recovery)
       (is (rmq/open? ch1))
       (is (rmq/open? ch2)))))
+
+(deftest test-publisher-confirms-state-recovery
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology false
+                                 :network-recovery-delay recovery-delay})]
+    (let [ch  (lch/open conn)
+          q   (lq/declare-server-named ch)]
+      (lcnf/select ch)
+      (is (rmq/open? ch))
+      (close-all-connections)
+      ;; wait for recovery to finish
+      (wait-for-recovery)
+      (is (rmq/open? ch))
+      (lb/publish ch "" q "a message")
+      (lcnf/wait-for-confirms ch))))
 
 (deftest test-basic-client-named-queue-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
