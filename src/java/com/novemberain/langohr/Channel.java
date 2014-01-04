@@ -20,6 +20,12 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   private final List<RecordedBinding> bindings = new ArrayList<RecordedBinding>();
   private Map<String, RecordedExchange> exchanges = new ConcurrentHashMap<String, RecordedExchange>();
 
+  private int prefetchCount;
+  private boolean globalQos;
+  private boolean usesPublisherConfirms;
+  private boolean usesTransactions;
+
+
   public Channel(Connection connection, com.rabbitmq.client.Channel channel) {
     this.connection = connection;
     this.delegate = channel;
@@ -127,6 +133,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Tx.SelectOk
    */
   public AMQP.Tx.SelectOk txSelect() throws IOException {
+    this.usesTransactions = true;
     return delegate.txSelect();
   }
 
@@ -323,7 +330,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see #basicQos(int, int, boolean)
    */
   public void basicQos(int prefetchCount) throws IOException {
-    delegate.basicQos(prefetchCount);
+    basicQos(0, prefetchCount, false);
   }
 
   /**
@@ -724,6 +731,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Confirm.Select
    */
   public AMQP.Confirm.SelectOk confirmSelect() throws IOException {
+    this.usesPublisherConfirms = true;
     return delegate.confirmSelect();
   }
 
@@ -794,6 +802,8 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Basic.Qos
    */
   public void basicQos(int prefetchSize, int prefetchCount, boolean global) throws IOException {
+    this.prefetchCount = prefetchCount;
+    this.globalQos = global;
     delegate.basicQos(prefetchSize, prefetchCount, global);
   }
 
@@ -1071,15 +1081,25 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
 
   public void automaticallyRecover(Connection connection, com.rabbitmq.client.Connection delegate) throws IOException {
     this.connection = connection;
+    this.delegate   = delegate.createChannel(this.getChannelNumber());
 
-    this.delegate = delegate.createChannel(this.getChannelNumber());
-
+    this.recoverState();
     if (this.connection.automaticTopologyRecoveryEnabled()) {
       this.recoverEntites();
     }
   }
 
-  public void runRecoveryHooks() {
+    private void recoverState() throws IOException {
+      basicQos(0, this.prefetchCount, this.globalQos);
+      if(this.usesPublisherConfirms) {
+          this.confirmSelect();
+      }
+      if(this.usesTransactions) {
+          this.txSelect();
+      }
+    }
+
+    public void runRecoveryHooks() {
     for (IFn f : this.recoveryHooks) {
       f.invoke(this);
     }
