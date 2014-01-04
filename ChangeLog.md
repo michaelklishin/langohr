@@ -1,5 +1,10 @@
 ## Changes between Langohr 2.0.0 and 2.1.0
 
+### Full Channel State Recovery
+
+Channel recovery now involves recovery of publisher confirms and
+transaction modes.
+
 ### No Zombie Bindings After Recovery
 
 Langohr now correctly removes bindings from the list of
