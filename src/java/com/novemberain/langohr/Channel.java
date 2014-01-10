@@ -82,7 +82,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     if (queue.equals(RecordedQueue.EMPTY_STRING)) {
       q.serverNamed(true);
     }
-    this.queues.put(ok.getQueue(), q);
+    recordQueue(ok, q);
     return ok;
   }
 
@@ -115,12 +115,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    */
   public AMQP.Exchange.BindOk exchangeBind(String destination, String source, String routingKey, Map<String, Object> arguments) throws IOException {
     final AMQP.Exchange.BindOk ok = delegate.exchangeBind(destination, source, routingKey, arguments);
-    RecordedBinding binding = new RecordedExchangeBinding(this).
-        source(source).
-        destination(destination).
-        routingKey(routingKey).
-        arguments(arguments);
-    this.bindings.add(binding);
+    recordExchangeBinding(destination, source, routingKey, arguments);
     return ok;
   }
 
@@ -372,17 +367,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     return ok;
   }
 
-  private void recordQueueBinding(String queue, String exchange, String routingKey, Map<String, Object> arguments) {
-    RecordedBinding binding = new RecordedQueueBinding(this).
-        source(exchange).
-        destination(queue).
-        routingKey(routingKey).
-        arguments(arguments);
-    if (!this.bindings.contains(binding)) {
-      this.bindings.add(binding);
-    }
-  }
-
   /**
    * Wait until all messages published since the last call have been
    * either ack'd or nack'd by the broker; or until timeout elapses.
@@ -547,7 +531,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
           durable(durable).
           autoDelete(autoDelete).
           arguments(arguments);
-      this.exchanges.put(exchange, x);
+      recordExchange(exchange, x);
     }
     return ok;
   }
@@ -706,15 +690,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     return delegate.queueUnbind(queue, exchange, routingKey, arguments);
   }
 
-  private boolean deleteRecordedQueueBinding(String queue, String exchange, String routingKey, Map<String, Object> arguments) {
-    RecordedBinding b = new RecordedQueueBinding(this).
-        source(exchange).
-        destination(queue).
-        routingKey(routingKey).
-        arguments(arguments);
-    return this.bindings.remove(b);
-  }
-
   /**
    * Get the shutdown reason object
    *
@@ -829,7 +804,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Exchange.DeleteOk
    */
   public AMQP.Exchange.DeleteOk exchangeDelete(String exchange, boolean ifUnused) throws IOException {
-    this.exchanges.remove(exchange);
+    deleteRecordedExchange(exchange);
     return delegate.exchangeDelete(exchange, ifUnused);
   }
 
@@ -1044,7 +1019,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @see com.rabbitmq.client.AMQP.Queue.DeleteOk
    */
   public AMQP.Queue.DeleteOk queueDelete(String queue, boolean ifUnused, boolean ifEmpty) throws IOException {
-    this.queues.remove(queue);
+    deleteRecordedQueue(queue);
     return delegate.queueDelete(queue, ifUnused, ifEmpty);
   }
 
@@ -1063,15 +1038,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   public AMQP.Exchange.UnbindOk exchangeUnbind(String destination, String source, String routingKey, Map<String, Object> arguments) throws IOException {
     deleteRecordedExchangeBinding(destination, source, routingKey, arguments);
     return delegate.exchangeUnbind(destination, source, routingKey, arguments);
-  }
-
-  private boolean deleteRecordedExchangeBinding(String destination, String source, String routingKey, Map<String, Object> arguments) {
-    RecordedBinding b = new RecordedExchangeBinding(this).
-        source(source).
-        destination(destination).
-        routingKey(routingKey).
-        arguments(arguments);
-    return this.bindings.remove(b);
   }
 
   @SuppressWarnings("unused")
@@ -1146,7 +1112,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
         // make sure server-named queues are re-added with
         // their new names. MK.
         synchronized (this.queues) {
-          this.queues.remove(oldName);
+          deleteRecordedQueue(oldName);
           this.queues.put(newName, q);
           this.propagateQueueNameChangeToBindings(oldName, newName);
           this.propagateQueueNameChangeToConsumers(oldName, newName);
@@ -1202,5 +1168,63 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
         e.printStackTrace(System.err);
       }
     }
+  }
+
+  //
+  // Recovery
+  //
+
+  private void recordQueueBinding(String queue, String exchange, String routingKey, Map<String, Object> arguments) {
+    RecordedBinding binding = new RecordedQueueBinding(this).
+        source(exchange).
+        destination(queue).
+        routingKey(routingKey).
+        arguments(arguments);
+    if (!this.bindings.contains(binding)) {
+      this.bindings.add(binding);
+    }
+  }
+
+  private boolean deleteRecordedQueueBinding(String queue, String exchange, String routingKey, Map<String, Object> arguments) {
+    RecordedBinding b = new RecordedQueueBinding(this).
+        source(exchange).
+        destination(queue).
+        routingKey(routingKey).
+        arguments(arguments);
+    return this.bindings.remove(b);
+  }
+
+  private void recordExchangeBinding(String destination, String source, String routingKey, Map<String, Object> arguments) {
+    RecordedBinding binding = new RecordedExchangeBinding(this).
+        source(source).
+        destination(destination).
+        routingKey(routingKey).
+        arguments(arguments);
+    this.bindings.add(binding);
+  }
+
+  private boolean deleteRecordedExchangeBinding(String destination, String source, String routingKey, Map<String, Object> arguments) {
+    RecordedBinding b = new RecordedExchangeBinding(this).
+        source(source).
+        destination(destination).
+        routingKey(routingKey).
+        arguments(arguments);
+    return this.bindings.remove(b);
+  }
+
+  private void recordQueue(AMQP.Queue.DeclareOk ok, RecordedQueue q) {
+    this.queues.put(ok.getQueue(), q);
+  }
+
+  private void deleteRecordedQueue(String queue) {
+    this.queues.remove(queue);
+  }
+
+  private void recordExchange(String exchange, RecordedExchange x) {
+    this.exchanges.put(exchange, x);
+  }
+
+  private void deleteRecordedExchange(String exchange) {
+    this.exchanges.remove(exchange);
   }
 }
