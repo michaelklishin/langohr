@@ -10,6 +10,11 @@ it on another channel and not have it reappear.
 Suggested by Jonathan Halterman.
 
 
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.2.2`.
+
+
 
 ## Changes between Langohr 2.0.0 and 2.1.0
 
