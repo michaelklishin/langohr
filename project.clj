@@ -5,7 +5,7 @@
   :dependencies [[org.clojure/clojure      "1.5.1"]
                  [com.rabbitmq/amqp-client "3.2.1"]
                  [clojurewerkz/support     "0.20.0"]
-                 [clj-http                 "0.7.7"]
+                 [clj-http                 "0.7.8"]
                  [cheshire                 "5.3.1"]]
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
