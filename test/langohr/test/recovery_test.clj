@@ -296,4 +296,4 @@
       (wait-for-recovery)
       (is (rmq/open? ch))
       (lb/publish ch x (first qs) "a message")
-      (await-on latch 10 TimeUnit/SECONDS))))
+      (await-on latch 15 TimeUnit/SECONDS))))
