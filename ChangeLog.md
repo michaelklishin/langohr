@@ -1,3 +1,16 @@
+## Changes between Langohr 2.1.0 and 2.2.0
+
+### Automatic Topology Recovery Tracks Entities Per Connection
+
+Automatic topology recovery now tracks entities (exchanges,
+queues, bindings, and consumers) per connection. This makes
+it possible to, say, declare an exchange on one channel, delete
+it on another channel and not have it reappear.
+
+Suggested by Jonathan Halterman.
+
+
+
 ## Changes between Langohr 2.0.0 and 2.1.0
 
 ### Full Channel State Recovery
