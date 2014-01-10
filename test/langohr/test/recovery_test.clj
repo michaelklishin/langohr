@@ -194,6 +194,32 @@
       (lb/publish ch x1 "" "a message")
       (is (not (.await latch 100 TimeUnit/MILLISECONDS))))))
 
+(deftest test-removed-e2e-bindings-declared-and-deleted-on-separate-channels-do-not-reappear-after-recovery
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology true
+                                 :network-recovery-delay recovery-delay})]
+    (let [ch1  (lch/open conn)
+          ch2  (lch/open conn)
+          x1   "langohr.test.recovery.fanout1"
+          x2   "langohr.test.recovery.fanout2"
+          latch (CountDownLatch. 1)
+          f     (fn [_ _ _]
+                  (.countDown latch))
+          q     (lq/declare-server-named ch1 :exclusive true)]
+      (lx/fanout ch1 x1 :durable true)
+      (lx/fanout ch1 x2 :durable true)
+      (lx/bind ch1 x2 x1)
+      (lq/bind ch2 q x2)
+      (lx/unbind ch2 x2 x1)
+      (lc/subscribe ch1 q f)
+      (is (lq/empty? ch2 q))
+      (close-all-connections)
+      (wait-for-recovery)
+      (is (rmq/open? ch1))
+      (is (rmq/open? ch2))
+      (lb/publish ch1 x1 "" "a message")
+      (is (not (.await latch 100 TimeUnit/MILLISECONDS))))))
+
 (deftest test-queue-binding-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology true
