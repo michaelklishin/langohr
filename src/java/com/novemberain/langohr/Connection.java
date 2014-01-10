@@ -4,10 +4,8 @@ import clojure.lang.IFn;
 import clojure.lang.IPersistentMap;
 import clojure.lang.Keyword;
 import clojure.lang.PersistentHashMap;
-import com.rabbitmq.client.BlockedListener;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ShutdownListener;
-import com.rabbitmq.client.ShutdownSignalException;
+import com.novemberain.langohr.recovery.*;
+import com.rabbitmq.client.*;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -38,6 +36,12 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private Map<Integer, Channel> channels;
   private final Collection<BlockedListener> blockedListeners = new CopyOnWriteArrayList<BlockedListener>();
   private long networkRecoveryDelay;
+
+  // Records topology changes
+  private final Map<String, RecordedQueue> recordedQueues = new ConcurrentHashMap<String, RecordedQueue>();
+  private final List<RecordedBinding> recordedBindings = new ArrayList<RecordedBinding>();
+  private Map<String, RecordedExchange> recordedExchanges = new ConcurrentHashMap<String, RecordedExchange>();
+  private final Map<String, RecordedConsumer> consumers = new ConcurrentHashMap<String, RecordedConsumer>();
 
   private static IPersistentMap buildDefaultOptions() {
     Map<Keyword, Boolean> m = new HashMap<Keyword, Boolean>();
@@ -114,6 +118,8 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
       this.recoverShutdownHooks();
       // System.out.println("About to recover channels...");
       this.recoverChannels();
+      this.recoverEntites();
+      this.recoverConsumers();
 
       for (IFn f : recoveryHooks) {
         f.invoke(this);
@@ -287,13 +293,6 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     return this.wrapChannel(delegate.createChannel(channelNumber));
   }
 
-  private void registerChannel(Channel channel) {
-    this.channels.put(channel.getChannelNumber(), channel);
-  }
-
-  public void unregisterChannel(Channel channel) {
-    this.channels.remove(channel.getChannelNumber());
-  }
 
   /**
    * Abort this connection and all its channels
@@ -477,5 +476,175 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
 
   public void clearBlockedListeners() {
     blockedListeners.clear();
+  }
+
+
+  //
+  // Recovery
+  //
+
+  public void recoverEntites() {
+    // The recovery sequence is the following:
+    //
+    // 1. Recover exchanges
+    // 2. Recover queues
+    // 3. Recover bindings
+    // 4. Recover consumers
+    recoverExchanges();
+    recoverQueues();
+    recoverBindings();
+  }
+
+  private void recoverExchanges() {
+    // recorded exchanges are guaranteed to be
+    // non-predefined (we filter out predefined ones
+    // in exchangeDeclare). MK.
+    for (RecordedExchange x : this.recordedExchanges.values()) {
+      try {
+        x.recover();
+      } catch (Exception e) {
+        System.err.println("Caught an exception while recovering exchange " + x.getName());
+        e.printStackTrace(System.err);
+      }
+    }
+  }
+
+  private void recoverQueues() {
+    for (Map.Entry<String, RecordedQueue> entry : this.recordedQueues.entrySet()) {
+      String oldName = entry.getKey();
+      RecordedQueue q = entry.getValue();
+      try {
+        q.recover();
+        String newName = q.getName();
+        // make sure server-named queues are re-added with
+        // their new names. MK.
+        synchronized (this.recordedQueues) {
+          deleteRecordedQueue(oldName);
+          this.recordedQueues.put(newName, q);
+          this.propagateQueueNameChangeToBindings(oldName, newName);
+          this.propagateQueueNameChangeToConsumers(oldName, newName);
+        }
+      } catch (Exception e) {
+        System.err.println("Caught an exception while recovering queue " + oldName);
+        e.printStackTrace(System.err);
+      }
+    }
+  }
+
+  private void propagateQueueNameChangeToBindings(String oldName, String newName) {
+    for (RecordedBinding b : this.recordedBindings) {
+      if (b.getDestination().equals(oldName)) {
+        b.setDestination(newName);
+      }
+    }
+  }
+
+  private void propagateQueueNameChangeToConsumers(String oldName, String newName) {
+    for (RecordedConsumer c : this.consumers.values()) {
+      if (c.getQueue().equals(oldName)) {
+        c.setQueue(newName);
+      }
+    }
+  }
+
+  public void recoverBindings() {
+    for (RecordedBinding b : this.recordedBindings) {
+      try {
+        b.recover();
+      } catch (Exception e) {
+        System.err.println("Caught an exception while recovering binding between " + b.getSource() + " and " + b.getDestination());
+        e.printStackTrace(System.err);
+      }
+    }
+  }
+
+  public void recoverConsumers() {
+    for (Map.Entry<String, RecordedConsumer> entry : this.consumers.entrySet()) {
+      String tag = entry.getKey();
+      RecordedConsumer consumer = entry.getValue();
+
+      try {
+        String newTag = (String) consumer.recover();
+        // make sure server-generated tags are re-added. MK.
+        synchronized (this.consumers) {
+          this.consumers.remove(tag);
+          this.consumers.put(newTag, consumer);
+        }
+      } catch (Exception e) {
+        System.err.println("Caught an exception while recovering consumer " + tag);
+        e.printStackTrace(System.err);
+      }
+    }
+  }
+
+
+  public synchronized void recordQueueBinding(Channel ch, String queue, String exchange, String routingKey, Map<String, Object> arguments) {
+    RecordedBinding binding = new RecordedQueueBinding(ch).
+        source(exchange).
+        destination(queue).
+        routingKey(routingKey).
+        arguments(arguments);
+    if (!this.recordedBindings.contains(binding)) {
+      this.recordedBindings.add(binding);
+    }
+  }
+
+  public synchronized boolean deleteRecordedQueueBinding(Channel ch, String queue, String exchange, String routingKey, Map<String, Object> arguments) {
+    RecordedBinding b = new RecordedQueueBinding(ch).
+        source(exchange).
+        destination(queue).
+        routingKey(routingKey).
+        arguments(arguments);
+    return this.recordedBindings.remove(b);
+  }
+
+  public synchronized void recordExchangeBinding(Channel ch, String destination, String source, String routingKey, Map<String, Object> arguments) {
+    RecordedBinding binding = new RecordedExchangeBinding(ch).
+        source(source).
+        destination(destination).
+        routingKey(routingKey).
+        arguments(arguments);
+    this.recordedBindings.add(binding);
+  }
+
+  public synchronized boolean deleteRecordedExchangeBinding(Channel ch, String destination, String source, String routingKey, Map<String, Object> arguments) {
+    RecordedBinding b = new RecordedExchangeBinding(ch).
+        source(source).
+        destination(destination).
+        routingKey(routingKey).
+        arguments(arguments);
+    return this.recordedBindings.remove(b);
+  }
+
+  public void recordQueue(AMQP.Queue.DeclareOk ok, RecordedQueue q) {
+    this.recordedQueues.put(ok.getQueue(), q);
+  }
+
+  public void deleteRecordedQueue(String queue) {
+    this.recordedQueues.remove(queue);
+  }
+
+  public void recordExchange(String exchange, RecordedExchange x) {
+    this.recordedExchanges.put(exchange, x);
+  }
+
+  public void deleteRecordedExchange(String exchange) {
+    this.recordedExchanges.remove(exchange);
+  }
+
+  public void registerChannel(Channel channel) {
+    this.channels.put(channel.getChannelNumber(), channel);
+  }
+
+  public void unregisterChannel(Channel channel) {
+    this.channels.remove(channel.getChannelNumber());
+  }
+
+  public void recordConsumer(String result, RecordedConsumer consumer) {
+    this.consumers.put(result, consumer);
+  }
+
+  public void deleteRecordedConsumer(String consumerTag) {
+    this.consumers.remove(consumerTag);
   }
 }

@@ -33,7 +33,12 @@ public class RecordedQueue extends RecordedNamedEntity implements RecoverableEnt
   }
 
   public Object recover() throws IOException {
-    AMQP.Queue.DeclareOk ok = this.channel.queueDeclare(this.getNameToUseForRecovery(), this.durable, this.exclusive, this.autoDelete, this.arguments);
+    AMQP.Queue.DeclareOk ok = this.channel.getDelegate().
+        queueDeclare(this.getNameToUseForRecovery(),
+                     this.durable,
+                     this.exclusive,
+                     this.autoDelete,
+                     this.arguments);
     this.name = ok.getQueue();
 
     return ok;
