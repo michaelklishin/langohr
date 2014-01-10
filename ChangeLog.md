@@ -18,6 +18,10 @@ RabbitMQ Java client dependency has been updated to `3.2.2`.
 
 clj-http dependency has been updated to `0.7.8`.
 
+### Cheshire Upgrade
+
+Cheshire dependency has been updated to `5.3.1`.
+
 
 
 ## Changes between Langohr 2.0.0 and 2.1.0
