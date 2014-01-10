@@ -267,33 +267,34 @@
       (is (not (.await latch 100 TimeUnit/MILLISECONDS)))
       (lx/delete ch x))))
 
-;; q1 => q2 => ... => q(n-1) => q(n)
-(deftest test-merry-go-around-recovery
-  (with-open [conn (rmq/connect {:automatically-recover true
-                                 :automatically-recover-topology true
-                                 :network-recovery-delay recovery-delay})]
-    (let [n     200
-          ch    (lch/open conn)
-          latch (CountDownLatch. n)
-          x     ""
-          qs    (for [i (range 0 n)]
-                  (format "langohr.test.recovery.merry-go-around.q.%d" i))]
-      (dotimes [i n]
-        (let [q  (nth qs i)
-              nq (try
-                   (nth qs (inc i))
-                   (catch IndexOutOfBoundsException oob
-                     nil))
-              f  (fn [_ _ ^bytes payload]
-                   #_ (println (format "Received %s" (String. payload "UTF-8")))
-                   (when nq
-                     (lb/publish ch x nq (format "message.%d" i)))
-                   (.countDown latch))]
-          #_ (println (format "Declaring queue %s" q))
-          (lq/declare ch q :exclusive true)
-          (lc/subscribe ch q f)))
-      (close-all-connections)
-      (wait-for-recovery)
-      (is (rmq/open? ch))
-      (lb/publish ch x (first qs) "a message")
-      (await-on latch 15 TimeUnit/SECONDS))))
+(when-not (System/getenv "CI")
+  ;; q1 => q2 => ... => q(n-1) => q(n)
+  (deftest test-merry-go-around-recovery
+    (with-open [conn (rmq/connect {:automatically-recover true
+                                   :automatically-recover-topology true
+                                   :network-recovery-delay recovery-delay})]
+      (let [n     200
+            ch    (lch/open conn)
+            latch (CountDownLatch. n)
+            x     ""
+            qs    (for [i (range 0 n)]
+                    (format "langohr.test.recovery.merry-go-around.q.%d" i))]
+        (dotimes [i n]
+          (let [q  (nth qs i)
+                nq (try
+                     (nth qs (inc i))
+                     (catch IndexOutOfBoundsException oob
+                       nil))
+                f  (fn [_ _ ^bytes payload]
+                     #_ (println (format "Received %s" (String. payload "UTF-8")))
+                     (when nq
+                       (lb/publish ch x nq (format "message.%d" i)))
+                     (.countDown latch))]
+            #_ (println (format "Declaring queue %s" q))
+            (lq/declare ch q :exclusive true)
+            (lc/subscribe ch q f)))
+        (close-all-connections)
+        (wait-for-recovery)
+        (is (rmq/open? ch))
+        (lb/publish ch x (first qs) "a message")
+        (await-on latch 15 TimeUnit/SECONDS)))))
