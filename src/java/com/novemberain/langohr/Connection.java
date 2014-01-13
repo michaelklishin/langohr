@@ -120,15 +120,19 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
         this.recoverConsumers();
       }
 
-      for (IFn f : recoveryHooks) {
-        f.invoke(this);
-      }
+      this.runRecoveryHooks();
       this.runChannelRecoveryHooks();
     } catch (Throwable t) {
       System.err.println("Caught an exception during connection recovery!");
       t.printStackTrace(System.err);
     }
 
+  }
+
+  private void runRecoveryHooks() {
+    for (IFn f : recoveryHooks) {
+      f.invoke(this);
+    }
   }
 
   private void runChannelRecoveryHooks() {
