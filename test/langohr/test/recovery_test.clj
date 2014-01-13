@@ -56,6 +56,20 @@
     (wait-for-recovery)
     (is (rmq/open? conn))))
 
+(deftest test-connection-recovery-with-disabled-topology-recovery
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology false
+                                 :network-recovery-delay recovery-delay})]
+    (let [ch (lch/open conn)
+          q  (lq/declare-server-named ch)]
+      (is (rmq/open? ch))
+      (lq/declare-passive ch q)
+      (close-all-connections)
+      (Thread/sleep 100)
+      (wait-for-recovery)
+      (is (rmq/open? ch))
+      (is (thrown? java.io.IOException
+                   (lq/declare-passive ch q))))))
 
 (deftest test-basic-channel-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
