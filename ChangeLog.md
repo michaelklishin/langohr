@@ -1,3 +1,10 @@
+## Changes between Langohr 2.2.0 and 2.3.0
+
+### Automatic Topology Recovery Doesn't Kick In When Disabled
+
+Automatic topology recovery no longer kicks in when it is disabled.
+
+
 ## Changes between Langohr 2.1.0 and 2.2.0
 
 ### Automatic Topology Recovery Tracks Entities Per Connection
