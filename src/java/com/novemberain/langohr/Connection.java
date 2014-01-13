@@ -112,24 +112,27 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   synchronized private void beginAutomaticRecovery() throws InterruptedException, IOException {
     try {
       Thread.sleep(networkRecoveryDelay);
-      // System.out.println("About to recover connection...");
       this.recoverConnection();
-      // System.out.println("About to recover shutdown hooks...");
       this.recoverShutdownHooks();
-      // System.out.println("About to recover channels...");
       this.recoverChannels();
-      this.recoverEntites();
-      this.recoverConsumers();
-
-      for (IFn f : recoveryHooks) {
-        f.invoke(this);
+      if(automaticTopologyRecoveryEnabled()) {
+        this.recoverEntites();
+        this.recoverConsumers();
       }
+
+      this.runRecoveryHooks();
       this.runChannelRecoveryHooks();
     } catch (Throwable t) {
       System.err.println("Caught an exception during connection recovery!");
       t.printStackTrace(System.err);
     }
 
+  }
+
+  private void runRecoveryHooks() {
+    for (IFn f : recoveryHooks) {
+      f.invoke(this);
+    }
   }
 
   private void runChannelRecoveryHooks() {
@@ -632,19 +635,19 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     this.recordedExchanges.remove(exchange);
   }
 
-  public void registerChannel(Channel channel) {
-    this.channels.put(channel.getChannelNumber(), channel);
-  }
-
-  public void unregisterChannel(Channel channel) {
-    this.channels.remove(channel.getChannelNumber());
-  }
-
   public void recordConsumer(String result, RecordedConsumer consumer) {
     this.consumers.put(result, consumer);
   }
 
   public void deleteRecordedConsumer(String consumerTag) {
     this.consumers.remove(consumerTag);
+  }
+
+  public void registerChannel(Channel channel) {
+    this.channels.put(channel.getChannelNumber(), channel);
+  }
+
+  public void unregisterChannel(Channel channel) {
+    this.channels.remove(channel.getChannelNumber());
   }
 }

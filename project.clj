@@ -10,9 +10,9 @@
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
              :master {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
-             :dev {:dependencies [[org.clojure/tools.cli "0.2.1" :exclusions [org.clojure/clojure]]]
+             :dev {:dependencies [[org.clojure/tools.cli "0.3.1" :exclusions [org.clojure/clojure]]]
                    :resource-paths ["test/resources"]
-                   :plugins [[codox "0.6.4"]]
+                   :plugins [[codox "0.6.6"]]
                    :codox {:sources ["src/clojure"]
                            :output-dir "doc/api"}}}
   :source-paths      ["src/clojure"]
