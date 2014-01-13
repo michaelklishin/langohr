@@ -1038,22 +1038,22 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
 
   public void automaticallyRecover(Connection connection, com.rabbitmq.client.Connection delegate) throws IOException {
     this.connection = connection;
-    this.delegate   = delegate.createChannel(this.getChannelNumber());
+    this.delegate = delegate.createChannel(this.getChannelNumber());
 
     this.recoverState();
   }
 
-    private void recoverState() throws IOException {
-      basicQos(0, this.prefetchCount, this.globalQos);
-      if(this.usesPublisherConfirms) {
-          this.confirmSelect();
-      }
-      if(this.usesTransactions) {
-          this.txSelect();
-      }
+  private void recoverState() throws IOException {
+    basicQos(0, this.prefetchCount, this.globalQos);
+    if (this.usesPublisherConfirms) {
+      this.confirmSelect();
     }
+    if (this.usesTransactions) {
+      this.txSelect();
+    }
+  }
 
-    public void runRecoveryHooks() {
+  public void runRecoveryHooks() {
     for (IFn f : this.recoveryHooks) {
       f.invoke(this);
     }
