@@ -112,14 +112,13 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   synchronized private void beginAutomaticRecovery() throws InterruptedException, IOException {
     try {
       Thread.sleep(networkRecoveryDelay);
-      // System.out.println("About to recover connection...");
       this.recoverConnection();
-      // System.out.println("About to recover shutdown hooks...");
       this.recoverShutdownHooks();
-      // System.out.println("About to recover channels...");
       this.recoverChannels();
-      this.recoverEntites();
-      this.recoverConsumers();
+      if(automaticTopologyRecoveryEnabled()) {
+        this.recoverEntites();
+        this.recoverConsumers();
+      }
 
       for (IFn f : recoveryHooks) {
         f.invoke(this);
