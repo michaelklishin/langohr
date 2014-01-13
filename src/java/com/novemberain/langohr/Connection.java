@@ -632,19 +632,19 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     this.recordedExchanges.remove(exchange);
   }
 
-  public void registerChannel(Channel channel) {
-    this.channels.put(channel.getChannelNumber(), channel);
-  }
-
-  public void unregisterChannel(Channel channel) {
-    this.channels.remove(channel.getChannelNumber());
-  }
-
   public void recordConsumer(String result, RecordedConsumer consumer) {
     this.consumers.put(result, consumer);
   }
 
   public void deleteRecordedConsumer(String consumerTag) {
     this.consumers.remove(consumerTag);
+  }
+
+  public void registerChannel(Channel channel) {
+    this.channels.put(channel.getChannelNumber(), channel);
+  }
+
+  public void unregisterChannel(Channel channel) {
+    this.channels.remove(channel.getChannelNumber());
   }
 }
