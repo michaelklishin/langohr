@@ -1,5 +1,11 @@
 ## Changes between Langohr 2.2.0 and 2.3.0
 
+### Recovery Predicates
+
+`langohr.core/automatic-recovery-enabled?` and `langohr.core/automatic-topology-recovery-enabled?`
+are new predicate functions that return `true` if automatic connection and topology recovery,
+respectively, is enabled for the provided connection.
+
 ### Topology Recovery Fails Quickly
 
 Topology recovery now fails quickly, raising
