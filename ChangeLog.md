@@ -1,5 +1,19 @@
 ## Changes between Langohr 2.2.0 and 2.3.0
 
+### Topology Recovery Fails Quickly
+
+Topology recovery now fails quickly, raising
+`com.novemberain.langohr.recovery.TopologyRecoveryException` which
+carries the original (cause) exception.
+
+Previously if recovery of an entity failed, other entities were still
+recovered. Now topology recovery fails on the first exception,
+making issues more visible.
+
+### Automatic Recovery Can Be Disabled By Passing `nil`
+
+Automatic recovery options now respect both `false` and `nil` values.
+
 ### Automatic Topology Recovery Doesn't Kick In When Disabled
 
 Automatic topology recovery no longer kicks in when it is disabled.
