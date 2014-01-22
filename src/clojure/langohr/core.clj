@@ -123,17 +123,6 @@
     (.addBlockedListener c lnr)
     lnr))
 
-(defn automatically-recover?
-  "Returns true if provided connection uses automatic connection recovery
-   mode, false otherwise"
-  [^com.novemberain.langohr.Connection c]
-  (.automaticRecoveryEnabled c))
-
-(defn on-recovery
-  "Registers a network recovery callback on a (Langohr) connection or channel"
-  [^Recoverable target ^IFn callback]
-  (.onRecovery target callback))
-
 (defn settings-from
   "Parses AMQP connection URI and returns a persistent map of settings"
   [^String uri]
@@ -152,13 +141,32 @@
   [^Connection conn]
   (walk/keywordize-keys (into {} (-> conn .getServerProperties (get "capabilities")))))
 
+;;
+;; Recovery
+;;
+
 (defn automatic-recovery-enabled?
-  [^Connection conn]
+  "Returns true if provided connection uses automatic connection recovery
+   mode, false otherwise"
+  [^com.novemberain.langohr.Connection conn]
   (.automaticRecoveryEnabled conn))
 
+(defn ^{:deprecated true} automatically-recover?
+  "See automatic-recovery-enabled?"
+  [^com.novemberain.langohr.Connection c]
+  (automatic-recovery-enabled? c))
+
 (defn automatic-topology-recovery-enabled?
-  [^Connection conn]
+  "Returns true if provided connection uses automatic topology recovery
+   mode, false otherwise"
+  [^com.novemberain.langohr.Connection conn]
   (.automaticTopologyRecoveryEnabled conn))
+
+(defn on-recovery
+  "Registers a network recovery callback on a (Langohr) connection or channel"
+  [^Recoverable target ^IFn callback]
+  (.onRecovery target callback))
+
 
 ;;
 ;; Implementation
