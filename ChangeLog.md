@@ -1,4 +1,13 @@
-## Changes between Langohr 2.2.0 and 2.3.0
+## Changes between Langohr 2.3.1 and 2.3.2
+
+### Deprecations
+
+`langohr.core/automatically-recover?` is deprecated
+
+Use `langohr.core/automatic-recovery-enabled?` instead.
+
+
+## Changes between Langohr 2.2.0 and 2.3.1
 
 ### Topology Recovery Fails Quickly
 
