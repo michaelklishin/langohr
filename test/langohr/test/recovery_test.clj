@@ -48,6 +48,7 @@
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology false
                                  :network-recovery-delay recovery-delay})]
+    (is (rmq/automatic-recovery-enabled? conn))
     (is (rmq/open? conn))
     (close-all-connections)
     (Thread/sleep 100)
@@ -60,6 +61,8 @@
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology false
                                  :network-recovery-delay recovery-delay})]
+    (is (rmq/automatic-recovery-enabled? conn))
+    (is (not (rmq/automatic-topology-recovery-enabled? conn)))
     (let [ch (lch/open conn)
           q  (lq/declare-server-named ch)]
       (is (rmq/open? ch))
@@ -109,6 +112,8 @@
                                  :network-recovery-delay recovery-delay})]
     (let [ch   (lch/open conn)
           q    "langohr.test.recovery.q1"]
+      (is (rmq/automatic-recovery-enabled? conn))
+      (is (rmq/automatic-topology-recovery-enabled? conn))
       (lq/declare ch q :durable true)
       (lq/purge ch q)
       (is (lq/empty? ch q))

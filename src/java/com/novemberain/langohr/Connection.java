@@ -174,12 +174,13 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   public boolean automaticRecoveryEnabled() {
-    return this.options.containsKey(AUTOMATICALLY_RECOVER_KEYWORD);
+    return Util.isTruthy(this.options.valAt(AUTOMATICALLY_RECOVER_KEYWORD));
   }
 
   public boolean automaticTopologyRecoveryEnabled() {
-    return this.options.containsKey(AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD);
+    return Util.isTruthy(this.options.valAt(AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD));
   }
+
 
   public void onRecovery(IFn f) {
     this.recoveryHooks.add(f);

@@ -152,6 +152,14 @@
   [^Connection conn]
   (walk/keywordize-keys (into {} (-> conn .getServerProperties (get "capabilities")))))
 
+(defn automatic-recovery-enabled?
+  [^Connection conn]
+  (.automaticRecoveryEnabled conn))
+
+(defn automatic-topology-recovery-enabled?
+  [^Connection conn]
+  (.automaticTopologyRecoveryEnabled conn))
+
 ;;
 ;; Implementation
 ;;
