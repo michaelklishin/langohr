@@ -1,3 +1,12 @@
+## Changes between Langohr 2.3.x and 2.4.0
+
+### Deprecations
+
+`langohr.core/automatically-recover?` is deprecated
+
+Use `langohr.core/automatic-recovery-enabled?` instead.
+
+
 ## Changes between Langohr 2.2.0 and 2.3.0
 
 ### Recovery Predicates
