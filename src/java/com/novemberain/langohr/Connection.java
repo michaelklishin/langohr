@@ -487,7 +487,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   // Recovery
   //
 
-  public void recoverEntites() {
+  public void recoverEntites() throws TopologyRecoveryException {
     // The recovery sequence is the following:
     //
     // 1. Recover exchanges
@@ -499,16 +499,15 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     recoverBindings();
   }
 
-  private void recoverExchanges() {
+  private void recoverExchanges() throws TopologyRecoveryException {
     // recorded exchanges are guaranteed to be
     // non-predefined (we filter out predefined ones
     // in exchangeDeclare). MK.
     for (RecordedExchange x : this.recordedExchanges.values()) {
       try {
         x.recover();
-      } catch (Exception e) {
-        System.err.println("Caught an exception while recovering exchange " + x.getName());
-        e.printStackTrace(System.err);
+      } catch (Exception cause) {
+        throw new TopologyRecoveryException("Caught an exception while recovering exchange " + x.getName(), cause);
       }
     }
   }
