@@ -512,7 +512,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     }
   }
 
-  private void recoverQueues() {
+  private void recoverQueues() throws TopologyRecoveryException {
     for (Map.Entry<String, RecordedQueue> entry : this.recordedQueues.entrySet()) {
       String oldName = entry.getKey();
       RecordedQueue q = entry.getValue();
@@ -527,9 +527,8 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
           this.propagateQueueNameChangeToBindings(oldName, newName);
           this.propagateQueueNameChangeToConsumers(oldName, newName);
         }
-      } catch (Exception e) {
-        System.err.println("Caught an exception while recovering queue " + oldName);
-        e.printStackTrace(System.err);
+      } catch (Exception cause) {
+          throw new TopologyRecoveryException("Caught an exception while recovering queue " + oldName, cause);
       }
     }
   }
