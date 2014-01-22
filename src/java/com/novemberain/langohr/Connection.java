@@ -549,7 +549,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     }
   }
 
-  public void recoverBindings() throws TopologyRecoveryException {
+  private void recoverBindings() throws TopologyRecoveryException {
     for (RecordedBinding b : this.recordedBindings) {
       try {
         b.recover();
@@ -560,7 +560,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     }
   }
 
-  public void recoverConsumers() {
+  private void recoverConsumers() throws TopologyRecoveryException {
     for (Map.Entry<String, RecordedConsumer> entry : this.consumers.entrySet()) {
       String tag = entry.getKey();
       RecordedConsumer consumer = entry.getValue();
@@ -572,9 +572,8 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
           this.consumers.remove(tag);
           this.consumers.put(newTag, consumer);
         }
-      } catch (Exception e) {
-        System.err.println("Caught an exception while recovering consumer " + tag);
-        e.printStackTrace(System.err);
+      } catch (Exception cause) {
+        throw new TopologyRecoveryException("Caught an exception while recovering consumer " + tag, cause);
       }
     }
   }
