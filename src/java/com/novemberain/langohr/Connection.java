@@ -549,13 +549,13 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     }
   }
 
-  public void recoverBindings() {
+  public void recoverBindings() throws TopologyRecoveryException {
     for (RecordedBinding b : this.recordedBindings) {
       try {
         b.recover();
-      } catch (Exception e) {
-        System.err.println("Caught an exception while recovering binding between " + b.getSource() + " and " + b.getDestination());
-        e.printStackTrace(System.err);
+      } catch (Exception cause) {
+        final String msg = "Caught an exception while recovering binding between " + b.getSource() + " and " + b.getDestination();
+        throw new TopologyRecoveryException(msg, cause);
       }
     }
   }
