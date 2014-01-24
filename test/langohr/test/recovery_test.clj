@@ -317,3 +317,7 @@
         (is (rmq/open? ch))
         (lb/publish ch x (first qs) "a message")
         (await-on latch 15 TimeUnit/SECONDS)))))
+
+(deftest test-default-topology-recovery-value
+  (with-open [conn (rmq/connect {:host "localhost"})]
+    (is (= true (rmq/automatic-topology-recovery-enabled? conn)))))
