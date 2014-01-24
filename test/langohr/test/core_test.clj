@@ -13,7 +13,8 @@
 (deftest t-connection-with-default-parameters
   (let [conn (lc/connect)]
     (is (instance? com.rabbitmq.client.Connection conn))
-    (is (not (lc/automatically-recover? conn)))
+    (is (lc/automatically-recover? conn))
+    (is (lc/automatic-recovery-enabled? conn))
     (is (lc/open? conn))))
 
 (deftest t-connection-with-overriden-parameters
@@ -23,7 +24,7 @@
                        :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
                        :requested-heartbeat 3 :connection-timeout 5})]
     (is (lc/open? conn))
-    (is (not (lc/automatically-recover? conn)))
+    (is (lc/automatically-recover? conn))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))
     (is (= 3           (.getHeartbeat conn)))))
@@ -150,3 +151,34 @@
     (is (.await latch 700 TimeUnit/MILLISECONDS))
     ;wait until recovery had a chance to kick in
     (Thread/sleep 6000)))
+
+(deftest t-disable-recovery
+  (testing "It should be possible to disable automatically-recover"
+    (let  [conn  (lc/connect  {:connection-timeout 300
+                               :automatically-recover false})]
+      (is (not (lc/automatic-recovery-enabled? conn)))
+      (is (lc/automatic-topology-recovery-enabled? conn))))
+
+  (testing "It should be possible to disable automatically-recover with nil"
+    (let  [conn  (lc/connect  {:connection-timeout 300
+                               :automatically-recover nil})]
+      (is (not (lc/automatic-recovery-enabled? conn)))
+      (is (lc/automatic-topology-recovery-enabled? conn))))
+
+  (testing "It should be possible to disable automatically-recover-topology"
+    (let  [conn  (lc/connect  {:connection-timeout 300
+                               :automatically-recover-topology false})]
+      (is (lc/automatic-recovery-enabled? conn))
+      (is (not (lc/automatic-topology-recovery-enabled? conn)))))
+
+  (testing "It should be possible to disable automatically-recover-topology with nil"
+    (let  [conn  (lc/connect  {:connection-timeout 300
+                               :automatically-recover-topology nil})]
+      (is (lc/automatic-recovery-enabled? conn))
+      (is (not (lc/automatic-topology-recovery-enabled? conn))))) )
+
+(deftest t-default-recovery-values
+  (testing "Defaults are true for automatic-*-enabled? when non-default options are used"
+    (let  [conn  (lc/connect  {:connection-timeout 300})]
+      (is (lc/automatic-recovery-enabled? conn))
+      (is (lc/automatic-topology-recovery-enabled? conn)))))

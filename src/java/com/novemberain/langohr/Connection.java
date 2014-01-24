@@ -36,6 +36,8 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private Map<Integer, Channel> channels;
   private final Collection<BlockedListener> blockedListeners = new CopyOnWriteArrayList<BlockedListener>();
   private long networkRecoveryDelay;
+  private boolean automaticallyRecover;
+  private boolean automaticallyRecoverTopology;
 
   // Records topology changes
   private final Map<String, RecordedQueue> recordedQueues = new ConcurrentHashMap<String, RecordedQueue>();
@@ -45,8 +47,6 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
 
   private static IPersistentMap buildDefaultOptions() {
     Map<Keyword, Boolean> m = new HashMap<Keyword, Boolean>();
-    m.put(AUTOMATICALLY_RECOVER_KEYWORD, true);
-    m.put(AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD, true);
 
     return PersistentHashMap.create(m);
   }
@@ -66,6 +66,8 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     // network failure recovery hooks
     this.recoveryHooks = new ArrayList<IFn>();
     this.networkRecoveryDelay = (Long) options.valAt(NETWORK_RECOVERY_DELAY_KEYWORD, DEFAULT_NETWORK_RECOVERY_DELAY);
+    this.automaticallyRecover = Util.isTruthy(options.valAt(AUTOMATICALLY_RECOVER_KEYWORD, true));
+    this.automaticallyRecoverTopology = Util.isTruthy(options.valAt(AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD, true));
   }
 
   @SuppressWarnings("unused")
@@ -174,11 +176,11 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   public boolean automaticRecoveryEnabled() {
-    return Util.isTruthy(this.options.valAt(AUTOMATICALLY_RECOVER_KEYWORD));
+    return automaticallyRecover;
   }
 
   public boolean automaticTopologyRecoveryEnabled() {
-    return Util.isTruthy(this.options.valAt(AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD));
+    return automaticallyRecoverTopology;
   }
 
 
