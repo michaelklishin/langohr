@@ -1,5 +1,12 @@
 ## Changes between Langohr 2.3.x and 2.4.0
 
+### Topology Recovery Default
+
+`:automatically-recover-topology` default is now `true`, as listed in
+documentation.
+
+Contributed by Ilya Ivanov.
+
 ### Deprecations
 
 `langohr.core/automatically-recover?` is deprecated
