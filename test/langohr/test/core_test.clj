@@ -154,31 +154,31 @@
 
 (deftest t-disable-recovery
   (testing "It should be possible to disable automatically-recover"
-    (let  [conn  (lc/connect  {:connection-timeout 300
+    (with-open  [conn  (lc/connect  {:connection-timeout 300
                                :automatically-recover false})]
       (is (not (lc/automatic-recovery-enabled? conn)))
       (is (lc/automatic-topology-recovery-enabled? conn))))
 
   (testing "It should be possible to disable automatically-recover with nil"
-    (let  [conn  (lc/connect  {:connection-timeout 300
+    (with-open  [conn  (lc/connect  {:connection-timeout 300
                                :automatically-recover nil})]
       (is (not (lc/automatic-recovery-enabled? conn)))
       (is (lc/automatic-topology-recovery-enabled? conn))))
 
   (testing "It should be possible to disable automatically-recover-topology"
-    (let  [conn  (lc/connect  {:connection-timeout 300
+    (with-open  [conn  (lc/connect  {:connection-timeout 300
                                :automatically-recover-topology false})]
       (is (lc/automatic-recovery-enabled? conn))
       (is (not (lc/automatic-topology-recovery-enabled? conn)))))
 
   (testing "It should be possible to disable automatically-recover-topology with nil"
-    (let  [conn  (lc/connect  {:connection-timeout 300
+    (with-open  [conn  (lc/connect  {:connection-timeout 300
                                :automatically-recover-topology nil})]
       (is (lc/automatic-recovery-enabled? conn))
       (is (not (lc/automatic-topology-recovery-enabled? conn))))) )
 
 (deftest t-default-recovery-values
   (testing "Defaults are true for automatic-*-enabled? when non-default options are used"
-    (let  [conn  (lc/connect  {:connection-timeout 300})]
+    (with-open  [conn  (lc/connect  {:connection-timeout 300})]
       (is (lc/automatic-recovery-enabled? conn))
       (is (lc/automatic-topology-recovery-enabled? conn)))))
