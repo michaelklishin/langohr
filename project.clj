@@ -40,4 +40,7 @@
                    :time-consuming :time-consuming
                    :performance    :performance
                    :tls            :tls
-                   :ci             (fn [m] (not (:tls m)))})
+                   :ci             (fn [m] (not (:tls m)))}
+  :mailing-list {:name "clojure-rabbitmq"
+                 :archive "https://groups.google.com/group/clojure-rabbitmq"
+                 :post "clojure-rabbitmq@googlegroups.com"})
