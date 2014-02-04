@@ -47,6 +47,12 @@
         exchange   "langohr.tests.exchanges.direct3"]
     (lhe/declare channel exchange "direct" :auto-delete true :durable false)))
 
+(deftest test-declare-an-internal-direct-exchange
+  (let [channel    (lhc/create-channel conn)
+        exchange   "langohr.tests.exchanges.direct.internal"]
+    (lhe/declare channel exchange "direct" :auto-delete true :durable false :internal true)
+    (lhe/delete channel exchange)))
+
 
 (deftest test-direct-exchange-routing-key-delivery
   (let [conn (lhc/connect)
