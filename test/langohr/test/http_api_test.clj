@@ -71,6 +71,11 @@
     (is (:durable r))
     (is (:arguments r))))
 
+(deftest ^{:http true} test-get-non-existing-vhost
+  (let [response (hc/list-exchanges "amq.non-existing-vhost")]
+    ; since this vhost does not exist, there is no JSON response, just the body as a string
+    (is (string? response))))
+
 (deftest ^{:http true} test-declare-and-delete-exchange
   (let [s  "langohr.http.fanout"
         r1 (hc/declare-exchange "/" s {:durable false :auto_delete true :internal false :arguments {}})
