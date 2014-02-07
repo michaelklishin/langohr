@@ -1,5 +1,9 @@
 ## Changes between Langohr 2.3.x and 2.4.0
 
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.2.3`.
+
 ### Topology Recovery Default
 
 `:automatically-recover-topology` default is now `true`, as listed in
