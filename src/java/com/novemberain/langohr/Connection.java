@@ -24,6 +24,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * Alternative {@link com.rabbitmq.client.Connection} implementation that wraps
+ * {@link com.rabbitmq.client.impl.AMQConnection} and adds automatic connection
+ * recovery capability to it.
+ *
+ * @see com.novemberain.langohr.Recoverable
+ */
 public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static final IPersistentMap DEFAULT_OPTIONS = buildDefaultOptions();
   // :automatically-recover
