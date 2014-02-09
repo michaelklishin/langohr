@@ -19,6 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * Alternative {@link com.rabbitmq.client.Channel} implementation that wraps
+ * {@link com.rabbitmq.client.impl.ChannelN} and adds automatic
+ * recovery capability to it.
+ * @see com.novemberain.langohr.Connection
+ * @see com.novemberain.langohr.Recoverable
+ */
 public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   private com.rabbitmq.client.Channel delegate;
   private Connection connection;
