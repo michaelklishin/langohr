@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutorService;
  * {@link com.rabbitmq.client.impl.AMQConnection} and adds automatic connection
  * recovery capability to it.
  *
+ * @see com.novemberain.langohr.Channel
  * @see com.novemberain.langohr.Recoverable
  */
 public class Connection implements com.rabbitmq.client.Connection, Recoverable {
