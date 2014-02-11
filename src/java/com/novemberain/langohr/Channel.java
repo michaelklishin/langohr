@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -29,6 +30,9 @@ import java.util.concurrent.TimeoutException;
 public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   private com.rabbitmq.client.Channel delegate;
   private Connection connection;
+  private List<ReturnListener> returnListeners = new CopyOnWriteArrayList<ReturnListener>();
+  private List<ConfirmListener> confirmListeners = new ArrayList<ConfirmListener>();
+  private List<FlowListener> flowListeners = new ArrayList<FlowListener>();
   private List<IFn> recoveryHooks = new ArrayList<IFn>();
 
   private int prefetchCount;
@@ -830,6 +834,16 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   }
 
   /**
+   * Add a {@link com.rabbitmq.client.ReturnListener}.
+   *
+   * @param listener the listener to add
+   */
+  public void addReturnListener(ReturnListener listener) {
+    this.returnListeners.add(listener);
+    delegate.addReturnListener(listener);
+  }
+
+  /**
    * Remove a {@link com.rabbitmq.client.ReturnListener}.
    *
    * @param listener the listener to remove
@@ -837,6 +851,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * <code><b>false</b></code> otherwise
    */
   public boolean removeReturnListener(ReturnListener listener) {
+    this.returnListeners.remove(listener);
     return delegate.removeReturnListener(listener);
   }
 
@@ -918,15 +933,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    */
   public AMQP.Tx.CommitOk txCommit() throws IOException {
     return delegate.txCommit();
-  }
-
-  /**
-   * Add a {@link com.rabbitmq.client.ReturnListener}.
-   *
-   * @param listener the listener to add
-   */
-  public void addReturnListener(ReturnListener listener) {
-    delegate.addReturnListener(listener);
   }
 
   /**
@@ -1053,7 +1059,28 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     this.connection = connection;
     this.delegate = delegate.createChannel(this.getChannelNumber());
 
+    this.recoverReturnListeners();
+    this.recoverConfirmListeners();
+    this.recoverFlowListeners();
     this.recoverState();
+  }
+
+  private void recoverReturnListeners() {
+    for(ReturnListener rl : this.returnListeners) {
+      this.delegate.addReturnListener(rl);
+    }
+  }
+
+  private void recoverConfirmListeners() {
+    for(ConfirmListener cl : this.confirmListeners) {
+      this.delegate.addConfirmListener(cl);
+    }
+  }
+
+  private void recoverFlowListeners() {
+    for(FlowListener fl : this.flowListeners) {
+      this.delegate.addFlowListener(fl);
+    }
   }
 
   private void recoverState() throws IOException {
