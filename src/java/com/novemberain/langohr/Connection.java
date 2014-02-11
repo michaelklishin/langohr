@@ -139,6 +139,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
       Thread.sleep(networkRecoveryDelay);
       this.recoverConnection();
       this.recoverShutdownHooks();
+      this.recoverBlockedListeners();
       this.recoverChannels();
       if(automaticTopologyRecoveryEnabled()) {
         this.recoverEntites();
@@ -180,6 +181,12 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private void recoverShutdownHooks() {
     for (ShutdownListener sh : this.shutdownHooks) {
       this.delegate.addShutdownListener(sh);
+    }
+  }
+
+  private void recoverBlockedListeners() {
+    for (BlockedListener bl : this.blockedListeners) {
+      this.delegate.addBlockedListener(bl);
     }
   }
 
