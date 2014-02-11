@@ -431,6 +431,14 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   }
 
   /**
+   * Remove all {@link com.rabbitmq.client.ConfirmListener}s.
+   */
+  public void clearConfirmListeners() {
+    this.confirmListeners.clear();
+    delegate.clearConfirmListeners();
+  }
+
+  /**
    * Wait until all messages published since the last call have been
    * either ack'd or nack'd by the broker.  Note, when called on a
    * non-Confirm channel, waitForConfirms returns true immediately.
@@ -994,13 +1002,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    */
   public String basicConsume(String queue, boolean autoAck, String consumerTag, Consumer callback) throws IOException {
     return basicConsume(queue, autoAck, consumerTag, false, false, null, callback);
-  }
-
-  /**
-   * Remove all {@link com.rabbitmq.client.ConfirmListener}s.
-   */
-  public void clearConfirmListeners() {
-    delegate.clearConfirmListeners();
   }
 
   /**
