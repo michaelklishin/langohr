@@ -346,6 +346,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * <code><b>false</b></code> otherwise
    */
   public boolean removeConfirmListener(ConfirmListener listener) {
+    this.confirmListeners.remove(listener);
     return delegate.removeConfirmListener(listener);
   }
 
