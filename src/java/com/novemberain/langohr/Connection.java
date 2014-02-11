@@ -47,11 +47,17 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static final Keyword EXECUTOR_KEYWORD = Keyword.intern(null, "executor");
   private static final long DEFAULT_RECONNECTION_PERIOD = 5000;
   private final IPersistentMap options;
+
+  private com.rabbitmq.client.Connection delegate;
+
+  //
+  // recovery
+  //
+
+  private Map<Integer, Channel> channels;
   private final List<ShutdownListener> shutdownHooks;
   private final List<IFn> recoveryHooks;
-  private com.rabbitmq.client.Connection delegate;
-  private Map<Integer, Channel> channels;
-  private final Collection<BlockedListener> blockedListeners = new CopyOnWriteArrayList<BlockedListener>();
+  private final List<BlockedListener> blockedListeners = new CopyOnWriteArrayList<BlockedListener>();
   private long networkRecoveryDelay;
   private boolean automaticallyRecover;
   private boolean automaticallyRecoverTopology;
@@ -499,6 +505,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
 
   public void clearBlockedListeners() {
     blockedListeners.clear();
+    delegate.clearBlockedListeners();
   }
 
 
