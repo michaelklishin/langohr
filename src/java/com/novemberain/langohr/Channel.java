@@ -583,6 +583,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * Remove all {@link com.rabbitmq.client.FlowListener}s.
    */
   public void clearFlowListeners() {
+    this.flowListeners.clear();
     delegate.clearFlowListeners();
   }
 
