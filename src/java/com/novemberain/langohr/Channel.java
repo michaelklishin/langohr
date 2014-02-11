@@ -339,6 +339,15 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   }
 
   /**
+   * Add a {@link com.rabbitmq.client.ConfirmListener}.
+   *
+   * @param listener the listener to add
+   */
+  public void addConfirmListener(ConfirmListener listener) {
+    delegate.addConfirmListener(listener);
+  }
+
+  /**
    * Remove a {@link com.rabbitmq.client.ConfirmListener}.
    *
    * @param listener the listener to remove
@@ -348,6 +357,14 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   public boolean removeConfirmListener(ConfirmListener listener) {
     this.confirmListeners.remove(listener);
     return delegate.removeConfirmListener(listener);
+  }
+
+  /**
+   * Remove all {@link com.rabbitmq.client.ConfirmListener}s.
+   */
+  public void clearConfirmListeners() {
+    this.confirmListeners.clear();
+    delegate.clearConfirmListeners();
   }
 
   /**
@@ -423,23 +440,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   }
 
   /**
-   * Add a {@link com.rabbitmq.client.ConfirmListener}.
-   *
-   * @param listener the listener to add
-   */
-  public void addConfirmListener(ConfirmListener listener) {
-    delegate.addConfirmListener(listener);
-  }
-
-  /**
-   * Remove all {@link com.rabbitmq.client.ConfirmListener}s.
-   */
-  public void clearConfirmListeners() {
-    this.confirmListeners.clear();
-    delegate.clearConfirmListeners();
-  }
-
-  /**
    * Wait until all messages published since the last call have been
    * either ack'd or nack'd by the broker.  Note, when called on a
    * non-Confirm channel, waitForConfirms returns true immediately.
@@ -500,15 +500,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    */
   public Connection getConnection() {
     return connection;
-  }
-
-  /**
-   * Add a {@link com.rabbitmq.client.FlowListener}.
-   *
-   * @param listener the listener to add
-   */
-  public void addFlowListener(FlowListener listener) {
-    delegate.addFlowListener(listener);
   }
 
   /**
@@ -610,14 +601,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     return delegate.getChannelNumber();
   }
 
-  /**
-   * Remove shutdown listener for the component.
-   *
-   * @param listener {@link com.rabbitmq.client.ShutdownListener} to be removed
-   */
-  public synchronized void removeShutdownListener(ShutdownListener listener) {
-    delegate.removeShutdownListener(listener);
-  }
 
   /**
    * Set the current default consumer.
@@ -742,6 +725,15 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   @SuppressWarnings("deprecation")
   public void basicRecoverAsync(boolean requeue) throws IOException {
     delegate.basicRecoverAsync(requeue);
+  }
+
+  /**
+   * Add a {@link com.rabbitmq.client.FlowListener}.
+   *
+   * @param listener the listener to add
+   */
+  public void addFlowListener(FlowListener listener) {
+    delegate.addFlowListener(listener);
   }
 
   /**
@@ -888,6 +880,15 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    */
   public synchronized void addShutdownListener(ShutdownListener listener) {
     delegate.addShutdownListener(listener);
+  }
+
+  /**
+   * Remove shutdown listener for the component.
+   *
+   * @param listener {@link com.rabbitmq.client.ShutdownListener} to be removed
+   */
+  public synchronized void removeShutdownListener(ShutdownListener listener) {
+    delegate.removeShutdownListener(listener);
   }
 
   /**
