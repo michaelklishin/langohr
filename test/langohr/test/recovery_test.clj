@@ -291,12 +291,25 @@
 
 (deftest test-connection-recovery-callback
   (with-open [conn (rmq/connect {:automatically-recover true
-                                 :automatically-recover-topology true
                                  :network-recovery-delay recovery-delay})]
     (let [latch (CountDownLatch. 2)
           f     (fn [_]
                   (.countDown latch))]
       (rmq/on-recovery conn f)
+      (close-all-connections)
+      (wait-for-recovery conn)
+      (close-all-connections)
+      (wait-for-recovery conn)
+      (is (.await latch 100 TimeUnit/MILLISECONDS)))))
+
+(deftest test-channel-recovery-callback
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :network-recovery-delay recovery-delay})]
+    (let [ch    (lch/open conn)
+          latch (CountDownLatch. 2)
+          f     (fn [_]
+                  (.countDown latch))]
+      (rmq/on-recovery ch f)
       (close-all-connections)
       (wait-for-recovery conn)
       (close-all-connections)
