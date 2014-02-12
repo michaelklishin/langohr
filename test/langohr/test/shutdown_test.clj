@@ -13,7 +13,7 @@
 (deftest test-channel-of-with-a-channel-exception
   (with-open [^Connection conn (lhc/connect)]
     (let [ch    (lch/open conn)
-          q     (:queue (lhq/declare ch))
+          q     (lhq/declare-server-named ch)
           latch    (java.util.concurrent.CountDownLatch. 1)
           cha      (atom nil)
           f        (fn [consumer_tag ^ShutdownSignalException reason]
@@ -32,7 +32,7 @@
 (deftest test-connection-of
   (with-open [^Connection conn (lhc/connect)]
     (let [ch    (lch/open conn)
-          q     (:queue (lhq/declare ch))
+          q     (lhq/declare-server-named ch)
           latch    (java.util.concurrent.CountDownLatch. 1)
           conn'    (atom nil)
           f        (fn [consumer_tag ^ShutdownSignalException reason]
@@ -40,18 +40,17 @@
                      (.countDown latch))
           consumer (lhcons/create-default ch :handle-shutdown-signal-fn f)]
       (lhb/consume ch q consumer)
-      (.start (Thread. (fn []
-                         (try
-                           (lhq/bind ch "ugggggh" "amq.fanout")
-                           (catch Exception e
-                             (comment "Do nothing"))))))
+      (try
+        (lhq/bind ch "ugggggh" "amq.fanout")
+        (catch Exception e
+          (comment "Do nothing")))
       (is (.await latch 700 TimeUnit/MILLISECONDS))
       (is (= @conn' (.getDelegate conn))))))
 
 (deftest test-initiator-with-a-channel-exception
   (with-open [^Connection conn (lhc/connect)]
     (let [ch    (lch/open conn)
-          q     (:queue (lhq/declare ch))
+          q     (lhq/declare-server-named ch)
           latch    (java.util.concurrent.CountDownLatch. 1)
           sse      (atom nil)
           f        (fn [consumer_tag ^ShutdownSignalException reason]
@@ -59,11 +58,10 @@
                      (.countDown latch))
           consumer (lhcons/create-default ch :handle-shutdown-signal-fn f)]
       (lhb/consume ch q consumer)
-      (.start (Thread. (fn []
-                         (try
-                           (lhq/bind ch "ugggggh" "amq.fanout")
-                           (catch Exception e
-                             (comment "Do nothing"))))))
+      (try
+        (lhq/bind ch "ugggggh" "amq.fanout")
+        (catch Exception e
+          (comment "Do nothing")))
       (is (.await latch 700 TimeUnit/MILLISECONDS))
       (is (lh/initiated-by-broker? @sse))
       (is (not (lh/initiated-by-application? @sse))))))
@@ -71,7 +69,7 @@
 (deftest test-initiator-with-an-explicit-channel-closure
   (with-open [^Connection conn (lhc/connect)]
     (let [ch    (lch/open conn)
-          q     (:queue (lhq/declare ch))
+          q     (lhq/declare-server-named ch)
           latch    (java.util.concurrent.CountDownLatch. 1)
           sse      (atom nil)
           f        (fn [consumer_tag ^ShutdownSignalException reason]
@@ -88,7 +86,7 @@
 (deftest test-initiator-with-an-unhandled-consumer-exception
   (with-open [^Connection conn (lhc/connect)]
     (let [ch    (lch/open conn)
-          q     (:queue (lhq/declare ch))
+          q     (lhq/declare-server-named ch)
           latch    (java.util.concurrent.CountDownLatch. 1)
           sse      (atom nil)
           dhf      (fn [ch metadata payload]
