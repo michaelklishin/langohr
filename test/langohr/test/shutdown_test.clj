@@ -21,11 +21,10 @@
                      (.countDown latch))
           consumer (lhcons/create-default ch :handle-shutdown-signal-fn f)]
       (lhb/consume ch q consumer)
-      (.start (Thread. (fn []
-                         (try
-                           (lhq/bind ch "ugggggh" "amq.fanout")
-                           (catch Exception e
-                             (comment "Do nothing"))))))
+      (try
+        (lhq/bind ch "ugggggh" "amq.fanout")
+        (catch Exception e
+          (comment "Do nothing")))
       (is (.await latch 700 TimeUnit/MILLISECONDS))
       (is (= @cha (.getDelegate ch))))))
 
