@@ -152,19 +152,20 @@
 ;;
 
 (deftest test-using-non-global-basic-qos
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel (lhc/create-channel conn)]
-      (lhb/qos channel 5))))
+  (with-open [^Connection conn (lhc/connect)
+              ch               (lhc/create-channel conn)]
+    (lhb/qos ch 5)))
 
 ;;
 ;; basic.ack
 ;;
 
 (deftest test-acknowledge-one-message
-  (with-open [^Connection conn (lhc/connect)]
-    (let [producer-channel (lhc/create-channel conn)
-          consumer-channel (lhc/create-channel conn)
-          queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue1" :auto-delete true))]
+  (with-open [^Connection conn (lhc/connect)
+              producer-channel (lhc/create-channel conn)
+              consumer-channel (lhc/create-channel conn)]
+    (let [queue "langohr.examples.basic.ack.queue1"]
+      (lhq/declare consumer-channel queue)
       (lhq/purge   producer-channel queue)
       (.start (Thread. ^Callable (fn []
                                    (lhb/publish producer-channel "" queue "One")
@@ -174,13 +175,14 @@
       (let [[{delivery-tag :delivery-tag} _] (lhb/get consumer-channel queue false)]
         (is (= 1 delivery-tag))
         (lhb/ack consumer-channel delivery-tag))
-      (lhq/purge   producer-channel queue))))
+      (lhq/delete consumer-channel queue))))
 
 (deftest test-acknowledge-multiple-messages
-  (with-open [^Connection conn (lhc/connect)]
-    (let [producer-channel (lhc/create-channel conn)
-          consumer-channel (lhc/create-channel conn)
-          queue            (.getQueue (lhq/declare consumer-channel "langohr.examples.basic.ack.queue2" :auto-delete true))]
+  (with-open [^Connection conn (lhc/connect)
+              producer-channel (lhc/create-channel conn)
+              consumer-channel (lhc/create-channel conn)]
+    (let [queue "langohr.examples.basic.ack.queue2"]
+      (lhq/declare consumer-channel queue)
       (lhq/purge   producer-channel queue)
       (.start (Thread. ^Callable (fn []
                                    (lhb/publish producer-channel "" queue "One")
@@ -192,7 +194,7 @@
         (is (= 1 delivery-tag1))
         (is (= 2 delivery-tag2))
         (lhb/ack consumer-channel delivery-tag1 true))
-      (lhq/purge   producer-channel queue))))
+      (lhq/delete producer-channel queue))))
 
 ;;
 ;; basic.nack
