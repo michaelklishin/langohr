@@ -1,7 +1,10 @@
 (ns langohr.test.http-api-test
   (:require [langohr.http :as hc]
             [clojure.test :refer :all]
-            [clojure.set :refer [subset? superset?]]))
+            [clojure.set :refer [subset? superset?]]
+            [langohr.core    :as rmq]
+            [langohr.channel :as lch]
+            [langohr.queue   :as lq]))
 
 (hc/connect! "http://127.0.0.1:15672" "guest" "guest")
 
@@ -34,20 +37,23 @@
     (is (get e :javascript))))
 
 (deftest ^{:http true} test-list-definitoins
-  (let [r           (hc/list-definitions)
-        vhosts      (:vhosts r)
-        exchanges   (:exchanges r)
-        queues      (:queues r)
-        bindings    (:bindings r)
-        parameters  (:parameters r)
-        policies    (:policies r)
-        permissions (:permissions r)]
-    (is (:rabbit_version r))
-    (is (:name (first vhosts)))
-    (is (:name (first queues)))
-    (is (:name (first exchanges)))
-    (is (:source (first bindings)))
-    (is (:user (first permissions)))))
+  (with-open [conn (rmq/connect)
+              ch   (lch/open conn)]
+    (lq/declare-server-named ch)
+    (let [r           (hc/list-definitions)
+          vhosts      (:vhosts r)
+          exchanges   (:exchanges r)
+          queues      (:queues r)
+          bindings    (:bindings r)
+          parameters  (:parameters r)
+          policies    (:policies r)
+          permissions (:permissions r)]
+      (is (:rabbit_version r))
+      (is (:name (first vhosts)))
+      (is (:name (first queues)))
+      (is (:name (first exchanges)))
+      (is (:source (first bindings)))
+      (is (:user (first permissions))))))
 
 (deftest ^{:http true} test-list-connections
   (let [r (hc/list-connections)]
@@ -73,7 +79,7 @@
 
 (deftest ^{:http true} test-get-non-existing-vhost
   (let [response (hc/list-exchanges "amq.non-existing-vhost")]
-    ; since this vhost does not exist, there is no JSON response, just the body as a string
+                                        ; since this vhost does not exist, there is no JSON response, just the body as a string
     (is (string? response))))
 
 (deftest ^{:http true} test-declare-and-delete-exchange
@@ -142,7 +148,7 @@
   (let [user "a-new-user"
         vhost "/"
         permissions {:configure ".*" :write "write-only-exchange" :read "a|b|c"}]
-    (is (hc/declare-user user "password" ""))
-    (is (hc/declare-permissions vhost user permissions))
-    (is (= permissions (select-keys (hc/get-permissions vhost user) (keys permissions)))) 
-    (is (hc/delete-user user))))
+        (is (hc/declare-user user "password" ""))
+        (is (hc/declare-permissions vhost user permissions))
+        (is (= permissions (select-keys (hc/get-permissions vhost user) (keys permissions)))) 
+        (is (hc/delete-user user))))
