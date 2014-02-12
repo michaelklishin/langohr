@@ -20,8 +20,11 @@
 (def ^:const expected-recovery-period 500)
 (def ^:const recovery-delay           200)
 (defn wait-for-recovery
-  []
-  (Thread/sleep expected-recovery-period))
+  [conn]
+  (let [latch (CountDownLatch. 1)]
+    (rmq/on-recovery conn (fn [_]
+                            (.countDown latch)))
+    (.await latch (+ expected-recovery-period 250) TimeUnit/MILLISECONDS)))
 
 (defn close-all-connections
   []
@@ -54,7 +57,7 @@
     (Thread/sleep 100)
     (is (not (rmq/open? conn)))
     ;; wait for recovery to finish
-    (wait-for-recovery)
+    (wait-for-recovery conn)
     (is (rmq/open? conn))))
 
 (deftest test-connection-recovery-with-disabled-topology-recovery
@@ -69,7 +72,7 @@
       (lq/declare-passive ch q)
       (close-all-connections)
       (Thread/sleep 100)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (is (rmq/open? ch))
       (is (thrown? java.io.IOException
                    (lq/declare-passive ch q))))))
@@ -87,7 +90,7 @@
       (is (not (rmq/open? ch1)))
       (is (not (rmq/open? ch2)))
       ;; wait for recovery to finish
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (is (rmq/open? ch1))
       (is (rmq/open? ch2)))))
 
@@ -101,7 +104,7 @@
       (is (rmq/open? ch))
       (close-all-connections)
       ;; wait for recovery to finish
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (is (rmq/open? ch))
       (lb/publish ch "" q "a message")
       (lcnf/wait-for-confirms ch))))
@@ -118,7 +121,7 @@
       (lq/purge ch q)
       (is (lq/empty? ch q))
       (close-all-connections)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (is (rmq/open? ch))
       (ensure-queue-recovery ch q))))
 
@@ -137,7 +140,7 @@
       (lc/subscribe ch q f)
       (is (lq/empty? ch q))
       (close-all-connections)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (is (rmq/open? ch))
       (lb/publish ch x "test-basic-server-named-queue-recovery" "a message")
       (await-on latch))))
@@ -161,7 +164,7 @@
       (is (lq/empty? ch q1))
       (is (lq/empty? ch q2))
       (close-all-connections)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (is (rmq/open? ch))
       (lb/publish ch x "" "a message")
       (await-on latch))))
@@ -184,7 +187,7 @@
       (lc/subscribe ch q f)
       (is (lq/empty? ch q))
       (close-all-connections)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (is (rmq/open? ch))
       (lb/publish ch x1 "" "a message")
       (await-on latch))))
@@ -208,7 +211,7 @@
       (lc/subscribe ch q f)
       (is (lq/empty? ch q))
       (close-all-connections)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (is (rmq/open? ch))
       (lb/publish ch x1 "" "a message")
       (is (not (.await latch 100 TimeUnit/MILLISECONDS))))))
@@ -233,7 +236,7 @@
       (lc/subscribe ch1 q f)
       (is (lq/empty? ch2 q))
       (close-all-connections)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (is (rmq/open? ch1))
       (is (rmq/open? ch2))
       (lb/publish ch1 x1 "" "a message")
@@ -254,10 +257,10 @@
       (lq/purge ch q)
       (lq/bind ch q x)
       (close-all-connections)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (lc/subscribe ch q f)
       (close-all-connections)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (lb/publish ch x "" "a message")
       (is (.await latch 100 TimeUnit/MILLISECONDS))
       (lx/delete ch x))))
@@ -278,13 +281,27 @@
       (lq/bind ch q x)
       (lq/unbind ch q x)
       (close-all-connections)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (lc/subscribe ch q f)
       (close-all-connections)
-      (wait-for-recovery)
+      (wait-for-recovery conn)
       (lb/publish ch x "" "a message")
       (is (not (.await latch 100 TimeUnit/MILLISECONDS)))
       (lx/delete ch x))))
+
+(deftest test-connection-recovery-callback
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology true
+                                 :network-recovery-delay recovery-delay})]
+    (let [latch (CountDownLatch. 2)
+          f     (fn [_]
+                  (.countDown latch))]
+      (rmq/on-recovery conn f)
+      (close-all-connections)
+      (wait-for-recovery conn)
+      (close-all-connections)
+      (wait-for-recovery conn)
+      (is (.await latch 100 TimeUnit/MILLISECONDS)))))
 
 (when-not (System/getenv "CI")
   ;; q1 => q2 => ... => q(n-1) => q(n)
@@ -313,7 +330,7 @@
             (lq/declare ch q :exclusive true)
             (lc/subscribe ch q f)))
         (close-all-connections)
-        (wait-for-recovery)
+        (wait-for-recovery conn)
         (is (rmq/open? ch))
         (lb/publish ch x (first qs) "a message")
         (await-on latch 15 TimeUnit/SECONDS)))))
