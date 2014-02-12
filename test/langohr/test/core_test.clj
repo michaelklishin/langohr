@@ -11,7 +11,7 @@
 
 
 (deftest t-connection-with-default-parameters
-  (let [conn (lc/connect)]
+  (with-open [conn (lc/connect)]
     (is (instance? com.rabbitmq.client.Connection conn))
     (is (lc/automatically-recover? conn))
     (is (lc/automatic-recovery-enabled? conn))
@@ -19,10 +19,10 @@
 
 (deftest t-connection-with-overriden-parameters
   ;; see ./bin/ci/before_script.sh
-  (let [conn (lc/connect {
-                       :host "127.0.0.1" :port 5672
-                       :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
-                       :requested-heartbeat 3 :connection-timeout 5})]
+  (with-open [conn (lc/connect {
+                                :host "127.0.0.1" :port 5672
+                                :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
+                                :requested-heartbeat 3 :connection-timeout 5})]
     (is (lc/open? conn))
     (is (lc/automatically-recover? conn))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
@@ -30,37 +30,37 @@
     (is (= 3           (.getHeartbeat conn)))))
 
 (deftest t-connection-with-custom-executor
-  (let [conn (lc/connect {:executor (Executors/newFixedThreadPool 16)})]
+  (with-open [conn (lc/connect {:executor (Executors/newFixedThreadPool 16)})]
     (is (lc/open? conn))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))))
 
 (deftest t-connection-with-overriden-channel-max
-  (let [conn (lc/connect {:requested-channel-max 16})]
+  (with-open [conn (lc/connect {:requested-channel-max 16})]
     (is (lc/open? conn))
     (dotimes [x 16]
       (lch/open conn))
     (is (nil? (lch/open conn)))))
 
 (deftest t-connection-with-uri
-  (let [conn (lc/connect {:uri "amqp://127.0.0.1:5672"})]
+  (with-open [conn (lc/connect {:uri "amqp://127.0.0.1:5672"})]
     (is (lc/open? conn))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))
     (is (-> conn .getServerProperties (get "capabilities") (get "publisher_confirms")))))
 
 (deftest t-connection-with-connection-recovery-enabled
-  (let [conn (lc/connect {:automatically-recover true})]
+  (with-open [conn (lc/connect {:automatically-recover true})]
     (is (lc/automatically-recover? conn))
     (is (lc/open? conn))))
 
 (deftest t-broker-capabilities
-  (let [conn (lc/connect {:uri "amqp://127.0.0.1:5672"})
-        m    (lc/capabilities-of conn)]
-    (is (:exchange_exchange_bindings m))
-    (is (:consumer_cancel_notify m))
-    (is (:basic.nack m))
-    (is (:publisher_confirms m))))
+  (with-open [conn (lc/connect {:uri "amqp://127.0.0.1:5672"})]
+    (let [m    (lc/capabilities-of conn)]
+      (is (:exchange_exchange_bindings m))
+      (is (:consumer_cancel_notify m))
+      (is (:basic.nack m))
+      (is (:publisher_confirms m)))))
 
 
 (deftest t-connection-failure-due-to-misconfigured-port
@@ -118,25 +118,6 @@
           m   (lc/settings-from uri)]
       (is (= {:host "dev.rabbitmq.com" :port 5671 :username "guest" :vhost "/" :password "guest"} m)))))
 
-(deftest t-connection-after-recovery-is-wrapper
-  (let [conn  (lc/connect {:automatically-recover true})
-        conn-delegate (cast com.rabbitmq.client.impl.AMQConnection (.getDelegate conn))
-        ch    (lc/create-channel conn)
-        latch (java.util.concurrent.CountDownLatch. 3)]
-    (is (lc/automatically-recover? conn))
-    (lc/on-recovery conn (fn [new-conn]
-                           (.countDown latch)
-                           (is (instance? com.novemberain.langohr.Connection new-conn))))
-    (lc/on-recovery ch (fn [new-channel]
-                           (.countDown latch)
-                           (is (instance? com.novemberain.langohr.Channel new-channel))))
-    (lc/add-shutdown-listener conn
-     (fn [sse]
-       (.countDown latch)
-       (is (not (ls/initiated-by-application? sse)))))
-    (.close conn-delegate 200 "simulated broken connection" false (RuntimeException.))
-    (is (.await latch 10 TimeUnit/SECONDS) "timeout waiting for recovery hooks")))
-
 (deftest t-no-connection-recovery-after-explicit-close
   (let [conn  (lc/connect {:automatically-recover true})
         ch    (lc/create-channel conn)
@@ -144,36 +125,34 @@
     (is (lc/automatically-recover? conn))
     (lc/on-recovery conn (fn [new-conn] (is false  "should not start recovery after explicit shutdown")))
     (lc/add-shutdown-listener conn
-     (fn [sse]
-       (.countDown latch)
-       (is (ls/initiated-by-application? sse))))
+                              (fn [sse]
+                                (.countDown latch)
+                                (is (ls/initiated-by-application? sse))))
     (lc/close conn)
-    (is (.await latch 700 TimeUnit/MILLISECONDS))
-    ;wait until recovery had a chance to kick in
-    (Thread/sleep 6000)))
+    (is (.await latch 700 TimeUnit/MILLISECONDS))))
 
 (deftest t-disable-recovery
   (testing "It should be possible to disable automatically-recover"
     (with-open  [conn  (lc/connect  {:connection-timeout 300
-                               :automatically-recover false})]
+                                     :automatically-recover false})]
       (is (not (lc/automatic-recovery-enabled? conn)))
       (is (lc/automatic-topology-recovery-enabled? conn))))
 
   (testing "It should be possible to disable automatically-recover with nil"
     (with-open  [conn  (lc/connect  {:connection-timeout 300
-                               :automatically-recover nil})]
+                                     :automatically-recover nil})]
       (is (not (lc/automatic-recovery-enabled? conn)))
       (is (lc/automatic-topology-recovery-enabled? conn))))
 
   (testing "It should be possible to disable automatically-recover-topology"
     (with-open  [conn  (lc/connect  {:connection-timeout 300
-                               :automatically-recover-topology false})]
+                                     :automatically-recover-topology false})]
       (is (lc/automatic-recovery-enabled? conn))
       (is (not (lc/automatic-topology-recovery-enabled? conn)))))
 
   (testing "It should be possible to disable automatically-recover-topology with nil"
     (with-open  [conn  (lc/connect  {:connection-timeout 300
-                               :automatically-recover-topology nil})]
+                                     :automatically-recover-topology nil})]
       (is (lc/automatic-recovery-enabled? conn))
       (is (not (lc/automatic-topology-recovery-enabled? conn))))) )
 
