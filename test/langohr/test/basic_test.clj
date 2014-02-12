@@ -55,9 +55,9 @@
 ;;
 
 (deftest test-subscribe-with-custom-handler
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel    (lhc/create-channel conn)
-          exchange   ""
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [exchange   ""
           queue (lhq/declare-server-named channel)
           latch        (java.util.concurrent.CountDownLatch. 1)
           handler-called (atom #{}) 
@@ -90,16 +90,16 @@
 ;;
 
 (deftest test-basic-cancel
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel     (lhc/create-channel conn)
-          exchange    ""
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [exchange    ""
           payload     ""
           queue       (.getQueue (lhq/declare channel "" :auto-delete true))
           tag         (lhu/generate-consumer-tag "langohr.basic/consume-tests")
           counter     (atom 0)
           msg-handler (fn [ch metadata payload]
                         (swap! counter inc))]
-      (.start (Thread. #(lhcons/subscribe channel queue msg-handler :consumer-tag tag, :auto-ack true) "t-basic-cancel/consumer"))
+      (lhcons/subscribe channel queue msg-handler :consumer-tag tag, :auto-ack true)
       (lhb/publish channel exchange queue payload)
       (Thread/sleep 200)
       (is (= @counter 1))
@@ -114,35 +114,37 @@
 ;;
 
 (deftest test-basic-get-with-automatic-ack
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel    (lhc/create-channel conn)
-          exchange   ""
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [exchange   ""
           body       "A message we will fetch with basic.get"
-          queue      "langohr.examples.basic.get.queue1"
-          declare-ok (lhq/declare channel queue :auto-delete true)]
+          queue      "langohr.examples.basic.get.queue1"]
+      (lhq/declare channel queue :auto-delete true)
       (lhb/publish channel exchange queue body)
       (let [[metadata payload] (lhb/get channel queue)]
         (is (= (String. ^bytes payload) body))
         (is (= (:message-count metadata) 0))
         (is (= (:exchange metadata) exchange))
-        (is (= (:routing-key metadata) queue))))))
+        (is (= (:routing-key metadata) queue)))
+      (lhq/delete channel queue))))
 
 (deftest test-basic-get-with-explicit-ack
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel    (lhc/create-channel conn)
-          exchange   ""
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [exchange   ""
           body       "A message we will fetch with basic.get"
-          queue      "langohr.examples.basic.get.queue2"
-          declare-ok (lhq/declare channel queue :auto-delete true)]
+          queue      "langohr.examples.basic.get.queue2"]
+      (lhq/declare channel queue)
       (lhb/publish channel exchange queue body)
       (let [[metadata payload] (lhb/get channel queue false)]
-        (is (= (String. ^bytes payload) body))))))
+        (is (= (String. ^bytes payload) body)))
+      (lhq/delete channel queue))))
 
 
 (deftest test-basic-get-with-an-empty-queue
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel    (lhc/create-channel conn)
-          queue      (.getQueue (lhq/declare channel "" :auto-delete true))]
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [queue (lhq/declare-server-named channel)]
       (is (nil? (lhb/get channel queue false))))))
 
 ;;
