@@ -239,9 +239,10 @@
 ;;
 
 (deftest test-reject-one-message-to-requeue-it
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel (lhc/create-channel conn)
-          queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue1" :auto-delete true))]
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [queue "langohr.examples.basic.reject.queue1"]
+      (lhq/declare channel queue)
       (lhq/purge channel queue)
       (.start (Thread. ^Callable (fn []
                                    (lhb/publish channel "" queue "One")
@@ -251,13 +252,13 @@
       (let [[{:keys [delivery-tag]} _] (lhb/get channel queue false)]
         (is (= 1 delivery-tag))
         (lhb/reject channel delivery-tag true))
-      (lhq/purge channel queue))))
+      (lhq/delete channel queue))))
 
 (deftest test-reject-one-message-without-requeueing
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel (lhc/create-channel conn)
-          queue   (.getQueue (lhq/declare channel "langohr.examples.basic.reject.queue2" :auto-delete true))]
-      (lhq/purge channel queue)
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [queue "langohr.examples.basic.reject.queue2"]
+      (lhq/declare channel queue)
       (.start (Thread. ^Callable (fn []
                                    (lhb/publish channel "" queue "One")
                                    (lhb/publish channel "" queue "Two")
@@ -268,31 +269,32 @@
         (is (= 1 delivery-tag1))
         (is (= 2 delivery-tag2))
         (lhb/reject channel delivery-tag1 false))
-      (lhq/purge channel queue))))
+      (lhq/delete channel queue))))
 
 ;;
 ;; basic.return
 ;;
 
 (deftest test-handling-of-returned-mandatory-messages-with-a-listener-instance
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel  (lhc/create-channel conn)
-          exchange "langohr.tests.basic.return1"
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [exchange "langohr.tests.basic.return1"
           latch    (java.util.concurrent.CountDownLatch. 1)
-          rl       (lhb/return-listener (fn [reply-code reply-text exchange routing-key properties body]
-                                          (is (= reply-text "NO_ROUTE"))
-                                          (is (= (String. ^bytes body) "return-me"))
-                                          (.countDown latch)))]
-      (.addReturnListener channel rl)
+          rl       (fn [reply-code reply-text exchange routing-key properties body]
+                     (is (= reply-text "NO_ROUTE"))
+                     (is (= (String. ^bytes body) "return-me"))
+                     (.countDown latch))]
+      (lhb/add-return-listener channel rl)
       (lhe/declare channel exchange "direct" :auto-delete true)
       (lhb/publish channel exchange (str (UUID/randomUUID)) "return-me" :mandatory true)
-      (is (.await latch 1 TimeUnit/SECONDS)))))
+      (is (.await latch 1 TimeUnit/SECONDS))
+      (lhe/delete channel exchange))))
 
 ;;
 ;; basic.recover, basic.recovery-async
 ;;
 
 (deftest test-kind-of-deprecated-recovery-methods
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel (lhc/create-channel conn)]
-      (lhb/recover-async channel true))))
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (lhb/recover-async channel true)))
