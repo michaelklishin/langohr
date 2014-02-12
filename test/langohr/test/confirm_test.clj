@@ -1,46 +1,40 @@
 (ns langohr.test.confirm-test
-  (:require langohr.confirm
-            [langohr.core    :as lhc]
+  (:require [langohr.core    :as lhc]
             [langohr.channel :as lch]
             [langohr.basic   :as lhb]
             [langohr.queue   :as lhq]
+            [langohr.confirm :as cfm]
             [clojure.test    :refer :all])
   (:import [com.rabbitmq.client Connection AMQP$Queue$DeclareOk AMQP$Confirm$SelectOk]
-           java.util.concurrent.TimeUnit))
-
-(defonce ^Connection conn (lhc/connect))
-
-(deftest t-confirm-select
-  (let [channel (lhc/create-channel conn)]
-    (is (instance? AMQP$Confirm$SelectOk (langohr.confirm/select channel)))))
+           [java.util.concurrent CountDownLatch TimeUnit]))
 
 (deftest t-confirm-select-with-a-listener
-  (let [channel  (lhc/create-channel conn)
-        queue    (.getQueue (lhq/declare channel))
-        latch    (java.util.concurrent.CountDownLatch. 1)
-        listener (langohr.confirm/listener (fn [delivery-tag, multiple]
-                                             (.countDown latch))
-                                           (fn [delivery-tag, multiple]
-                                             (.countDown latch)))]
-    (langohr.confirm/select channel)
-    (langohr.confirm/add-listener channel listener)
-    (.start (Thread. (fn []
-                       (lhb/publish channel "" queue "")) "publisher"))
-    (is (.await latch 700 TimeUnit/MILLISECONDS))))
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [queue    (lhq/declare-server-named channel)
+          latch    (CountDownLatch. 1)
+          listener (cfm/listener (fn [delivery-tag, multiple]
+                                               (.countDown latch))
+                                             (fn [delivery-tag, multiple]
+                                               (.countDown latch)))]
+      (cfm/select channel)
+      (cfm/add-listener channel listener)
+      (lhb/publish channel "" queue "")
+      (is (.await latch 700 TimeUnit/MILLISECONDS)))))
 
 
 (deftest t-confirm-select-with-callback-functions
-  (let [channel  (lhc/create-channel conn)
-        queue    (.getQueue (lhq/declare channel))
-        latch    (java.util.concurrent.CountDownLatch. 1)]
-    (langohr.confirm/select channel
-                            (fn [delivery-tag, multiple]
-                              (.countDown latch))
-                            (fn [delivery-tag, multiple]
-                              (.countDown latch)))
-    (.start (Thread. (fn []
-                       (lhb/publish channel "" queue "")) "publisher"))
-    (is (.await latch 700 TimeUnit/MILLISECONDS))))
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [queue    (lhq/declare-server-named channel)
+          latch    (CountDownLatch. 1)]
+      (cfm/select channel
+                  (fn [delivery-tag, multiple]
+                    (.countDown latch))
+                  (fn [delivery-tag, multiple]
+                    (.countDown latch)))
+      (lhb/publish channel "" queue "")
+      (is (.await latch 700 TimeUnit/MILLISECONDS)))))
 
 (deftest test-publishing-confirms
   (with-open [conn (lhc/connect)
@@ -49,7 +43,7 @@
           q     "langohr.publisher.confirms"
           _     (lhq/declare ch q :exclusive true)
           body  (.getBytes "message" "UTF-8")]
-      (langohr.confirm/select ch)
+      (cfm/select ch)
       (lhb/publish ch x q body :content-type "application-json")
-      (langohr.confirm/wait-for-confirms ch 200)
+      (cfm/wait-for-confirms ch 200)
       (is true))))
