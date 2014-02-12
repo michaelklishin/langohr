@@ -201,9 +201,10 @@
 ;;
 
 (deftest test-nack-one-message-to-requeue-it
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel (lhc/create-channel conn)
-          queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue1" :auto-delete true))]
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [queue "langohr.examples.basic.nack.queue1"]
+      (lhq/declare channel queue)
       (lhq/purge channel queue)
       (.start (Thread. ^Callable (fn []
                                    (lhb/publish channel "" queue "One")
@@ -213,12 +214,13 @@
       (let [[{:keys [delivery-tag]} _] (lhb/get channel queue false)]
         (is (= 1 delivery-tag))
         (lhb/nack channel delivery-tag false true))
-      (lhq/purge channel queue))))
+      (lhq/delete channel queue))))
 
 (deftest test-nack-multiple-messages-without-requeueing
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel (lhc/create-channel conn)
-          queue   (.getQueue (lhq/declare channel "langohr.examples.basic.nack.queue2" :auto-delete true))]
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [queue "langohr.examples.basic.nack.queue2"]
+      (lhq/declare channel queue)
       (lhq/purge channel queue)
       (.start (Thread. ^Callable (fn []
                                    (lhb/publish channel "" queue "One")
@@ -230,7 +232,7 @@
         (is (= 1 delivery-tag1))
         (is (= 2 delivery-tag2))
         (lhb/nack channel delivery-tag1 true false))
-      (lhq/purge channel queue))))
+      (lhq/delete channel queue))))
 
 ;;
 ;; basic.reject
