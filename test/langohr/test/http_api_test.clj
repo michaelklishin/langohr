@@ -36,7 +36,7 @@
         e (first r)]
     (is (get e :javascript))))
 
-(deftest ^{:http true} test-list-definitoins
+(deftest ^{:http true} test-list-definitions
   (with-open [conn (rmq/connect)
               ch   (lch/open conn)]
     (lq/declare-server-named ch)
