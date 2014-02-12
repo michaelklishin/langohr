@@ -18,9 +18,9 @@
 ;;
 
 (deftest test-publishing-using-default-exchange-and-default-message-attributes
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel    (lhc/create-channel conn)
-          exchange   ""
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [exchange   ""
           ;; yes, payload may be blank. This is an edge case Ruby amqp
           ;; gem did not support for a long time so I want to use it in the langohr
           ;; test suite. MK.
@@ -39,7 +39,7 @@
                           (is (:message-id metadata))
                           (is (:priority metadata))
                           (.countDown latch))]
-      (.start (Thread. #(lhcons/subscribe channel queue msg-handler :consumer-tag tag :auto-ack true) "t-publishing-using-default-exchange-and-default-message-attributes/consumer"))
+      (lhcons/subscribe channel queue msg-handler :consumer-tag tag :auto-ack true)
       (.start (Thread. (fn []
                          (dotimes [i n]
                            (lhb/publish channel exchange queue payload
