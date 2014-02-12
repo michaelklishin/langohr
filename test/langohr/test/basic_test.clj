@@ -72,11 +72,11 @@
 
 
 (deftest test-demonstrate-sender-selected-distribution-extension-support
-  (with-open [^Connection conn (lhc/connect)]
-    (let [channel     (lhc/create-channel conn)
-          queue1      (.getQueue (lhq/declare channel "" :auto-delete true))
-          queue2      (.getQueue (lhq/declare channel "" :auto-delete true))
-          queue3      (.getQueue (lhq/declare channel "" :auto-delete true))]
+  (with-open [^Connection conn (lhc/connect)
+              channel          (lhc/create-channel conn)]
+    (let [queue1      (lhq/declare-server-named channel)
+          queue2      (lhq/declare-server-named channel)
+          queue3      (lhq/declare-server-named channel)]
       (lhb/publish channel "" queue1 "1010" :headers { "CC" [queue2], "BCC" [queue3] })
       (is (lhb/get channel queue1))
       (is (lhb/get channel queue2))
