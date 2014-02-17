@@ -39,7 +39,8 @@
 (deftest ^{:http true} test-list-definitions
   (with-open [conn (rmq/connect)
               ch   (lch/open conn)]
-    (lq/declare-server-named ch)
+    (dotimes [i 100]
+      (lq/declare-server-named ch))
     (let [r           (hc/list-definitions)
           vhosts      (:vhosts r)
           exchanges   (:exchanges r)
