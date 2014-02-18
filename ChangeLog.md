@@ -1,5 +1,9 @@
 ## Changes between Langohr 2.3.x and 2.4.0
 
+### clj-http Upgrade
+
+clj-http dependency has been updated to `0.7.9`.
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.2.3`.
