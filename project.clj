@@ -8,7 +8,7 @@
                  [clj-http                 "0.7.9"]
                  [cheshire                 "5.3.1"]]
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
-             :1.6 {:dependencies [[org.clojure/clojure "1.6.0-beta1"]]}
+             :1.6 {:dependencies [[org.clojure/clojure "1.6.0-beta2"]]}
              :master {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/tools.cli "0.3.1" :exclusions [org.clojure/clojure]]]
                    :resource-paths ["test/resources"]
