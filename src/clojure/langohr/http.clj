@@ -47,7 +47,7 @@
 
 (defn safe-json-decode
   "Try to parse json response. If the content-type is not json, just return the body (string)."
-  [{body :body, {content-type "content-type"} :headers}]
+  [{body :body {content-type "content-type"} :headers}]
   (if (.contains (.toLowerCase ^String content-type) "json")
     (json/decode body true)
     body))
@@ -60,11 +60,17 @@
   [^String uri &{:keys [body] :as options}]
   (io! (:body (http/put uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions :content-type "application/json"}))) true))
 
+(defn ^{:private true} get
+  ([^String uri]
+     (io! (http/get uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"})))
+  ([^String uri options]
+     (io! (http/get uri (merge options {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"})))))
+
 (defn ^{:private true} get-and-decode-json
   ([^String uri]
-     (io! (safe-json-decode (http/get uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"}))))
-  ([^String uri &{:as options}]
-     (io! (safe-json-decode (http/get uri (merge options {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"}))))))
+     (safe-json-decode (get uri)))
+  ([^String uri options]
+     (safe-json-decode (get uri options))))
 
 (defn ^{:private true} head
   [^String uri]
