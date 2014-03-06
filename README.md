@@ -60,7 +60,7 @@ With Maven:
 
 If you are only starting out, please see our [Getting Started guide](http://clojurerabbitmq.info/articles/getting_started.html).
 
-[Documentation guides](http://clojurerabbitmq.info) are incomplete but most of the content is there:
+[Documentation guides](http://clojurerabbitmq.info):
 
  * [AMQP 0.9.1 Concepts](http://www.rabbitmq.com/tutorials/amqp-concepts.html)
  * [Conneciting To The Broker](http://clojurerabbitmq.info/articles/connecting.html)
@@ -70,7 +70,6 @@ If you are only starting out, please see our [Getting Started guide](http://cloj
  * [Durability](http://clojurerabbitmq.info/articles/durability.html)
  * [TLS/SSL](http://clojurerabbitmq.info/articles/tls.html)
 
-The rest of the guides will be written eventually.
 
 ### API Reference
 
@@ -86,14 +85,14 @@ Our [test suite](https://github.com/michaelklishin/langohr/tree/master/test/lang
 
 ## Supported Clojure Versions
 
-Langohr requires Clojure 1.4. The most recent
+Langohr requires Clojure 1.4+. The most recent
 stable release is highly recommended.
 
 
 ## Supported RabbitMQ Versions
 
-Langohr depends on RabbitMQ Java client 3.0.x and thus should work
-with RabbitMQ versions 2.0 and later.
+Langohr depends on RabbitMQ Java client 3.2.x and requires
+RabbitMQ versions 2.0 and later.
 
 
 ## Project Maturity
