@@ -1,4 +1,4 @@
-## Changes between Langohr 2.4.x and 2.5.0
+## Changes between Langohr 2.3.x and 2.5.0
 
 ### langohr.http/declare-user Renamed
 
