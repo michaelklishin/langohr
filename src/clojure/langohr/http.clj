@@ -8,7 +8,12 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.http
-  "RabbitMQ HTTP API client"
+  "RabbitMQ HTTP API client.
+
+   Relevant documentation guides:
+
+   * http://www.rabbitmq.com/management.html
+   * http://hg.rabbitmq.com/rabbitmq-management/raw-file/rabbitmq_v3_2_4/priv/www/api/index.html"
   (:refer-clojure :exclude [get])
   (:require [clj-http.client :as http]
             [cheshire.core   :as json]
