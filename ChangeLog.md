@@ -1,3 +1,17 @@
+## Changes between Langohr 2.4.x and 2.5.0
+
+### langohr.core/user-exists?
+
+`langohr.core/user-exists?` is a new function that returns true if provided
+user exists:
+
+``` clojure
+(require '[langohr.http :as hc])
+
+(hc/user-exists? "monitoring")
+```
+
+
 ## Changes between Langohr 2.3.x and 2.4.0
 
 ### clj-http Upgrade
