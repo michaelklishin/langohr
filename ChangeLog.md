@@ -4,9 +4,9 @@
 
 `langohr.http/declare-user` was renamed to `langohr.http/add-user`.
 
-### langohr.core/vhost-exists?
+### langohr.http/vhost-exists?
 
-`langohr.core/vhost-exists?` is a new function that returns true if provided
+`langohr.http/vhost-exists?` is a new function that returns true if provided
 vhost exists:
 
 ``` clojure
@@ -15,9 +15,9 @@ vhost exists:
 (hc/vhost-exists? "killer-app-dev")
 ```
 
-### langohr.core/user-exists?
+### langohr.http/user-exists?
 
-`langohr.core/user-exists?` is a new function that returns true if provided
+`langohr.http/user-exists?` is a new function that returns true if provided
 user exists:
 
 ``` clojure
