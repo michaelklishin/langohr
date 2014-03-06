@@ -141,11 +141,11 @@
     (is (subset? #{"/"} (set (map :name xs))))))
 
 (deftest ^{:http true} test-vhost-manipulations
-  (let [vhost "new-vhost"
-        v (hc/declare-vhost vhost)
-        v-del (hc/delete-vhost vhost)]
-    (is v)
-    (is v-del)))
+  (let [vhost "new-vhost"]
+    (is (not (hc/vhost-exists? vhost)))
+    (hc/declare-vhost vhost)
+    (is (hc/vhost-exists? vhost))
+    (hc/delete-vhost vhost)))
 
 (deftest ^{:http true} test-user-manipulations
   (let [user "a-new-user"]

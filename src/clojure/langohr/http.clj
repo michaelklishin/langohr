@@ -215,6 +215,11 @@
   []
   (get-and-decode-json (url-with-path "/api/vhosts")))
 
+(defn vhost-exists?
+  [^String vhost]
+  (let [{:keys [status]} (head (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost))))]
+    (not (missing? status))))
+
 (defn get-vhost
   [^String vhost]
   (get-and-decode-json (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost)))))
