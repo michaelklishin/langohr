@@ -1,5 +1,9 @@
 ## Changes between Langohr 2.4.x and 2.5.0
 
+### langohr.http/declare-user Renamed
+
+`langohr.http/declare-user` was renamed to `langohr.http/add-user`.
+
 ### langohr.core/vhost-exists?
 
 `langohr.core/vhost-exists?` is a new function that returns true if provided
