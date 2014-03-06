@@ -293,9 +293,14 @@
   ([^String vhost ^String name]
   (get-and-decode-json (url-with-path (format "/api/policies/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode name))))))
 
-(defn declare-policy
+(defn set-policy
   [^String vhost ^String name policy]
   (put (url-with-path (format "/api/policies/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode name))) {:body policy}))
+
+(defn ^{:deprecated true} declare-policy
+  "Deprecated. Use set-policy."
+  [^String vhost ^String name policy]
+  (set-policy vhost name policy))
 
 (defn delete-policy
   [^String vhost]
