@@ -1,5 +1,9 @@
 ## Changes between Langohr 2.4.x and 2.5.0
 
+### langohr.http/declare-permissions Renamed
+
+`langohr.http/declare-permissions` was renamed to `langohr.http/set-permissions`.
+
 ### langohr.http/declare-user Renamed
 
 `langohr.http/declare-user` was renamed to `langohr.http/add-user`.
