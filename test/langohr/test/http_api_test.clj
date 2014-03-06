@@ -53,8 +53,6 @@
     (let [r           (hc/list-definitions)
           vhosts      (:vhosts r)
           exchanges   (:exchanges r)
-          queues      (:queues r)
-          bindings    (:bindings r)
           parameters  (:parameters r)
           policies    (:policies r)
           permissions (:permissions r)]
