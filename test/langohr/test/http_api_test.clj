@@ -58,9 +58,7 @@
           permissions (:permissions r)]
       (is (:rabbit_version r))
       (is (:name (first vhosts)))
-      (is (:name (first queues)))
       (is (:name (first exchanges)))
-      (is (:source (first bindings)))
       (is (:user (first permissions))))))
 
 (deftest ^{:http true} test-list-connections
