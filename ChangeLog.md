@@ -1,5 +1,9 @@
 ## Changes between Langohr 2.4.x and 2.5.0
 
+### langohr.http/declare-policy Renamed
+
+`langohr.http/declare-policy` was renamed to `langohr.http/set-policy`.
+
 ### langohr.http/declare-permissions Renamed
 
 `langohr.http/declare-permissions` was renamed to `langohr.http/set-permissions`.
