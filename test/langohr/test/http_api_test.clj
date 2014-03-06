@@ -149,8 +149,10 @@
 
 (deftest ^{:http true} test-user-manipulations
   (let [user "a-new-user"]
+    (is (not (hc/user-exists? user)))
     (is (hc/declare-user user "password" ""))
     (is (= user (:name (hc/get-user user))))
+    (is (hc/user-exists? user))
     (is (some #{user} (map :name (hc/list-users))))
     (is (hc/delete-user user))))
 

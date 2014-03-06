@@ -82,7 +82,9 @@
   ([^String uri &{:keys [body] :as options}]
      (io! (:body (http/delete uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions}))) true)))
 
-
+(defn ^{:private true} missing?
+  [status]
+  (= status 404))
 
 ;;
 ;; API
@@ -251,6 +253,11 @@
 (defn get-user
   [^String user]
   (get-and-decode-json (url-with-path (format "/api/users/%s" (URLEncoder/encode user)))))
+
+(defn user-exists?
+  [^String user]
+  (let [{:keys [status]} (head (url-with-path (format "/api/users/%s" (URLEncoder/encode user))))]
+    (not (missing? status))))
 
 (defn declare-user
   [^String user password tags]
