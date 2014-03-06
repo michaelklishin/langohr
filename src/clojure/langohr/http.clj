@@ -60,7 +60,7 @@
   [^String uri &{:keys [body] :as options}]
   (io! (:body (http/put uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions :content-type "application/json"}))) true))
 
-(defn ^{:private true} get
+(defn ^{:private true} get-and-decode-json
   ([^String uri]
      (io! (safe-json-decode (http/get uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"}))))
   ([^String uri &{:as options}]
@@ -91,34 +91,34 @@
 
 (defn get-overview
   []
-  (get (url-with-path "/api/overview")))
+  (get-and-decode-json (url-with-path "/api/overview")))
 
 
 (defn list-nodes
   []
-  (get (url-with-path "/api/nodes")))
+  (get-and-decode-json (url-with-path "/api/nodes")))
 
 (defn get-node
   [^String node]
-  (get (url-with-path (str "/api/nodes/" node))))
+  (get-and-decode-json (url-with-path (str "/api/nodes/" node))))
 
 
 (defn list-extensions
   []
-  (get (url-with-path "/api/extensions")))
+  (get-and-decode-json (url-with-path "/api/extensions")))
 
 
 (defn list-definitions
   []
-  (get (url-with-path "/api/definitions")))
+  (get-and-decode-json (url-with-path "/api/definitions")))
 
 (defn list-connections
   []
-  (get (url-with-path "/api/connections")))
+  (get-and-decode-json (url-with-path "/api/connections")))
 
 (defn get-connection
   [^String id]
-  (get (url-with-path (str "/api/connections/" id))))
+  (get-and-decode-json (url-with-path (str "/api/connections/" id))))
 
 (defn close-connection
   [^String id]
@@ -126,17 +126,17 @@
 
 (defn list-channels
   []
-  (get (url-with-path "/api/channels")))
+  (get-and-decode-json (url-with-path "/api/channels")))
 
 (defn list-exchanges
   ([]
-     (get (url-with-path "/api/exchanges")))
+     (get-and-decode-json (url-with-path "/api/exchanges")))
   ([^String vhost]
-     (get (url-with-path (str "/api/exchanges/" (URLEncoder/encode vhost))))))
+     (get-and-decode-json (url-with-path (str "/api/exchanges/" (URLEncoder/encode vhost))))))
 
 (defn get-exchange
   [^String vhost ^String exchange]
-  (get (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
+  (get-and-decode-json (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
 
 (defn declare-exchange
   [^String vhost ^String exchange properties]
@@ -148,11 +148,11 @@
 
 (defn list-bindings-for-which-exchange-is-the-source
   [^String vhost ^String exchange]
-  (get (url-with-path (format "/api/exchanges/%s/%s/bindings/source" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
+  (get-and-decode-json (url-with-path (format "/api/exchanges/%s/%s/bindings/source" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
 
 (defn list-bindings-for-which-exchange-is-the-destination
   [^String vhost ^String exchange]
-  (get (url-with-path (format "/api/exchanges/%s/%s/bindings/destination" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
+  (get-and-decode-json (url-with-path (format "/api/exchanges/%s/%s/bindings/destination" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
 
 (defn publish
   [^String vhost ^String exchange]
@@ -160,13 +160,13 @@
 
 (defn list-queues
   ([]
-     (get (url-with-path "/api/queues")))
+     (get-and-decode-json (url-with-path "/api/queues")))
   ([^String vhost]
-     (get (url-with-path (format "/api/queues/%s" (URLEncoder/encode vhost))))))
+     (get-and-decode-json (url-with-path (format "/api/queues/%s" (URLEncoder/encode vhost))))))
 
 (defn get-queue
   [^String vhost ^String queue]
-  (get (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue)))))
+  (get-and-decode-json (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue)))))
 
 (defn declare-queue
   [^String vhost ^String queue properties]
@@ -186,11 +186,11 @@
 
 (defn list-bindings
   ([]
-     (get (url-with-path "/api/bindings")))
+     (get-and-decode-json (url-with-path "/api/bindings")))
   ([^String vhost]
-     (get (url-with-path (format "/api/bindings/%s" (URLEncoder/encode vhost)))))
+     (get-and-decode-json (url-with-path (format "/api/bindings/%s" (URLEncoder/encode vhost)))))
   ([^String vhost ^String queue]
-     (get (url-with-path (format "/api/queues/%s/%s/bindings"
+     (get-and-decode-json (url-with-path (format "/api/queues/%s/%s/bindings"
                                  (URLEncoder/encode vhost)
                                  (URLEncoder/encode queue))))))
 
@@ -205,11 +205,11 @@
 
 (defn list-vhosts
   []
-  (get (url-with-path "/api/vhosts")))
+  (get-and-decode-json (url-with-path "/api/vhosts")))
 
 (defn get-vhost
   [^String vhost]
-  (get (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost)))))
+  (get-and-decode-json (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost)))))
 
 (defn declare-vhost
   [^String vhost]
@@ -221,13 +221,13 @@
 
 (defn list-permissions
   ([]
-    (get (url-with-path "/api/permissions")))
+    (get-and-decode-json (url-with-path "/api/permissions")))
   ([^String vhost]
-    (get (url-with-path (format "/api/vhosts/%s/permissions" (URLEncoder/encode vhost))))))
+    (get-and-decode-json (url-with-path (format "/api/vhosts/%s/permissions" (URLEncoder/encode vhost))))))
 
 (defn get-permissions
   [^String vhost ^String username]
-  (get (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username)))))
+  (get-and-decode-json (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username)))))
 
 (defn declare-permissions
   [^String vhost ^String username {:keys [configure write read] :as body}]
@@ -240,11 +240,11 @@
 
 (defn list-users
   []
-  (get (url-with-path "/api/users")))
+  (get-and-decode-json (url-with-path "/api/users")))
 
 (defn get-user
   [^String user]
-  (get (url-with-path (format "/api/users/%s" (URLEncoder/encode user)))))
+  (get-and-decode-json (url-with-path (format "/api/users/%s" (URLEncoder/encode user)))))
 
 (defn declare-user
   [^String user password tags]
@@ -256,13 +256,13 @@
 
 (defn list-policies
   []
-  (get (url-with-path "/api/policies")))
+  (get-and-decode-json (url-with-path "/api/policies")))
 
 (defn get-policies
   ([^String vhost]
-    (get (url-with-path (format "/api/policies/%s" (URLEncoder/encode vhost)))))
+    (get-and-decode-json (url-with-path (format "/api/policies/%s" (URLEncoder/encode vhost)))))
   ([^String vhost ^String name]
-  (get (url-with-path (format "/api/policies/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode name))))))
+  (get-and-decode-json (url-with-path (format "/api/policies/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode name))))))
 
 (defn declare-policy
   [^String vhost ^String name policy]
@@ -274,8 +274,8 @@
 
 (defn whoami
   []
-  (get (url-with-path "/api/whoami")))
+  (get-and-decode-json (url-with-path "/api/whoami")))
 
 (defn aliveness-test
   [^String vhost]
-  (get (url-with-path (format "/api/aliveness-test/%s" (URLEncoder/encode vhost)))))
+  (get-and-decode-json (url-with-path (format "/api/aliveness-test/%s" (URLEncoder/encode vhost)))))
