@@ -1,5 +1,16 @@
 ## Changes between Langohr 2.4.x and 2.5.0
 
+### langohr.core/vhost-exists?
+
+`langohr.core/vhost-exists?` is a new function that returns true if provided
+vhost exists:
+
+``` clojure
+(require '[langohr.http :as hc])
+
+(hc/vhost-exists? "killer-app-dev")
+```
+
 ### langohr.core/user-exists?
 
 `langohr.core/user-exists?` is a new function that returns true if provided
