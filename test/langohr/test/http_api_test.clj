@@ -161,6 +161,6 @@
         vhost "/"
         permissions {:configure ".*" :write "write-only-exchange" :read "a|b|c"}]
     (is (hc/add-user user "password" ""))
-    (is (hc/declare-permissions vhost user permissions))
+    (is (hc/set-permissions vhost user permissions))
     (is (= permissions (select-keys (hc/get-permissions vhost user) (keys permissions))))
     (is (hc/delete-user user))))

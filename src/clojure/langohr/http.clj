@@ -242,10 +242,16 @@
   [^String vhost ^String username]
   (get-and-decode-json (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username)))))
 
-(defn declare-permissions
+(defn  set-permissions
   [^String vhost ^String username {:keys [configure write read] :as body}]
   {:pre [(every? string? [configure write read])]}
   (put (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username))) {:body body}))
+
+(defn ^{:deprecated true} declare-permissions
+  "Deprecated. Use set-permissions."
+  [^String vhost ^String username {:keys [configure write read] :as body}]
+  {:pre [(every? string? [configure write read])]}
+  (set-permissions vhost username body))
 
 (defn delete-permissions
   [^String vhost ^String username]
