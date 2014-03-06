@@ -53,11 +53,11 @@
     body))
 
 (defn ^{:private true} post
-  [^String uri &{:keys [body] :as options}]
+  [^String uri {:keys [body] :as options}]
   (io! (:body (http/post uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :content-type "application/json"}))) true))
 
 (defn ^{:private true} put
-  [^String uri &{:keys [body] :as options}]
+  [^String uri {:keys [body] :as options}]
   (io! (:body (http/put uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions :content-type "application/json"}))) true))
 
 (defn ^{:private true} get
@@ -146,7 +146,7 @@
 
 (defn declare-exchange
   [^String vhost ^String exchange properties]
-  (put (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange))) :body properties))
+  (put (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange))) {:body properties}))
 
 (defn delete-exchange
   [^String vhost ^String exchange]
@@ -176,7 +176,7 @@
 
 (defn declare-queue
   [^String vhost ^String queue properties]
-  (put (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue))) :body properties))
+  (put (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue))) {:body properties}))
 
 (defn delete-queue
   [^String vhost ^String queue]
@@ -207,7 +207,7 @@
      (post (url-with-path (format "/api/bindings/%s/e/%s/q/%s"
                                   (URLEncoder/encode vhost)
                                   (URLEncoder/encode exchange)
-                                  (URLEncoder/encode queue))) :body properties)))
+                                  (URLEncoder/encode queue))) {:body properties})))
 
 (defn list-vhosts
   []
@@ -219,7 +219,7 @@
 
 (defn declare-vhost
   [^String vhost]
-  (put (url-with-path (format "api/vhosts/%s" (URLEncoder/encode vhost))) :body {:name vhost}))
+  (put (url-with-path (format "api/vhosts/%s" (URLEncoder/encode vhost))) {:body {:name vhost}}))
 
 (defn delete-vhost
   [^String vhost]
@@ -238,7 +238,7 @@
 (defn declare-permissions
   [^String vhost ^String username {:keys [configure write read] :as body}]
   {:pre [(every? string? [configure write read])]}
-  (put (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username))) :body body))
+  (put (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username))) {:body body}))
 
 (defn delete-permissions
   [^String vhost ^String username]
@@ -254,7 +254,7 @@
 
 (defn declare-user
   [^String user password tags]
-  (put (url-with-path (format "/api/users/%s" (URLEncoder/encode user))) :body {:username user :password password :tags tags :has-password true}))
+  (put (url-with-path (format "/api/users/%s" (URLEncoder/encode user))) {:body {:username user :password password :tags tags :has-password true}}))
 
 (defn delete-user
   [^String user]
@@ -272,7 +272,7 @@
 
 (defn declare-policy
   [^String vhost ^String name policy]
-  (put (url-with-path (format "/api/policies/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode name))) :body policy))
+  (put (url-with-path (format "/api/policies/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode name))) {:body policy}))
 
 (defn delete-policy
   [^String vhost]
