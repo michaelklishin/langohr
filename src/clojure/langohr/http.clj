@@ -264,9 +264,14 @@
   (let [{:keys [status]} (head (url-with-path (format "/api/users/%s" (URLEncoder/encode user))))]
     (not (missing? status))))
 
-(defn declare-user
+(defn add-user
   [^String user password tags]
   (put (url-with-path (format "/api/users/%s" (URLEncoder/encode user))) {:body {:username user :password password :tags tags :has-password true}}))
+
+(defn ^{:deprecated true} declare-user
+  "Deprecated. Use add-user."
+  [^String user password tags]
+  (add-user user password tags))
 
 (defn delete-user
   [^String user]

@@ -150,7 +150,7 @@
 (deftest ^{:http true} test-user-manipulations
   (let [user "a-new-user"]
     (is (not (hc/user-exists? user)))
-    (is (hc/declare-user user "password" ""))
+    (is (hc/add-user user "password" ""))
     (is (= user (:name (hc/get-user user))))
     (is (hc/user-exists? user))
     (is (some #{user} (map :name (hc/list-users))))
@@ -160,7 +160,7 @@
   (let [user "a-new-user"
         vhost "/"
         permissions {:configure ".*" :write "write-only-exchange" :read "a|b|c"}]
-        (is (hc/declare-user user "password" ""))
-        (is (hc/declare-permissions vhost user permissions))
-        (is (= permissions (select-keys (hc/get-permissions vhost user) (keys permissions)))) 
-        (is (hc/delete-user user))))
+    (is (hc/add-user user "password" ""))
+    (is (hc/declare-permissions vhost user permissions))
+    (is (= permissions (select-keys (hc/get-permissions vhost user) (keys permissions))))
+    (is (hc/delete-user user))))
