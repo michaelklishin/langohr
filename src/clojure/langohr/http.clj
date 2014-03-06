@@ -52,25 +52,25 @@
     (json/decode body true)
     body))
 
-(defn post
+(defn ^{:private true} post
   [^String uri &{:keys [body] :as options}]
   (io! (:body (http/post uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :content-type "application/json"}))) true))
 
-(defn put
+(defn ^{:private true} put
   [^String uri &{:keys [body] :as options}]
   (io! (:body (http/put uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions :content-type "application/json"}))) true))
 
-(defn get
+(defn ^{:private true} get
   ([^String uri]
      (io! (safe-json-decode (http/get uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"}))))
   ([^String uri &{:as options}]
      (io! (safe-json-decode (http/get uri (merge options {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"}))))))
 
-(defn head
+(defn ^{:private true} head
   [^String uri]
   (io! (http/head uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions})))
 
-(defn delete
+(defn ^{:private true} delete
   ([^String uri]
      (io! (:body (http/delete uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions})) true))
   ([^String uri &{:keys [body] :as options}]
