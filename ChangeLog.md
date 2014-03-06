@@ -1,3 +1,10 @@
+## Changes between Langohr 2.5.x and 2.6.0
+
+### clj-http Upgrade
+
+clj-http dependency has been updated to `0.9.0`.
+
+
 ## Changes between Langohr 2.3.x and 2.5.0
 
 ### langohr.http/declare-user Renamed
