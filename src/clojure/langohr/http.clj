@@ -224,9 +224,14 @@
   [^String vhost]
   (get-and-decode-json (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost)))))
 
-(defn declare-vhost
+(defn add-vhost
   [^String vhost]
   (put (url-with-path (format "api/vhosts/%s" (URLEncoder/encode vhost))) {:body {:name vhost}}))
+
+(defn ^{:deprecated true} declare-vhost
+  "Deprecated. Use add-vhost."
+  [^String vhost]
+  (add-vhost vhost))
 
 (defn delete-vhost
   [^String vhost]

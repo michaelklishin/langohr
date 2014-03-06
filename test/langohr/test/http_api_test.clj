@@ -143,7 +143,7 @@
 (deftest ^{:http true} test-vhost-manipulations
   (let [vhost "new-vhost"]
     (is (not (hc/vhost-exists? vhost)))
-    (hc/declare-vhost vhost)
+    (hc/add-vhost vhost)
     (is (hc/vhost-exists? vhost))
     (hc/delete-vhost vhost)))
 
