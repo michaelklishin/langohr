@@ -45,7 +45,7 @@
   (str *endpoint* slash (s/join slash segments)))
 
 
-(defn safe-json-decode 
+(defn safe-json-decode
   "Try to parse json response. If the content-type is not json, just return the body (string)."
   [{body :body, {content-type "content-type"} :headers}]
   (if (.contains (.toLowerCase ^String content-type) "json")
@@ -229,7 +229,7 @@
   [^String vhost ^String username]
   (get (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username)))))
 
-(defn declare-permissions 
+(defn declare-permissions
   [^String vhost ^String username {:keys [configure write read] :as body}]
   {:pre [(every? string? [configure write read])]}
   (put (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username))) :body body))
