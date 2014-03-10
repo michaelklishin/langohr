@@ -1,4 +1,4 @@
-## Changes between Langohr 2.6.x and 2.7.0
+## Changes between Langohr 2.6.x and 2.7.1
 
 ### langohr.http/list-enabled-protocols
 
