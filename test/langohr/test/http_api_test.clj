@@ -181,3 +181,7 @@
       (is (not (rmq/open? c2)))
       (is (rmq/open? c3))
       (rmq/close c3))))
+
+(deftest ^{:http true} test-enabled-protocols
+  (let [xs (hc/list-enabled-protocols)]
+    (is (xs "amqp"))))

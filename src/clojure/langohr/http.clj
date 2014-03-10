@@ -101,6 +101,10 @@
   []
   (get-and-decode-json (url-with-path "/api/overview")))
 
+(defn list-enabled-protocols
+  []
+  (let [m (get-overview)]
+    (set (map :protocol (:listeners m)))))
 
 (defn list-nodes
   []
