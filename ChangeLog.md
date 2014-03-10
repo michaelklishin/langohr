@@ -1,3 +1,11 @@
+## Changes between Langohr 2.7.x and 2.8.0
+
+### langohr.core/version is Gone
+
+`langohr.core/version`, which indicated Langohr's own version,
+was removed.
+
+
 ## Changes between Langohr 2.6.x and 2.7.0
 
 ### langohr.http/list-enabled-protocols
