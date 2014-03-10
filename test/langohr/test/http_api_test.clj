@@ -160,3 +160,24 @@
     (is (hc/set-permissions vhost user permissions))
     (is (= permissions (select-keys (hc/get-permissions vhost user) (keys permissions))))
     (is (hc/delete-user user))))
+
+(deftest ^{:http true} test-forced-connection-close
+  (let [u  "temp-user"
+        p  "temp-user-pwd"
+        vh "/"]
+    (hc/add-user u p "management")
+    (hc/set-permissions vh u {:configure ".*" :write ".*" :read ".*"})
+    (let [opts {:username u :password p :vhost vh :automatically-recover false}
+          c1   (rmq/connect opts)
+          c2   (rmq/connect opts)
+          c3   (rmq/connect)]
+      (is (rmq/open? c1))
+      (is (rmq/open? c2))
+      (is (rmq/open? c3))
+      (is (= 2 (count (hc/list-connections-from u))))
+      (hc/close-connections-from u)
+      (is (= 0 (count (hc/list-connections-from u))))
+      (is (not (rmq/open? c1)))
+      (is (not (rmq/open? c2)))
+      (is (rmq/open? c3))
+      (rmq/close c3))))

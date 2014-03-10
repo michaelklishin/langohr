@@ -124,6 +124,13 @@
   []
   (get-and-decode-json (url-with-path "/api/connections")))
 
+(defn list-connections-from
+  [^String user]
+  (let [xs (list-connections)]
+    (filter (fn [m]
+              (= user (:user m)))
+            xs)))
+
 (defn get-connection
   [^String id]
   (get-and-decode-json (url-with-path (str "/api/connections/" id))))
@@ -131,6 +138,12 @@
 (defn close-connection
   [^String id]
   (delete (url-with-path (str "/api/connections/" id))))
+
+(defn close-connections-from
+  [^String user]
+  (let [xs (map :name (list-connections-from user))]
+    (doseq [^String cn xs]
+      (close-connection cn))))
 
 (defn list-channels
   []
