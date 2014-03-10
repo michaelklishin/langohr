@@ -103,8 +103,7 @@
 
 (defn list-enabled-protocols
   []
-  (let [m (get-overview)]
-    (set (map :protocol (:listeners m)))))
+  (set (map :protocol (:listeners (get-overview)))))
 
 (defn list-nodes
   []
