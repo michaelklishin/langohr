@@ -1,3 +1,13 @@
+## Changes between Langohr 2.6.x and 2.7.0
+
+### langohr.http/list-enabled-protocols
+
+`langohr.http/list-enabled-protocols` is a new function that lists
+the protocols a RabbitMQ installation supports, e.g. `"amqp"` or `"mqtt"`.
+Note that this currently does not include WebSTOMP (due to certain technical decisions
+in RabbitMQ Web STOMP plugin).
+
+
 ## Changes between Langohr 2.5.x and 2.6.0
 
 ### langohr.http/list-connections-from, /close-connections-from
