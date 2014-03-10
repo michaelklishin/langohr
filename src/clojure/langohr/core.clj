@@ -63,6 +63,9 @@
   (closed? [ch] (not (.isOpen ch))))
 
 
+(def ^{:const true}
+  version "2.4.0-SNAPSHOT")
+
 (declare create-connection-factory)
 (defn ^Connection connect
   "Creates and returns a new connection to RabbitMQ."
