@@ -141,9 +141,8 @@
 
 (defn close-connections-from
   [^String user]
-  (let [xs (map :name (list-connections-from user))]
-    (doseq [^String cn xs]
-      (close-connection cn))))
+  (doseq [^String cn (map :name (list-connections-from user))]
+    (close-connection cn)))
 
 (defn list-channels
   []
