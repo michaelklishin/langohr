@@ -1,5 +1,21 @@
 ## Changes between Langohr 2.5.x and 2.6.0
 
+### langohr.http/list-connections-from, /close-connections-from
+
+`langohr.http/list-connections-from` and `langohr.http/close-connections-from`
+are two new functions that list and close connections for a given username,
+respectively:
+
+``` clojure
+(require '[langohr.http :as hc])
+
+(hc/list-connections-from "guest")
+;= a list of connections with username "guest"
+
+;; closes all connections from "guest"
+(hc/close-connections-from "guest")
+```
+
 ### clj-http Upgrade
 
 clj-http dependency has been updated to `0.9.0`.
