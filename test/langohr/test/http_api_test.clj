@@ -185,3 +185,7 @@
 (deftest ^{:http true} test-enabled-protocols
   (let [xs (hc/list-enabled-protocols)]
     (is (xs "amqp"))))
+
+(deftest ^{:http true} test-protocol-ports
+  (let [m (hc/protocol-ports)]
+    (is (= 5672 (get m "amqp")))))

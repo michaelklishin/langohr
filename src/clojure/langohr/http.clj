@@ -105,6 +105,14 @@
   []
   (set (map :protocol (:listeners (get-overview)))))
 
+(defn protocol-ports
+  []
+  (let [xs (:listeners (get-overview))]
+    (reduce (fn [acc lnr]
+              (assoc acc (:protocol lnr) (:port lnr)))
+            {}
+            xs)))
+
 (defn list-nodes
   []
   (get-and-decode-json (url-with-path "/api/nodes")))
