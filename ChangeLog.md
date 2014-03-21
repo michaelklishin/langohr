@@ -1,3 +1,12 @@
+## Changes between Langohr 2.7.x and 2.8.0
+
+### langohr.http/protocol-ports
+
+`langohr.http/protocol-ports` is a new function that returns
+a map of protocol names to protocol ports. The protocols
+are listed with `langohr.http/list-enabled-protocols`.
+
+
 ## Changes between Langohr 2.6.x and 2.7.1
 
 ### langohr.http/list-enabled-protocols
