@@ -188,4 +188,9 @@
 
 (deftest ^{:http true} test-protocol-ports
   (let [m (hc/protocol-ports)]
-    (is (= 5672 (get m "amqp")))))
+    (println m)
+    (is (= 5672 (get m "amqp")))
+    (when-let [p (get m "amqps")]
+      (is (= 5671 p)))
+    (when-let [p (get m "mqtt")]
+      (is (= 1883 p)))))

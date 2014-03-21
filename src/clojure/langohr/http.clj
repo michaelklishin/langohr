@@ -86,6 +86,12 @@
   [status]
   (= status 404))
 
+(defn ^{:private true} normalize-protocol
+  [proto]
+  (case proto
+    "amqp/ssl" "amqps"
+    (.toLowerCase ^String (str proto))))
+
 ;;
 ;; API
 ;;
@@ -109,7 +115,7 @@
   []
   (let [xs (:listeners (get-overview))]
     (reduce (fn [acc lnr]
-              (assoc acc (:protocol lnr) (:port lnr)))
+              (assoc acc (normalize-protocol (:protocol lnr)) (:port lnr)))
             {}
             xs)))
 
