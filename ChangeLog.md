@@ -1,5 +1,9 @@
 ## Changes between Langohr 2.7.x and 2.8.0
 
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.3.0`.
+
 ### Clojure 1.6 By Default
 
 Langohr now depends on `org.clojure/clojure` version `1.6.0`. It is
