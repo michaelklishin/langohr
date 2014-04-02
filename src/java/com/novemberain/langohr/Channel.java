@@ -469,6 +469,10 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     return basicConsume(queue, autoAck, "", callback);
   }
 
+  public String basicConsume(String queue, boolean autoAck, Map<String, Object> arguments, Consumer callback) throws IOException {
+    return basicConsume(queue, autoAck, "", false, false, arguments, callback);
+  }
+
   /**
    * Close this channel.
    *
@@ -479,6 +483,10 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   public void close(int closeCode, String closeMessage) throws IOException {
     this.connection.unregisterChannel(this);
     delegate.close(closeCode, closeMessage);
+  }
+
+  public boolean flowBlocked() {
+    return delegate.flowBlocked();
   }
 
   /**
@@ -793,6 +801,10 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     delegate.basicQos(prefetchSize, prefetchCount, global);
   }
 
+  public void basicQos(int prefetchCount, boolean global) throws IOException {
+
+  }
+
   /**
    * Close this channel with the {@link com.rabbitmq.client.AMQP#REPLY_SUCCESS} close code
    * and message 'OK'.
@@ -892,16 +904,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   }
 
   /**
-   * Set flow on the channel
-   *
-   * @param active if true, the server is asked to start sending. If false, the server is asked to stop sending.
-   * @throws java.io.IOException
-   */
-  public AMQP.Channel.FlowOk flow(boolean active) throws IOException {
-    return delegate.flow(active);
-  }
-
-  /**
    * Asynchronously send a method over this channel.
    *
    * @param method method to transmit over this channel.
@@ -909,13 +911,6 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    */
   public void asyncRpc(Method method) throws IOException {
     delegate.asyncRpc(method);
-  }
-
-  /**
-   * Return the current Channel.Flow settings.
-   */
-  public AMQP.Channel.FlowOk getFlow() {
-    return delegate.getFlow();
   }
 
   /**
