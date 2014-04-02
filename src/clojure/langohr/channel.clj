@@ -45,15 +45,3 @@
   [^Channel channel]
   (.isOpen channel))
 (def closed? (complement open?))
-
-
-(defn ^Boolean flow?
-  "Returns true if flow is active on given channel. Uses channel.flow AMQP method."
-  ([^Channel channel]
-     (.getActive (.getFlow channel))))
-
-
-(defn ^com.novemberain.langohr.channel.FlowOk flow
-  "Enables or disables channel flow using channel.flow AMQP method"
-  ([^Channel channel ^Boolean on]
-     (FlowOk. (.flow channel on))))
