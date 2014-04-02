@@ -1,5 +1,11 @@
 ## Changes between Langohr 2.7.x and 2.8.0
 
+### Client-side Channel Flow Removed
+
+`langohr.channel/flow` and `langohr.channel/flow?` were removed.
+Client-side flow control has been deprecated for a while and was removed
+in RabbitMQ Java client 3.3.0.
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.3.0`.
