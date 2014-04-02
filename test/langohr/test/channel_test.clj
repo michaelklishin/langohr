@@ -47,14 +47,3 @@
       (is (lc/open? ch))
       (lch/close ch 200 "Bye-bye")
       (is (lc/closed? ch)))))
-
-(deftest test-toggle-flow-control
-  (with-open [^Connection conn (lc/connect)]
-    (let [ch   (lch/open conn)]
-      (is (lch/flow? ch))
-      (lch/flow ch false)
-      (lch/flow ch true)
-      (is (lch/flow? ch))
-      (lch/close ch)
-      (is (not (lch/open? ch))))))
-
