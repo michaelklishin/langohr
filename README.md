@@ -63,7 +63,7 @@ If you are only starting out, please see our [Getting Started guide](http://cloj
 [Documentation guides](http://clojurerabbitmq.info):
 
  * [AMQP 0.9.1 Concepts](http://www.rabbitmq.com/tutorials/amqp-concepts.html)
- * [Conneciting To The Broker](http://clojurerabbitmq.info/articles/connecting.html)
+ * [Connecting To The Broker](http://clojurerabbitmq.info/articles/connecting.html)
  * [Queues and Consumers](http://clojurerabbitmq.info/articles/queues.html)
  * [Exchanges and Publishing](http://clojurerabbitmq.info/articles/exchanges.html)
  * [Bindings](http://clojurerabbitmq.info/articles/bindings.html)
