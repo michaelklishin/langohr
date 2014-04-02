@@ -84,21 +84,6 @@
           nil)))))
 
 
-
-;;
-;; Passive queue.declare
-;;
-
-(deftest test-passive-declare-a-non-durable-exclusive-auto-deleted-client-named-queue
-  (with-open [^Connection conn (lhc/connect)]
-    (let  [channel    (lhc/create-channel conn)
-           queue-name "langohr.tests2.queues.client-named.non-durable.non-exclusive.auto-deleted"
-           _          (lhq/declare channel queue-name :durable false :exclusive false :auto-delete true)
-           status     (lhq/status channel queue-name)]
-      (is (= 0 (status :message-count)))
-      (is (= 0 (status :consumer-count))))))
-
-
 ;;
 ;; queue.bind
 ;;
