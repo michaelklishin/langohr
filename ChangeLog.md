@@ -1,5 +1,15 @@
 ## Changes between Langohr 2.8.x and 2.9.0
 
+### Thread Factory Customization
+
+It is now possible to customize a `java.util.concurrent.ThreadFactory`
+used by Langohr connections. The factory will be used to instantiate
+all threads created by the client under the hood.
+
+The primary use case for this is running on Google App Engine which
+prohibits direct thread instantiation and requires apps to use 
+thread manager (or thread factory) from GAE SDK instead.
+
 ### com.rabbitmq.client.TopologyRecoveryException is Used
 
 Langohr now uses com.rabbitmq.client.TopologyRecoveryException instead of
