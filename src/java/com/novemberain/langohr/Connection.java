@@ -515,6 +515,10 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     delegate.clearBlockedListeners();
   }
 
+  public ExceptionHandler getExceptionHandler() {
+    return delegate.getExceptionHandler();
+  }
+
 
   //
   // Recovery

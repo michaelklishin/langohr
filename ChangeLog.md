@@ -1,3 +1,15 @@
+## Changes between Langohr 2.8.x and 2.9.0
+
+### com.rabbitmq.client.TopologyRecoveryException is Used
+
+Langohr now uses com.rabbitmq.client.TopologyRecoveryException instead of
+reinventing its own exception to indicate topology recovery failure.
+
+### RabbitMQ Java Client Compatibility
+
+A few RabbitMQ Java client interface compatibility issues are resolved.
+
+
 ## Changes between Langohr 2.7.x and 2.8.0
 
 ### Client-side Channel Flow Removed
