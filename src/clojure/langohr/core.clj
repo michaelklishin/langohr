@@ -169,6 +169,19 @@
 
 
 ;;
+;; Advanced Customization
+;;
+
+(defn thread-factory-from
+  "Instantiates a java.util.concurrent.ThreadFactory that delegates
+   #newThread to provided Clojure function"
+  [f]
+  (reify java.util.concurrent.ThreadFactory
+    (^Thread newThread [this ^Runnable r]
+      (f r))))
+
+
+;;
 ;; Implementation
 ;;
 
@@ -182,9 +195,9 @@
   []
   (let []
     (format "Clojure %s on %s %s"
-      (clojure-version)
-      (System/getProperty "java.vm.name")
-      (System/getProperty "java.version"))))
+            (clojure-version)
+            (System/getProperty "java.vm.name")
+            (System/getProperty "java.version"))))
 
 (def ^{:private true}
   client-properties {"product"      "Langohr"
@@ -199,7 +212,7 @@
   [settings]
   (let [{:keys [host port username password vhost
                 requested-heartbeat connection-timeout ssl ssl-context socket-factory sasl-config
-                requested-channel-max]
+                requested-channel-max thread-factory]
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT
               requested-channel-max ConnectionFactory/DEFAULT_CHANNEL_MAX}} (normalize-settings settings)
@@ -224,5 +237,7 @@
       (.setSaslConfig cf sasl-config))
     (when ssl-context
       (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context))
+    (when thread-factory
+      (.setThreadFactory cf ^ThreadFactory thread-factory))
     cf))
 

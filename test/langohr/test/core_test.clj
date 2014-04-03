@@ -44,6 +44,13 @@
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))))
 
+(deftest t-connection-with-custom-thread-factory
+  (let [tf (lc/thread-factory-from
+            (fn [^Runnable r]
+              (Thread. r)))]
+    (with-open [conn (lc/connect {:thread-factory tf})]
+      (is (lc/open? conn)))))
+
 (deftest t-connection-with-overriden-channel-max
   (with-open [conn (lc/connect {:requested-channel-max 16})]
     (is (lc/open? conn))
