@@ -10,6 +10,19 @@ The primary use case for this is running on Google App Engine which
 prohibits direct thread instantiation and requires apps to use 
 thread manager (or thread factory) from GAE SDK instead.
 
+To provide a custom thread factory, pass it as `:thread-factory` to
+`langohr.core/connect`. To reify a thread factory with a Clojure function,
+use `langohr.core/thread-factory-from`:
+
+``` clojure
+(require '[langohr.core :as lc])
+
+(let [tf (lc/thread-factory-from
+            (fn [^Runnable r]
+              (Thread. r)))]
+  (lc/connect {:thread-factory tf}))
+```
+
 ### com.rabbitmq.client.TopologyRecoveryException is Used
 
 Langohr now uses com.rabbitmq.client.TopologyRecoveryException instead of
