@@ -24,13 +24,11 @@
 ;; Implementation
 ;;
 
-;; a good default for now. RabbitMQ 3.0 will redirect
-;; from port 55672 to 15672.
 (def ^:dynamic *endpoint* "http://127.0.0.1:15672")
 
 (def ^:dynamic *username* "guest")
 (def ^:dynamic *password* "guest")
-
+(def ^:dynamic *default-http-options* {})
 
 ;;
 ;; Implementation
@@ -53,18 +51,33 @@
     body))
 
 (defn ^{:private true} post
-  [^String uri {:keys [body] :as options}]
-  (io! (:body (http/post uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :content-type "application/json"}))) true))
+  ([^String uri]
+     (post uri {}))
+  ([^String uri {:keys [body] :as options}]
+     (io! (:body (http/post uri (merge *default-http-options* options {:accept :json
+                                                                       :basic-auth [*username* *password*]
+                                                                       :body (json/encode body)
+                                                                       :content-type "application/json"}))) true)))
 
 (defn ^{:private true} put
   [^String uri {:keys [body] :as options}]
-  (io! (:body (http/put uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions :content-type "application/json"}))) true))
+  (io! (:body (http/put uri (merge *default-http-options* options {:accept :json
+                                                                   :basic-auth [*username* *password*]
+                                                                   :body (json/encode body)
+                                                                   :throw-exceptions throw-exceptions
+                                                                   :content-type "application/json"}))) true))
 
 (defn ^{:private true} get
   ([^String uri]
-     (io! (http/get uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"})))
+     (io! (http/get uri (merge *default-http-options* {:accept :json
+                                                       :basic-auth [*username* *password*]
+                                                       :throw-exceptions throw-exceptions
+                                                       :content-type "application/json"}))))
   ([^String uri options]
-     (io! (http/get uri (merge options {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions :content-type "application/json"})))))
+     (io! (http/get uri (merge *default-http-options* options {:accept :json
+                                                               :basic-auth [*username* *password*]
+                                                               :throw-exceptions throw-exceptions
+                                                               :content-type "application/json"})))))
 
 (defn ^{:private true} get-and-decode-json
   ([^String uri]
@@ -73,14 +86,19 @@
      (safe-json-decode (get uri options))))
 
 (defn ^{:private true} head
-  [^String uri]
-  (io! (http/head uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions})))
+  ([^String uri]
+     (head uri {}))
+  ([^String uri options]
+     (io! (http/head uri (merge *default-http-options* options {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions})))))
 
 (defn ^{:private true} delete
   ([^String uri]
      (io! (:body (http/delete uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions})) true))
-  ([^String uri &{:keys [body] :as options}]
-     (io! (:body (http/delete uri (merge options {:accept :json :basic-auth [*username* *password*] :body (json/encode body) :throw-exceptions throw-exceptions}))) true)))
+  ([^String uri {:keys [body] :as options}]
+     (io! (:body (http/delete uri (merge *default-http-options* options {:accept :json
+                                                                         :basic-auth [*username* *password*]
+                                                                         :body (json/encode body)
+                                                                         :throw-exceptions throw-exceptions}))) true)))
 
 (defn ^{:private true} missing?
   [status]
@@ -97,73 +115,102 @@
 ;;
 
 (defn connect!
-  [^String endpoint ^String username ^String password]
-  (alter-var-root (var *endpoint*) (constantly endpoint))
-  (alter-var-root (var *username*) (constantly username))
-  (alter-var-root (var *password*) (constantly password)))
+  ([^String endpoint ^String username ^String password]
+     (connect! endpoint username password {}))
+  ([^String endpoint ^String username ^String password opts]
+     (alter-var-root (var *endpoint*) (constantly endpoint))
+     (alter-var-root (var *username*) (constantly username))
+     (alter-var-root (var *password*) (constantly password))
+     (alter-var-root (var *default-http-options*) (constantly opts))))
 
 
 (defn get-overview
-  []
-  (get-and-decode-json (url-with-path "/api/overview")))
+  ([]
+     (get-overview {}))
+  ([m]
+     (get-and-decode-json (url-with-path "/api/overview") m)))
 
 (defn list-enabled-protocols
-  []
-  (set (map :protocol (:listeners (get-overview)))))
+  ([]
+     (list-enabled-protocols {}))
+  ([m]
+     (set (map :protocol (:listeners (get-overview m))))))
 
 (defn protocol-ports
-  []
-  (let [xs (:listeners (get-overview))]
-    (reduce (fn [acc lnr]
-              (assoc acc (normalize-protocol (:protocol lnr)) (:port lnr)))
-            {}
-            xs)))
+  ([]
+     (protocol-ports {}))
+  ([m]
+     (let [xs (:listeners (get-overview m))]
+       (reduce (fn [acc lnr]
+                 (assoc acc (normalize-protocol (:protocol lnr)) (:port lnr)))
+               {}
+               xs))))
 
 (defn list-nodes
-  []
-  (get-and-decode-json (url-with-path "/api/nodes")))
+  ([]
+     (list-nodes {}))
+  ([m]
+     (get-and-decode-json (url-with-path "/api/nodes") m)))
 
 (defn get-node
-  [^String node]
-  (get-and-decode-json (url-with-path (str "/api/nodes/" node))))
+  ([]
+     (get-node {}))
+  ([^String node m]
+     (get-and-decode-json (url-with-path (str "/api/nodes/" node)) m)))
 
 
 (defn list-extensions
-  []
-  (get-and-decode-json (url-with-path "/api/extensions")))
+  ([]
+     (list-extensions {}))
+  ([m]
+     (get-and-decode-json (url-with-path "/api/extensions") m)))
 
 
 (defn list-definitions
-  []
-  (get-and-decode-json (url-with-path "/api/definitions")))
+  ([]
+     (list-definitions {}))
+  ([m]
+     (get-and-decode-json (url-with-path "/api/definitions") m)))
 
 (defn list-connections
-  []
-  (get-and-decode-json (url-with-path "/api/connections")))
+  ([]
+     (list-connections {}))
+  ([m]
+     (get-and-decode-json (url-with-path "/api/connections") m)))
 
 (defn list-connections-from
-  [^String user]
-  (let [xs (list-connections)]
-    (filter (fn [m]
-              (= user (:user m)))
-            xs)))
+  ([^String user]
+     (list-connections-from user {}))
+  ([^String user m]
+     (let [xs (list-connections m)]
+       (filter (fn [m]
+                 (= user (:user m)))
+               xs))))
 
 (defn get-connection
-  [^String id]
-  (get-and-decode-json (url-with-path (str "/api/connections/" id))))
+  ([^String id]
+     (get-connection id {}))
+  ([^String id m]
+     (get-and-decode-json (url-with-path (str "/api/connections/" id)) m)))
 
 (defn close-connection
-  [^String id]
-  (delete (url-with-path (str "/api/connections/" id))))
+  ([^String id]
+     (close-connection id {}))
+  ([^String id m]
+     (delete (url-with-path (str "/api/connections/" id)) m)))
 
 (defn close-connections-from
-  [^String user]
-  (doseq [^String cn (map :name (list-connections-from user))]
-    (close-connection cn)))
+  ([^String user]
+     (close-connections-from user {}))
+  ([^String user m]
+     (doseq [^String cn (map :name (list-connections-from user m))]
+       (close-connection cn m))))
 
 (defn list-channels
-  []
-  (get-and-decode-json (url-with-path "/api/channels")))
+  ([]
+     (list-channels {}))
+  ([m]
+     (get-and-decode-json (url-with-path "/api/channels") m)))
 
 (defn list-exchanges
   ([]
@@ -180,8 +227,10 @@
   (put (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange))) {:body properties}))
 
 (defn delete-exchange
-  [^String vhost ^String exchange]
-  (delete (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange)))))
+  ([^String vhost ^String exchange]
+     (delete-exchange vhost exchange {}))
+  ([^String vhost ^String exchange m]
+     (delete (url-with-path (format "/api/exchanges/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode exchange))) m)))
 
 (defn list-bindings-for-which-exchange-is-the-source
   [^String vhost ^String exchange]
@@ -199,7 +248,9 @@
   ([]
      (get-and-decode-json (url-with-path "/api/queues")))
   ([^String vhost]
-     (get-and-decode-json (url-with-path (format "/api/queues/%s" (URLEncoder/encode vhost))))))
+     (list-queues vhost {}))
+  ([^String vhost m]
+     (get-and-decode-json (url-with-path (format "/api/queues/%s" (URLEncoder/encode vhost))) m)))
 
 (defn get-queue
   [^String vhost ^String queue]
@@ -210,12 +261,16 @@
   (put (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue))) {:body properties}))
 
 (defn delete-queue
-  [^String vhost ^String queue]
-  (delete (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue)))))
+  ([^String vhost ^String queue]
+     (delete-queue vhost queue {}))
+  ([^String vhost ^String queue m]
+     (delete (url-with-path (format "/api/queues/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode queue))) m)))
 
 (defn purge-queue
-  [^String vhost ^String queue]
-  (delete (url-with-path (format "/api/queues/%s/%s/contents" (URLEncoder/encode vhost) (URLEncoder/encode queue)))))
+  ([^String vhost ^String queue]
+     (purge-queue vhost queue {}))
+  ([^String vhost ^String queue m]
+     (delete (url-with-path (format "/api/queues/%s/%s/contents" (URLEncoder/encode vhost) (URLEncoder/encode queue))) m)))
 
 (defn get-message
   [^String vhost ^String queue]
@@ -225,37 +280,49 @@
   ([]
      (get-and-decode-json (url-with-path "/api/bindings")))
   ([^String vhost]
-     (get-and-decode-json (url-with-path (format "/api/bindings/%s" (URLEncoder/encode vhost)))))
+     (get-and-decode-json (url-with-path (format "/api/bindings/%s" (URLEncoder/encode vhost))) {}))
   ([^String vhost ^String queue]
+     (list-bindings vhost queue {}))
+  ([^String vhost ^String queue m]
      (get-and-decode-json (url-with-path (format "/api/queues/%s/%s/bindings"
-                                 (URLEncoder/encode vhost)
-                                 (URLEncoder/encode queue))))))
+                                                 (URLEncoder/encode vhost)
+                                                 (URLEncoder/encode queue))) m)))
 
 (defn bind
   ([^String vhost ^String exchange ^String queue]
-     (bind vhost exchange queue {}))
+     (bind vhost exchange queue {} {}))
   ([^String vhost ^String exchange ^String queue properties]
+     (bind vhost exchange queue properties {}))
+  ([^String vhost ^String exchange ^String queue properties m]
      (post (url-with-path (format "/api/bindings/%s/e/%s/q/%s"
                                   (URLEncoder/encode vhost)
                                   (URLEncoder/encode exchange)
-                                  (URLEncoder/encode queue))) {:body properties})))
+                                  (URLEncoder/encode queue))) (merge m {:body properties}))))
 
 (defn list-vhosts
-  []
-  (get-and-decode-json (url-with-path "/api/vhosts")))
+  ([]
+     (list-vhosts {}))
+  ([m]
+     (get-and-decode-json (url-with-path "/api/vhosts") m)))
 
 (defn vhost-exists?
-  [^String vhost]
-  (let [{:keys [status]} (head (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost))))]
-    (not (missing? status))))
+  ([^String vhost]
+     (vhost-exists? vhost {}))
+  ([^String vhost m]
+     (let [{:keys [status]} (head (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost))) m)]
+       (not (missing? status)))))
 
 (defn get-vhost
-  [^String vhost]
-  (get-and-decode-json (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost)))))
+  ([^String vhost]
+     (get-vhost vhost {}))
+  ([^String vhost m]
+     (get-and-decode-json (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost))) m)))
 
 (defn add-vhost
-  [^String vhost]
-  (put (url-with-path (format "api/vhosts/%s" (URLEncoder/encode vhost))) {:body {:name vhost}}))
+  ([^String vhost]
+     (add-vhost vhost {}))
+  ([^String vhost m]
+     (put (url-with-path (format "api/vhosts/%s" (URLEncoder/encode vhost))) (merge m {:body {:name vhost}}))))
 
 (defn ^{:deprecated true} declare-vhost
   "Deprecated. Use add-vhost."
@@ -263,23 +330,29 @@
   (add-vhost vhost))
 
 (defn delete-vhost
-  [^String vhost]
-  (delete (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost)))))
+  ([^String vhost]
+     (delete-vhost vhost {}))
+  ([^String vhost m]
+     (delete (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost))) m)))
 
 (defn list-permissions
   ([]
-    (get-and-decode-json (url-with-path "/api/permissions")))
+     (get-and-decode-json (url-with-path "/api/permissions")))
   ([^String vhost]
-    (get-and-decode-json (url-with-path (format "/api/vhosts/%s/permissions" (URLEncoder/encode vhost))))))
+     (list-permissions vhost {}))
+  ([^String vhost m]
+     (get-and-decode-json (url-with-path (format "/api/vhosts/%s/permissions" (URLEncoder/encode vhost))) m)))
 
 (defn get-permissions
-  [^String vhost ^String username]
-  (get-and-decode-json (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username)))))
+  ([^String vhost ^String username]
+     (get-permissions vhost username {}))
+  ([^String vhost ^String username m]
+     (get-and-decode-json (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username))) m)))
 
 (defn  set-permissions
-  [^String vhost ^String username {:keys [configure write read] :as body}]
-  {:pre [(every? string? [configure write read])]}
-  (put (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username))) {:body body}))
+  ([^String vhost ^String username {:keys [configure write read] :as options}]
+     {:pre [(every? string? [configure write read])]}
+     (put (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username))) {:body options})))
 
 (defn ^{:deprecated true} declare-permissions
   "Deprecated. Use set-permissions."
@@ -292,21 +365,29 @@
   (delete (url-with-path (format "/api/permissions/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode username)))))
 
 (defn list-users
-  []
-  (get-and-decode-json (url-with-path "/api/users")))
+  ([]
+     (list-users {}))
+  ([m]
+     (get-and-decode-json (url-with-path "/api/users") m)))
 
 (defn get-user
-  [^String user]
-  (get-and-decode-json (url-with-path (format "/api/users/%s" (URLEncoder/encode user)))))
+  ([^String user]
+     (get-user user {}))
+  ([^String user m]
+     (get-and-decode-json (url-with-path (format "/api/users/%s" (URLEncoder/encode user))) m)))
 
 (defn user-exists?
-  [^String user]
-  (let [{:keys [status]} (head (url-with-path (format "/api/users/%s" (URLEncoder/encode user))))]
-    (not (missing? status))))
+  ([^String user]
+     (user-exists? user {}))
+  ([^String user m]
+     (let [{:keys [status]} (head (url-with-path (format "/api/users/%s" (URLEncoder/encode user))) m)]
+       (not (missing? status)))))
 
 (defn add-user
-  [^String user password tags]
-  (put (url-with-path (format "/api/users/%s" (URLEncoder/encode user))) {:body {:username user :password password :tags tags :has-password true}}))
+  ([^String user password tags]
+     (add-user user password tags {}))
+  ([^String user password tags m]
+     (put (url-with-path (format "/api/users/%s" (URLEncoder/encode user))) (merge m {:body {:username user :password password :tags tags :has-password true}}))))
 
 (defn ^{:deprecated true} declare-user
   "Deprecated. Use add-user."
@@ -314,8 +395,10 @@
   (add-user user password tags))
 
 (defn delete-user
-  [^String user]
-  (delete (url-with-path (format "/api/users/%s" (URLEncoder/encode user)))))
+  ([^String user]
+     (delete-user user {}))
+  ([^String user m]
+     (delete (url-with-path (format "/api/users/%s" (URLEncoder/encode user))) m)))
 
 (defn list-policies
   []
@@ -323,9 +406,9 @@
 
 (defn get-policies
   ([^String vhost]
-    (get-and-decode-json (url-with-path (format "/api/policies/%s" (URLEncoder/encode vhost)))))
+     (get-and-decode-json (url-with-path (format "/api/policies/%s" (URLEncoder/encode vhost)))))
   ([^String vhost ^String name]
-  (get-and-decode-json (url-with-path (format "/api/policies/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode name))))))
+     (get-and-decode-json (url-with-path (format "/api/policies/%s/%s" (URLEncoder/encode vhost) (URLEncoder/encode name))))))
 
 (defn set-policy
   [^String vhost ^String name policy]
