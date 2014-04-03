@@ -1,5 +1,15 @@
 ## Changes between Langohr 2.8.x and 2.9.0
 
+### Extra Options in HTTP API Client
+
+Most HTTP API client functions now have an additional optional arguments,
+which is a map of options passed to `clj-http` functions. This lets you fine
+tune certain HTTP requests as needed.
+
+In addition, `langohr.http/connect!` now accepts one more argument which serves
+as default HTTP client options merged with the options provided per `langohr.http`
+function call..
+
 ### Thread Factory Customization
 
 It is now possible to customize a `java.util.concurrent.ThreadFactory`
