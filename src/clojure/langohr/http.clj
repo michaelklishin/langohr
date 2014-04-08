@@ -28,13 +28,11 @@
 
 (def ^:dynamic *username* "guest")
 (def ^:dynamic *password* "guest")
-(def ^:dynamic *default-http-options* {})
-
-;;
-;; Implementation
-;;
-
 (def ^:const throw-exceptions false)
+
+(def ^:dynamic *default-http-options* {:accept :json
+                                       :content-type "application/json"
+                                       :throw-exceptions throw-exceptions})
 
 (def ^{:const true} slash    "/")
 
@@ -54,30 +52,19 @@
   ([^String uri]
      (post uri {}))
   ([^String uri {:keys [body] :as options}]
-     (io! (:body (http/post uri (merge *default-http-options* options {:accept :json
-                                                                       :basic-auth [*username* *password*]
-                                                                       :body (json/encode body)
-                                                                       :content-type "application/json"}))) true)))
+     (io! (:body (http/post uri (merge *default-http-options* options {:basic-auth [*username* *password*]
+                                                                       :body (json/encode body)}))) true)))
 
 (defn ^{:private true} put
   [^String uri {:keys [body] :as options}]
-  (io! (:body (http/put uri (merge *default-http-options* options {:accept :json
-                                                                   :basic-auth [*username* *password*]
-                                                                   :body (json/encode body)
-                                                                   :throw-exceptions throw-exceptions
-                                                                   :content-type "application/json"}))) true))
+  (io! (:body (http/put uri (merge *default-http-options* options {:basic-auth [*username* *password*]
+                                                                   :body (json/encode body)}))) true))
 
 (defn ^{:private true} get
   ([^String uri]
-     (io! (http/get uri (merge *default-http-options* {:accept :json
-                                                       :basic-auth [*username* *password*]
-                                                       :throw-exceptions throw-exceptions
-                                                       :content-type "application/json"}))))
+     (get uri {}))
   ([^String uri options]
-     (io! (http/get uri (merge *default-http-options* options {:accept :json
-                                                               :basic-auth [*username* *password*]
-                                                               :throw-exceptions throw-exceptions
-                                                               :content-type "application/json"})))))
+     (io! (http/get uri (merge *default-http-options* options {:basic-auth [*username* *password*]})))))
 
 (defn ^{:private true} get-and-decode-json
   ([^String uri]
@@ -89,16 +76,14 @@
   ([^String uri]
      (head uri {}))
   ([^String uri options]
-     (io! (http/head uri (merge *default-http-options* options {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions})))))
+     (io! (http/head uri (merge *default-http-options* options {:basic-auth [*username* *password*]})))))
 
 (defn ^{:private true} delete
   ([^String uri]
-     (io! (:body (http/delete uri {:accept :json :basic-auth [*username* *password*] :throw-exceptions throw-exceptions})) true))
+     (delete {}))
   ([^String uri {:keys [body] :as options}]
-     (io! (:body (http/delete uri (merge *default-http-options* options {:accept :json
-                                                                         :basic-auth [*username* *password*]
-                                                                         :body (json/encode body)
-                                                                         :throw-exceptions throw-exceptions}))) true)))
+     (io! (:body (http/delete uri (merge *default-http-options* options {:basic-auth [*username* *password*]
+                                                                         :body (json/encode body)}))) true)))
 
 (defn ^{:private true} missing?
   [status]
@@ -121,7 +106,8 @@
      (alter-var-root (var *endpoint*) (constantly endpoint))
      (alter-var-root (var *username*) (constantly username))
      (alter-var-root (var *password*) (constantly password))
-     (alter-var-root (var *default-http-options*) (constantly opts))))
+     (alter-var-root (var *default-http-options*) (fn [m]
+                                                    (merge m opts)))))
 
 
 (defn get-overview
