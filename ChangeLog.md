@@ -1,6 +1,6 @@
 ## Changes between Langohr 2.8.x and 2.9.0
 
-### Extra Options in HTTP API Client
+### Configurable Default and Per-Operation Options in HTTP API Client
 
 Most HTTP API client functions now have an additional optional arguments,
 which is a map of options passed to `clj-http` functions. This lets you fine
@@ -8,7 +8,22 @@ tune certain HTTP requests as needed.
 
 In addition, `langohr.http/connect!` now accepts one more argument which serves
 as default HTTP client options merged with the options provided per `langohr.http`
-function call..
+function call:
+
+``` clojure
+(require '[langohr.http :as hc])
+
+;; non-20x/30x statuses will now throw exceptions
+(hc/connect! "http://127.0.0.1:15673" "guest" "guest" {:throw-exceptions true})
+
+;; disable throwing exceptions for an individual operation,
+;; because 404 is an expected HTTP response in this case
+(hc/vhost-exists? "myapp-production" {:throw-exceptions false})
+;= false
+
+;; disabling peer verification for HTTPS requests
+(hc/connect! "http://127.0.0.1:15673" "guest" "guest" {:insecure? true})
+```
 
 ### Thread Factory Customization
 
