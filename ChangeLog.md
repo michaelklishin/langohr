@@ -1,3 +1,9 @@
+## Changes between Langohr 2.9.x and 2.10.0
+
+No changes yet.
+
+
+
 ## Changes between Langohr 2.8.x and 2.9.0
 
 ### Configurable Default and Per-Operation Options in HTTP API Client
