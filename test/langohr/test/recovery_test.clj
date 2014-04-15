@@ -20,7 +20,8 @@
             [clojure.test :refer :all]
             [langohr.http      :as mgmt])
   (:import [java.util.concurrent CountDownLatch
-            TimeUnit]))
+            TimeUnit]
+           java.util.UUID))
 
 ;;
 ;; Helpers
@@ -297,6 +298,38 @@
       (lb/publish ch x "" "a message")
       (is (not (.await latch 100 TimeUnit/MILLISECONDS)))
       (lx/delete ch x))))
+
+(deftest test-recovery-of-all-consumers
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology true
+                                 :network-recovery-delay recovery-delay})]
+    (let [ch    (lch/open conn)
+          q     "langohr.test.recovery.q1"
+          n     1024]
+      (lq/declare ch q :durable true)
+      (dotimes [i n]
+        (lc/subscribe ch q (fn [_ _ _] )))
+      (close-all-connections)
+      (wait-for-recovery conn)
+      (is (= n (lq/consumer-count ch q)))
+      (lq/delete ch q))))
+
+(deftest test-recovery-of-all-queues
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology true
+                                 :network-recovery-delay recovery-delay})]
+    (let [ch    (lch/open conn)
+          qs    (atom [])
+          n     64]
+      (dotimes [i n]
+        (let [q (str (UUID/randomUUID))]
+          (lq/declare ch q :durable false :exclusive true)
+          (swap! qs conj q)))
+      (close-all-connections)
+      (wait-for-recovery conn)
+      (doseq [q @qs]
+        (lq/declare-passive ch q)
+        (lq/delete ch q)))))
 
 (deftest test-connection-recovery-callback
   (with-open [conn (rmq/connect {:automatically-recover true
