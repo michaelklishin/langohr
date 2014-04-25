@@ -44,7 +44,7 @@
 (defn ensure-queue-recovery
   [ch ^String q]
   (lb/publish ch "" q "a message")
-  (Thread/sleep 50)
+  (Thread/sleep 75)
   (is (not (lq/empty? ch q))))
 
 (defn await-on
@@ -134,6 +134,35 @@
       (wait-for-recovery conn)
       (is (rmq/open? ch))
       (ensure-queue-recovery ch q))))
+
+(deftest test-manual-client-named-queue-recovery
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology false
+                                 :network-recovery-delay recovery-delay})]
+    (let [ch    (lch/open conn)
+          q     (str (UUID/randomUUID))
+          latch (CountDownLatch. 1)
+          hf    (fn [ch meta ^bytes payload]
+                  (.countDown latch))
+          f     (fn [ch q]
+                  (lq/declare ch q :durable false)
+                  (lq/purge ch q)
+                  (lc/subscribe ch q hf :auto-ack true))]
+      (is (rmq/automatic-recovery-enabled? conn))
+      (is (not (rmq/automatic-topology-recovery-enabled? conn)))
+      (f ch q)
+      (rmq/on-recovery ch
+                       (fn [ch]
+                         (f ch q)))
+      (close-all-connections)
+      (wait-for-recovery conn)
+      (is (rmq/open? ch))
+      ;; wait a bit more to make sure the consumer is there
+      (Thread/sleep 150)
+      (lb/publish ch "" q "a message")
+      (is (await-on latch 15 TimeUnit/SECONDS))
+      (lq/delete ch q))))
+
 
 (deftest test-basic-server-named-queue-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
