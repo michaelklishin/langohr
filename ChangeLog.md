@@ -1,7 +1,15 @@
 ## Changes between Langohr 2.9.x and 2.10.0
 
-No changes yet.
+### Retries for all IOExceptions During Recovery
 
+All IOException subclasses thrown during connection recovery attempts
+will now be retried.
+
+Contributed by Paul Bellamy (Xively).
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.3.1`.
 
 
 ## Changes between Langohr 2.8.x and 2.9.0
