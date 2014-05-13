@@ -17,7 +17,6 @@ import com.novemberain.langohr.recovery.*;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -121,9 +120,6 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
           // no-op, we cannot really do anything useful here,
           // doing nothing will prevent automatic recovery
           // from continuing. MK.
-        } catch (IOException e) {
-          // no-op, see above
-          // TODO: exponential backoff on how long we wait
         }
       }
     };
@@ -134,7 +130,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     }
   }
 
-  synchronized private void beginAutomaticRecovery() throws InterruptedException, IOException {
+  synchronized private void beginAutomaticRecovery() throws InterruptedException {
     try {
       Thread.sleep(networkRecoveryDelay);
       this.recoverConnection();
@@ -190,14 +186,14 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     }
   }
 
-  private void recoverConnection() throws IOException, InterruptedException {
+  private void recoverConnection() throws InterruptedException {
     boolean recovering = true;
     while (recovering) {
       try {
         ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
         this.delegate = this.cf.newConnection(es);
         recovering = false;
-      } catch (ConnectException ce) {
+      } catch (IOException ce) {
         System.err.println("Failed to reconnect: " + ce.getMessage());
         // TODO: exponential back-off
         Thread.sleep(DEFAULT_RECONNECTION_PERIOD);
