@@ -64,7 +64,7 @@
 
 
 (def ^{:const true}
-  version "2.10.1")
+  version "2.10.2-SNAPSHOT")
 
 (declare create-connection-factory)
 (defn ^Connection connect
