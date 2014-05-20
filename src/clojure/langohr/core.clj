@@ -67,6 +67,16 @@
   version "2.11.0-SNAPSHOT")
 
 (declare create-connection-factory normalize-settings)
+(defn- address-array-from
+  [addresses port]
+  (into-array Address
+              (map (fn [arg]
+                     (let [[host port] (if (coll? arg)
+                                         [(first arg) (second arg)]
+                                         [arg port])]
+                       (Address. host port)))
+                   (remove nil? addresses))))
+
 (defn ^Connection connect
   "Creates and returns a new connection to RabbitMQ."
   ;; defaults
@@ -76,14 +86,12 @@
          .init)))
   ;; settings
   ([settings]
-     (let [^ConnectionFactory cf (create-connection-factory (normalize-settings settings))]
+     (let [settings'             (normalize-settings settings)
+           ^ConnectionFactory cf (create-connection-factory settings')
+           xs                    (address-array-from (get settings' :hosts #{})
+                                                     (get settings' :port ConnectionFactory/DEFAULT_AMQP_PORT))]
        (doto (com.novemberain.langohr.Connection. cf (dissoc settings :password :username))
-         .init))))
-
-(defn- create-address-array [addresses]
-  (into-array Address
-              (for [[host port] addresses]
-                (Address. host (or port ConnectionFactory/DEFAULT_AMQP_PORT)))))
+         (.init xs)))))
 
 (defn ^Channel create-channel
   "Delegates to langohr.channel/open, kept for backwards compatibility"
@@ -189,7 +197,7 @@
   "For setting maps that contain keys such as :host, :username, :vhost, returns the argument"
   [config]
   (let [{:keys [host hosts]} config
-        hosts' (into #{} (or hosts #{host}))]
+        hosts' (into #{} (remove nil? (or hosts #{host})))]
     (merge (settings-from (:uri config (System/getenv "RABBITMQ_URL")))
            {:hosts hosts'}
            config)))

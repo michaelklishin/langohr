@@ -95,10 +95,14 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
 
   @SuppressWarnings("unused")
   public Connection init() throws IOException {
+    return init(new Address[]{});
+  }
+
+  @SuppressWarnings("unused")
+  public Connection init(Address[] addresses) throws IOException {
     ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
-    List<Address> addresses = addressesFrom(this.options);
-    if(addresses.size() > 0) {
-      this.delegate = cf.newConnection(es, addresses.toArray(new Address[addresses.size()]));
+    if(addresses.length > 0) {
+      this.delegate = cf.newConnection(es, addresses);
     } else {
       this.delegate = cf.newConnection(es);
     }

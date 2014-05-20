@@ -45,6 +45,13 @@
       (is (lc/open? conn))
       (is (xs (-> conn .getAddress .getHostAddress))))))
 
+(deftest test-connection-with-multiple-hosts-and-ports
+  (let [xs #{"127.0.0.1" "localhost"}]
+    (with-open [conn (lc/connect {:hosts xs
+                                  :vhost "langohr_testbed" :username "langohr" :password "langohr.password"})]
+      (is (lc/open? conn))
+      (is (xs (-> conn .getAddress .getHostAddress))))))
+
 
 (deftest test-connection-with-custom-executor
   (with-open [conn (lc/connect {:executor (Executors/newFixedThreadPool 16)})]
