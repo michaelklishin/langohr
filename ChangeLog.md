@@ -1,3 +1,20 @@
+## Changes between Langohr 2.10.x and 2.11.0
+
+### Multi-Host Support In langohr.core/connect
+
+`langohr.core/connect` now supports `:hosts` as well as `:host`.
+The hosts provided will be iterated over, the first reachable host
+will be used.
+
+Example:
+
+``` clojure
+(require '[langohr.core :as rmq])
+
+(rmq/connect {:hosts #{"192.168.1.2" "192.168.1.3"}})
+```
+
+
 ## Changes between Langohr 2.9.x and 2.10.0
 
 ### Retries for all IOExceptions During Recovery
