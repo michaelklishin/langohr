@@ -12,6 +12,10 @@ Example:
 (require '[langohr.core :as rmq])
 
 (rmq/connect {:hosts #{"192.168.1.2" "192.168.1.3"}})
+;; uses port 5688 for both hosts
+(rmq/connect {:hosts #{"192.168.1.2" "192.168.1.3"} :port 5688})
+;; uses multiple host/port pairs
+(rmq/connect {:hosts #{["192.168.1.2" 5688] ["192.168.1.3" 5689]}})
 ```
 
 
