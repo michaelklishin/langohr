@@ -66,7 +66,7 @@
 (def ^{:const true}
   version "2.11.0-SNAPSHOT")
 
-(declare create-connection-factory)
+(declare create-connection-factory normalize-settings)
 (defn ^Connection connect
   "Creates and returns a new connection to RabbitMQ."
   ;; defaults
@@ -76,7 +76,7 @@
          .init)))
   ;; settings
   ([settings]
-     (let [^ConnectionFactory cf (create-connection-factory settings)]
+     (let [^ConnectionFactory cf (create-connection-factory (normalize-settings settings))]
        (doto (com.novemberain.langohr.Connection. cf (dissoc settings :password :username))
          .init))))
 
@@ -188,8 +188,11 @@
 (defn normalize-settings
   "For setting maps that contain keys such as :host, :username, :vhost, returns the argument"
   [config]
-  (merge (settings-from (:uri config (System/getenv "RABBITMQ_URL")))
-         config))
+  (let [{:keys [host hosts]} config
+        hosts' (into #{} (or hosts #{host}))]
+    (merge (settings-from (:uri config (System/getenv "RABBITMQ_URL")))
+           {:hosts hosts'}
+           config)))
 
 (defn- platform-string
   []

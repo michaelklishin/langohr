@@ -19,14 +19,14 @@
 (println (str "Using Clojure version " *clojure-version*))
 
 
-(deftest t-connection-with-default-parameters
+(deftest test-connection-with-default-parameters
   (with-open [conn (lc/connect)]
     (is (instance? com.rabbitmq.client.Connection conn))
     (is (lc/automatically-recover? conn))
     (is (lc/automatic-recovery-enabled? conn))
     (is (lc/open? conn))))
 
-(deftest t-connection-with-overriden-parameters
+(deftest test-connection-with-overriden-parameters
   ;; see ./bin/ci/before_script.sh
   (with-open [conn (lc/connect {
                                 :host "127.0.0.1" :port 5672
@@ -38,39 +38,47 @@
     (is (= 5672        (.getPort conn)))
     (is (= 3           (.getHeartbeat conn)))))
 
-(deftest t-connection-with-custom-executor
+(deftest test-connection-with-multiple-hosts
+  (let [xs #{"127.0.0.1" "localhost"}]
+    (with-open [conn (lc/connect {:hosts xs :port 5672
+                                  :vhost "langohr_testbed" :username "langohr" :password "langohr.password"})]
+      (is (lc/open? conn))
+      (is (xs (-> conn .getAddress .getHostAddress))))))
+
+
+(deftest test-connection-with-custom-executor
   (with-open [conn (lc/connect {:executor (Executors/newFixedThreadPool 16)})]
     (is (lc/open? conn))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))))
 
-(deftest t-connection-with-custom-thread-factory
+(deftest test-connection-with-custom-thread-factory
   (let [tf (lc/thread-factory-from
             (fn [^Runnable r]
               (Thread. r)))]
     (with-open [conn (lc/connect {:thread-factory tf})]
       (is (lc/open? conn)))))
 
-(deftest t-connection-with-overriden-channel-max
+(deftest test-connection-with-overriden-channel-max
   (with-open [conn (lc/connect {:requested-channel-max 16})]
     (is (lc/open? conn))
     (dotimes [x 16]
       (lch/open conn))
     (is (nil? (lch/open conn)))))
 
-(deftest t-connection-with-uri
+(deftest test-connection-with-uri
   (with-open [conn (lc/connect {:uri "amqp://127.0.0.1:5672"})]
     (is (lc/open? conn))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))
     (is (-> conn .getServerProperties (get "capabilities") (get "publisher_confirms")))))
 
-(deftest t-connection-with-connection-recovery-enabled
+(deftest test-connection-with-connection-recovery-enabled
   (with-open [conn (lc/connect {:automatically-recover true})]
     (is (lc/automatically-recover? conn))
     (is (lc/open? conn))))
 
-(deftest t-broker-capabilities
+(deftest test-broker-capabilities
   (with-open [conn (lc/connect {:uri "amqp://127.0.0.1:5672"})]
     (let [m    (lc/capabilities-of conn)]
       (is (:exchange_exchange_bindings m))
@@ -79,26 +87,26 @@
       (is (:publisher_confirms m)))))
 
 
-(deftest t-connection-failure-due-to-misconfigured-port
+(deftest test-connection-failure-due-to-misconfigured-port
   (is (thrown? java.net.ConnectException
                (lc/connect {:host "127.0.0.1" :port 2887}))))
 
-(deftest t-connection-failure-due-to-unknown-host
+(deftest test-connection-failure-due-to-unknown-host
   (is (thrown? java.net.UnknownHostException
                (lc/connect {:host "skdjhfkjshfglkashfklajshdf.local" :port 2887}))))
 
-(deftest t-connection-failure-due-to-invalid-credentials
+(deftest test-connection-failure-due-to-invalid-credentials
   (is (thrown? com.rabbitmq.client.PossibleAuthenticationFailureException
                (lc/connect {:username "skdjhfkjshFGLKASHFKlajshdf" :password "HFKlajshdf"}))))
 
 
-(deftest t-close-connection
+(deftest test-close-connection
   (let [conn (lc/connect)]
     (is (lc/open? conn))
     (lc/close conn)
     (is (not (lc/open? conn)))))
 
-(deftest t-uri-parsing-for-amqp
+(deftest test-uri-parsing-for-amqp
   (testing "case without the path part"
     (let [uri "amqp://dev.rabbitmq.com"
           m   (lc/settings-from uri)]
@@ -128,13 +136,13 @@
           m   (lc/settings-from uri)]
       (is (= {:host "172.22.87.188" :port 87888 :vhost "5e56ec8f588b44f17213b6d756v544a70" :username "utquQluArWWn3" :password "vZ19hISpc3ICU"} m)))))
 
-(deftest t-uri-parsing-for-amqps
+(deftest test-uri-parsing-for-amqps
   (testing "case without the path part"
     (let [uri "amqps://dev.rabbitmq.com"
           m   (lc/settings-from uri)]
       (is (= {:host "dev.rabbitmq.com" :port 5671 :username "guest" :vhost "/" :password "guest"} m)))))
 
-(deftest t-no-connection-recovery-after-explicit-close
+(deftest test-no-connection-recovery-after-explicit-close
   (let [conn  (lc/connect {:automatically-recover true})
         ch    (lc/create-channel conn)
         latch (java.util.concurrent.CountDownLatch. 1)]
@@ -147,7 +155,7 @@
     (lc/close conn)
     (is (.await latch 700 TimeUnit/MILLISECONDS))))
 
-(deftest t-disable-recovery
+(deftest test-disable-recovery
   (testing "It should be possible to disable automatically-recover"
     (with-open  [conn  (lc/connect  {:connection-timeout 300
                                      :automatically-recover false})]
@@ -172,7 +180,7 @@
       (is (lc/automatic-recovery-enabled? conn))
       (is (not (lc/automatic-topology-recovery-enabled? conn))))) )
 
-(deftest t-default-recovery-values
+(deftest test-default-recovery-values
   (testing "Defaults are true for automatic-*-enabled? when non-default options are used"
     (with-open  [conn  (lc/connect  {:connection-timeout 300})]
       (is (lc/automatic-recovery-enabled? conn))

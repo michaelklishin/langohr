@@ -45,6 +45,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static final long DEFAULT_NETWORK_RECOVERY_DELAY = 5000;
   private static final Keyword EXECUTOR_KEYWORD = Keyword.intern(null, "executor");
   private static final long DEFAULT_RECONNECTION_PERIOD = 5000;
+  private static final Keyword HOSTS_KEYWORD = Keyword.intern(null, "hosts");
   private final IPersistentMap options;
 
   private com.rabbitmq.client.Connection delegate;
@@ -95,13 +96,31 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   @SuppressWarnings("unused")
   public Connection init() throws IOException {
     ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
-    this.delegate = cf.newConnection(es);
+    List<Address> addresses = addressesFrom(this.options);
+    if(addresses.size() > 0) {
+      this.delegate = cf.newConnection(es, addresses.toArray(new Address[addresses.size()]));
+    } else {
+      this.delegate = cf.newConnection(es);
+    }
 
     if (this.automaticRecoveryEnabled()) {
       this.addAutomaticRecoveryHook();
     }
 
     return this;
+  }
+
+  private List<Address> addressesFrom(IPersistentMap options) {
+    List<Address> addresses = new ArrayList<Address>();
+    Set<String> hosts = (Set<String>) options.valAt(HOSTS_KEYWORD);
+    if (null != hosts) {
+      for (String h : hosts) {
+        addresses.add(new Address(h));
+      }
+      return addresses;
+    } else {
+      return new ArrayList<Address>();
+    }
   }
 
   private void addAutomaticRecoveryHook() {
@@ -137,7 +156,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
       this.recoverShutdownHooks();
       this.recoverBlockedListeners();
       this.recoverChannels();
-      if(automaticTopologyRecoveryEnabled()) {
+      if (automaticTopologyRecoveryEnabled()) {
         this.recoverEntites();
         this.recoverConsumers();
       }
@@ -561,7 +580,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
           this.propagateQueueNameChangeToConsumers(oldName, newName);
         }
       } catch (Exception cause) {
-          throw new TopologyRecoveryException("Caught an exception while recovering queue " + oldName, cause);
+        throw new TopologyRecoveryException("Caught an exception while recovering queue " + oldName, cause);
       }
     }
   }
