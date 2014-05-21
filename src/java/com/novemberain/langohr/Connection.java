@@ -49,6 +49,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private final IPersistentMap options;
 
   private com.rabbitmq.client.Connection delegate;
+  private Address[] addresses;
 
   //
   // recovery
@@ -101,6 +102,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   @SuppressWarnings("unused")
   public Connection init(Address[] addresses) throws IOException {
     ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
+    this.addresses = addresses;
     if(addresses.length > 0) {
       this.delegate = cf.newConnection(es, addresses);
     } else {
@@ -214,7 +216,11 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     while (recovering) {
       try {
         ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
-        this.delegate = this.cf.newConnection(es);
+        if(addresses.length > 0) {
+          this.delegate = cf.newConnection(es, addresses);
+        } else {
+          this.delegate = cf.newConnection(es);
+        }
         recovering = false;
       } catch (IOException ce) {
         System.err.println("Failed to reconnect: " + ce.getMessage());
