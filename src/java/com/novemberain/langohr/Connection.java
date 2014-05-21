@@ -116,19 +116,6 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     return this;
   }
 
-  private List<Address> addressesFrom(IPersistentMap options) {
-    List<Address> addresses = new ArrayList<Address>();
-    Set<String> hosts = (Set<String>) options.valAt(HOSTS_KEYWORD);
-    if (null != hosts) {
-      for (String h : hosts) {
-        addresses.add(new Address(h));
-      }
-      return addresses;
-    } else {
-      return new ArrayList<Address>();
-    }
-  }
-
   private void addAutomaticRecoveryHook() {
     final Connection c = this;
     /*
