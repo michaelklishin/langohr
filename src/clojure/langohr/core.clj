@@ -62,10 +62,6 @@
   (open? [ch] (.isOpen ch))
   (closed? [ch] (not (.isOpen ch))))
 
-
-(def ^{:const true}
-  version "2.11.0-SNAPSHOT")
-
 (declare create-connection-factory normalize-settings)
 (defn- address-array-from
   [addresses port]
