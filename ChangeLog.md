@@ -1,3 +1,10 @@
+## Changes between Langohr 2.11.x and 2.12.0
+
+### langohr.core/version is Removed
+
+`langohr.core/version` was removed.
+
+
 ## Changes between Langohr 2.10.x and 2.11.0
 
 ### Multi-Host Support In langohr.core/connect
