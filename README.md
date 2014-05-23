@@ -42,7 +42,7 @@ definition to your `pom.xml`:
 With [Leiningen](http://leiningen.org):
 
 ``` clojure
-[com.novemberain/langohr "2.10.1"]
+[com.novemberain/langohr "2.11.0"]
 ```
 
 With Maven:
@@ -51,7 +51,7 @@ With Maven:
 <dependency>
   <groupId>com.novemberain</groupId>
   <artifactId>langohr</artifactId>
-  <version>2.10.1</version>
+  <version>2.11.0</version>
 </dependency>
 ```
 
