@@ -211,8 +211,7 @@
                      "information"  "See http://clojurerabbitmq.info/"
                      "platform"     (platform-string)
                      "capabilities" (get (AMQConnection/defaultClientProperties) "capabilities")
-                     "copyright" "Copyright (C) 2011-2014 Michael S. Klishin, Alex Petrov"
-                     "version"   version})
+                     "copyright"    "Copyright (C) 2011-2014 Michael S. Klishin, Alex Petrov"})
 
 (defn- ^ConnectionFactory create-connection-factory
   "Creates connection factory from given attributes"
