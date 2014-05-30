@@ -16,8 +16,7 @@
    * http://clojurerabbitmq.info/articles/queues.html
    * http://clojurerabbitmq.info/articles/exchanges.html"
   (:refer-clojure :exclude [get])
-  (:require langohr.util
-            [langohr.conversion :refer [to-message-metadata]]
+  (:require [langohr.conversion :refer [to-message-metadata]]
             [clojurewerkz.support.bytes :refer [to-byte-array]])
   (:import [com.rabbitmq.client AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener]
            [java.util Map Date]
