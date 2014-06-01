@@ -11,7 +11,7 @@ package com.novemberain.langohr;
 
 public class Util {
   public static boolean isFalsey(Object val) {
-    return (val == null || false == val);
+    return (val == null || clojure.lang.Util.identical(val, false));
   }
 
   public static boolean isTruthy(Object val) {

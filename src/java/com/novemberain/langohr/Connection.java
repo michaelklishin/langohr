@@ -9,10 +9,7 @@
 
 package com.novemberain.langohr;
 
-import clojure.lang.IFn;
-import clojure.lang.IPersistentMap;
-import clojure.lang.Keyword;
-import clojure.lang.PersistentHashMap;
+import clojure.lang.*;
 import com.novemberain.langohr.recovery.*;
 import com.rabbitmq.client.*;
 
@@ -90,6 +87,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     // network failure recovery hooks
     this.recoveryHooks = new ArrayList<IFn>();
     this.networkRecoveryDelay = (Long) options.valAt(NETWORK_RECOVERY_DELAY_KEYWORD, DEFAULT_NETWORK_RECOVERY_DELAY);
+
     this.automaticallyRecover = Util.isTruthy(options.valAt(AUTOMATICALLY_RECOVER_KEYWORD, true));
     this.automaticallyRecoverTopology = Util.isTruthy(options.valAt(AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD, true));
   }
