@@ -34,12 +34,9 @@
                                        :content-type "application/json"
                                        :throw-exceptions throw-exceptions})
 
-(def ^{:const true} slash    "/")
-
 (defn url-with-path
-  [& segments]
-  (str *endpoint* slash (s/join slash segments)))
-
+  [path]
+  (str *endpoint* path))
 
 (defn safe-json-decode
   "Try to parse json response. If the content-type is not json, just return the body (string)."
@@ -308,7 +305,7 @@
   ([^String vhost]
      (add-vhost vhost {}))
   ([^String vhost m]
-     (put (url-with-path (format "api/vhosts/%s" (URLEncoder/encode vhost))) (merge m {:body {:name vhost}}))))
+     (put (url-with-path (format "/api/vhosts/%s" (URLEncoder/encode vhost))) (merge m {:body {:name vhost}}))))
 
 (defn ^{:deprecated true} declare-vhost
   "Deprecated. Use add-vhost."
