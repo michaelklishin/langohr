@@ -30,6 +30,7 @@ import java.util.concurrent.TimeoutException;
 public class Channel implements com.rabbitmq.client.Channel, Recoverable {
   private com.rabbitmq.client.Channel delegate;
   private Connection connection;
+  private List<ShutdownListener> shutdownHooks  = new ArrayList<ShutdownListener>();
   private List<ReturnListener> returnListeners = new CopyOnWriteArrayList<ReturnListener>();
   private List<ConfirmListener> confirmListeners = new ArrayList<ConfirmListener>();
   private List<FlowListener> flowListeners = new ArrayList<FlowListener>();
@@ -891,6 +892,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @param listener {@link com.rabbitmq.client.ShutdownListener} to the component
    */
   public synchronized void addShutdownListener(ShutdownListener listener) {
+    this.shutdownHooks.add(listener);
     delegate.addShutdownListener(listener);
   }
 
@@ -900,6 +902,7 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
    * @param listener {@link com.rabbitmq.client.ShutdownListener} to be removed
    */
   public synchronized void removeShutdownListener(ShutdownListener listener) {
+    this.shutdownHooks.remove(listener);
     delegate.removeShutdownListener(listener);
   }
 
@@ -1059,10 +1062,17 @@ public class Channel implements com.rabbitmq.client.Channel, Recoverable {
     this.connection = connection;
     this.delegate = delegate.createChannel(this.getChannelNumber());
 
+    this.recoverShutdownListeners();
     this.recoverReturnListeners();
     this.recoverConfirmListeners();
     this.recoverFlowListeners();
     this.recoverState();
+  }
+
+  private void recoverShutdownListeners() {
+    for (ShutdownListener sh : this.shutdownHooks) {
+      this.delegate.addShutdownListener(sh);
+    }
   }
 
   private void recoverReturnListeners() {

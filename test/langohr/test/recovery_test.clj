@@ -104,6 +104,41 @@
       (is (rmq/open? ch1))
       (is (rmq/open? ch2)))))
 
+(deftest test-shutdown-hooks-recovery-on-connection
+  (let [conn  (rmq/connect {:automatically-recover true
+                            :automatically-recover-topology false
+                            :network-recovery-delay recovery-delay})
+        latch (CountDownLatch. 2)]
+    (rmq/add-shutdown-listener conn (fn [_]
+                                      (.countDown latch)))
+    (close-all-connections)
+    (Thread/sleep 50)
+    (is (not (rmq/open? conn)))
+    ;; wait for recovery to finish
+    (wait-for-recovery conn)
+    (is (rmq/open? conn))
+    (rmq/close conn)
+    (await-on latch 10 TimeUnit/SECONDS)))
+
+(deftest test-shutdown-hooks-recovery-on-channel
+  (let [conn  (rmq/connect {:automatically-recover true
+                            :automatically-recover-topology false
+                            :network-recovery-delay recovery-delay})
+        latch (CountDownLatch. 3)
+        ch    (lch/open conn)]
+    (rmq/add-shutdown-listener ch (fn [_]
+                                    (.countDown latch)))
+    (close-all-connections)
+    (Thread/sleep 50)
+    (is (not (rmq/open? conn)))
+    (wait-for-recovery conn)
+    (is (rmq/open? conn))
+    (close-all-connections)
+    (wait-for-recovery conn)
+    (is (rmq/open? conn))
+    (rmq/close conn)
+    (await-on latch 10 TimeUnit/SECONDS)))
+
 (deftest test-publisher-confirms-state-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology false
