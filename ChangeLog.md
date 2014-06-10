@@ -1,5 +1,11 @@
 ## Changes between Langohr 2.11.x and 2.12.0
 
+### Shutdown Hooks Recovery for Channels
+
+Channels now record and recover shutdown hooks registered
+for them.
+
+
 ### langohr.core/version is Removed
 
 `langohr.core/version` was removed.
