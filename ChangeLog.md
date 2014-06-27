@@ -5,6 +5,10 @@
 Channels now record and recover shutdown hooks registered
 for them.
 
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.3.4`.
+
 
 ### langohr.core/version is Removed
 
