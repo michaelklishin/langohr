@@ -1,5 +1,21 @@
 ## Changes between Langohr 2.11.x and 2.12.0
 
+### Custom Exception Handlers
+
+`langohr.core/exception-handler` is a function that customizes
+default exception handler RabbitMQ Java client uses:
+
+``` clojure
+(require '[langohr.core :as rmq])
+
+(let [(rmq/exception-handler :handle-consumer-exception (fn [ch ex consumer
+                                                             consumer-tag method-name]
+                                                           ))]
+  )
+```
+
+GH issue: [#47](https://github.com/michaelklishin/langohr/issues/47).
+
 ### Shutdown Hooks Recovery for Channels
 
 Channels now record and recover shutdown hooks registered
