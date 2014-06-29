@@ -15,7 +15,11 @@
 
     * http://clojurerabbitmq.info/articles/connecting.html
     * http://clojurerabbitmq.info/articles/tls.html"
-  (:import [com.rabbitmq.client Connection Channel Address ConnectionFactory ShutdownListener BlockedListener]
+  (:import [com.rabbitmq.client Connection Channel Address
+            ConnectionFactory ShutdownListener BlockedListener
+            Consumer TopologyRecoveryException
+            ExceptionHandler]
+           [com.rabbitmq.client.impl DefaultExceptionHandler]
            [com.novemberain.langohr Recoverable]
            [clojure.lang IFn]
            [com.rabbitmq.client.impl AMQConnection])
@@ -184,6 +188,47 @@
     (^Thread newThread [this ^Runnable r]
       (f r))))
 
+(defn exception-handler
+  [&{:keys [handle-connection-exception-fn
+            handle-return-listener-exception-fn
+            handle-flow-listener-exception-fn
+            handle-confirm-listener-exception-fn
+            handle-blocked-listener-exception-fn
+            handle-consumer-exception-fn
+            handle-connection-recovery-exception-fn
+            handle-channel-recovery-exception-fn
+            handle-topology-recovery-exception-fn]}]
+  (proxy [DefaultExceptionHandler] []
+    (handleUnexpectedConnectionDriverException [^Connection conn ^Throwable t]
+      (when handle-connection-exception-fn
+        (handle-connection-exception-fn conn t)))
+    (handleReturnListenerException [^Channel ch ^Throwable t]
+      (when handle-return-listener-exception-fn
+        (handle-return-listener-exception-fn ch t)))
+    (handleFlowListenerException [^Channel ch ^Throwable t]
+      (when handle-flow-listener-exception-fn
+        (handle-flow-listener-exception-fn ch t)))
+    (handleConfirmListenerException [^Channel ch ^Throwable t]
+      (when handle-confirm-listener-exception-fn
+        (handle-confirm-listener-exception-fn ch t)))
+    (handleBlockedListenerException [^Connection conn ^Throwable t]
+      (when handle-blocked-listener-exception-fn
+        (handle-blocked-listener-exception-fn conn t)))
+    (handleConsumerException [^Channel ch ^Throwable t
+                              ^Consumer consumer ^String consumer-tag
+                              ^String method-name]
+      (when handle-consumer-exception-fn
+        (handle-consumer-exception-fn ch t consumer consumer-tag method-name)))
+    (handleConnectionRecoveryException [^Connection conn ^Throwable t]
+      (when handle-connection-recovery-exception-fn
+        (handle-connection-recovery-exception-fn conn t)))
+    (handleChannelRecoveryException [^Channel ch ^Throwable t]
+      (when handle-channel-recovery-exception-fn
+        (handle-channel-recovery-exception-fn )))
+    (handleTopologyRecoveryException [^Connection conn ^Channel ch
+                                      ^TopologyRecoveryException t]
+      (when handle-topology-recovery-exception-fn
+        (handle-topology-recovery-exception-fn conn ch t)))))
 
 ;;
 ;; Implementation
@@ -219,7 +264,7 @@
   [settings]
   (let [{:keys [host port username password vhost
                 requested-heartbeat connection-timeout ssl ssl-context socket-factory sasl-config
-                requested-channel-max thread-factory]
+                requested-channel-max thread-factory exception-handler]
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT
               requested-channel-max ConnectionFactory/DEFAULT_CHANNEL_MAX}} (normalize-settings settings)
@@ -246,5 +291,7 @@
       (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context))
     (when thread-factory
       (.setThreadFactory cf ^ThreadFactory thread-factory))
+    (when exception-handler
+      (.setExceptionHandler cf ^ExceptionHandler exception-handler))
     cf))
 

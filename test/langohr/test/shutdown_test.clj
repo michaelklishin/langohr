@@ -16,7 +16,7 @@
             [langohr.shutdown  :as lh]
             [clojure.test      :refer :all])
   (:import [com.rabbitmq.client Connection Channel Consumer ShutdownSignalException]
-           java.util.concurrent.TimeUnit))
+           [java.util.concurrent CountDownLatch TimeUnit]))
 
 
 (deftest test-channel-of-with-a-channel-exception
@@ -110,3 +110,21 @@
       (is (.await latch 700 TimeUnit/MILLISECONDS))
       (is (not (lh/initiated-by-broker? @sse)))
       (is (lh/initiated-by-application? @sse)))))
+
+(deftest test-custom-exception-handler
+  (let [el (CountDownLatch. 1)
+        eh (lhc/exception-handler :handle-consumer-exception (fn [ch ex consumer
+                                                                  consumer-tag method-name]
+                                                               (.countDown el)))]
+    (with-open [^Connection conn (lhc/connect {:exception-handler eh})]
+      (let [ch    (lch/open conn)
+            q     (lhq/declare-server-named ch)
+            cl    (CountDownLatch. 1)
+            dhf      (fn [ch metadata payload]
+                       (.countDown cl)
+                       (throw (RuntimeException. "the monster, it is out! Run for life!")))]
+        (lhcons/subscribe ch q dhf)
+        (Thread/sleep 50)
+        (lhb/publish ch "" q "message")
+        (is (.await cl 700 TimeUnit/MILLISECONDS))
+        (is (.await el 700 TimeUnit/MILLISECONDS))))))
