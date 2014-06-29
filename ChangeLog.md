@@ -14,6 +14,18 @@ default exception handler RabbitMQ Java client uses:
   )
 ```
 
+Valid keys are:
+
+ * `:handle-connection-exception-fn`
+ * `:handle-return-listener-exception-fn`
+ * `:handle-flow-listener-exception-fn`
+ * `:handle-confirm-listener-exception-fn`
+ * `:handle-blocked-listener-exception-fn`
+ * `:handle-consumer-exception-fn`
+ * `:handle-connection-recovery-exception-fn`
+ * `:handle-channel-recovery-exception-fn`
+ * `:handle-topology-recovery-exception-fn`
+
 GH issue: [#47](https://github.com/michaelklishin/langohr/issues/47).
 
 ### Shutdown Hooks Recovery for Channels
