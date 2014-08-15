@@ -1,5 +1,24 @@
 ## Changes between Langohr 2.11.x and 3.0.0
 
+### JDK 8 Compatibility
+
+Langohr test suite now passes on JDK 8 (previously there was 1 failure
+in recovery test).
+
+
+### Connection Recovery Performed by Java Client
+
+Langohr no longer implements automatic connection recovery
+of its own. The feature is still there and there should be no
+behaviour changes but the functionality has now been pushed
+"upstream" in the Java client, so Langohr now relies on it
+to do all the work.
+
+There is one public API change:
+`com.novemberain.langohr.Recoverable` is gone, `langohr.core/on-recovery`
+now uses `com.rabbitmq.client.Recoverable` instead in its signature.
+
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.3.5`.
