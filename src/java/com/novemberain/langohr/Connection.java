@@ -9,24 +9,23 @@
 
 package com.novemberain.langohr;
 
-import clojure.lang.*;
-import com.novemberain.langohr.recovery.*;
+import clojure.lang.IFn;
+import clojure.lang.IPersistentMap;
+import clojure.lang.Keyword;
+import clojure.lang.PersistentHashMap;
 import com.rabbitmq.client.*;
+import com.rabbitmq.client.impl.recovery.AutorecoveringConnection;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
  * Alternative {@link com.rabbitmq.client.Connection} implementation that wraps
  * {@link com.rabbitmq.client.impl.AMQConnection} and adds automatic connection
  * recovery capability to it.
- *
- * @see com.novemberain.langohr.Channel
- * @see com.novemberain.langohr.Recoverable
  */
 public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static final IPersistentMap DEFAULT_OPTIONS = buildDefaultOptions();
@@ -41,30 +40,17 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static final Keyword NETWORK_RECOVERY_DELAY_KEYWORD = Keyword.intern(null, NETWORK_RECOVERY_DELAY_KEYWORD_NAME);
   private static final long DEFAULT_NETWORK_RECOVERY_DELAY = 5000;
   private static final Keyword EXECUTOR_KEYWORD = Keyword.intern(null, "executor");
-  private static final long DEFAULT_RECONNECTION_PERIOD = 5000;
   private static final Keyword HOSTS_KEYWORD = Keyword.intern(null, "hosts");
   private final IPersistentMap options;
 
   private com.rabbitmq.client.Connection delegate;
-  private Address[] addresses;
 
   //
   // recovery
   //
 
-  private Map<Integer, Channel> channels;
-  private final List<ShutdownListener> shutdownHooks;
-  private final List<IFn> recoveryHooks;
-  private final List<BlockedListener> blockedListeners = new CopyOnWriteArrayList<BlockedListener>();
-  private long networkRecoveryDelay;
   private boolean automaticallyRecover;
   private boolean automaticallyRecoverTopology;
-
-  // Records topology changes
-  private final Map<String, RecordedQueue> recordedQueues = new ConcurrentHashMap<String, RecordedQueue>();
-  private final List<RecordedBinding> recordedBindings = new ArrayList<RecordedBinding>();
-  private Map<String, RecordedExchange> recordedExchanges = new ConcurrentHashMap<String, RecordedExchange>();
-  private final Map<String, RecordedConsumer> consumers = new ConcurrentHashMap<String, RecordedConsumer>();
 
   private static IPersistentMap buildDefaultOptions() {
     Map<Keyword, Boolean> m = new HashMap<Keyword, Boolean>();
@@ -82,14 +68,14 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     this.cf = cf;
     this.options = options;
 
-    this.channels = new ConcurrentHashMap<Integer, Channel>();
-    this.shutdownHooks = new ArrayList<ShutdownListener>();
-    // network failure recovery hooks
-    this.recoveryHooks = new ArrayList<IFn>();
-    this.networkRecoveryDelay = (Long) options.valAt(NETWORK_RECOVERY_DELAY_KEYWORD, DEFAULT_NETWORK_RECOVERY_DELAY);
+    Long l = (Long) options.valAt(NETWORK_RECOVERY_DELAY_KEYWORD, DEFAULT_NETWORK_RECOVERY_DELAY);
+    cf.setNetworkRecoveryInterval(l.intValue());
 
     this.automaticallyRecover = Util.isTruthy(options.valAt(AUTOMATICALLY_RECOVER_KEYWORD, true));
     this.automaticallyRecoverTopology = Util.isTruthy(options.valAt(AUTOMATICALLY_RECOVER_TOPOLOGY_KEYWORD, true));
+
+    cf.setAutomaticRecoveryEnabled(this.automaticallyRecover);
+    cf.setTopologyRecoveryEnabled(this.automaticallyRecoverTopology);
   }
 
   @SuppressWarnings("unused")
@@ -100,119 +86,13 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   @SuppressWarnings("unused")
   public Connection init(Address[] addresses) throws IOException {
     ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
-    this.addresses = addresses;
-    if(addresses.length > 0) {
+    if (addresses.length > 0) {
       this.delegate = cf.newConnection(es, addresses);
     } else {
       this.delegate = cf.newConnection(es);
     }
 
-    if (this.automaticRecoveryEnabled()) {
-      this.addAutomaticRecoveryHook();
-    }
-
     return this;
-  }
-
-  private void addAutomaticRecoveryHook() {
-    final Connection c = this;
-    /*
-    Shutdown listener that kicks off automatic connection recovery
-    if it is enabled.
-   */
-    ShutdownListener automaticRecoveryListener = new ShutdownListener() {
-      public void shutdownCompleted(ShutdownSignalException cause) {
-        try {
-          if (!cause.isInitiatedByApplication()) {
-            c.beginAutomaticRecovery();
-          }
-        } catch (InterruptedException e) {
-          // no-op, we cannot really do anything useful here,
-          // doing nothing will prevent automatic recovery
-          // from continuing. MK.
-        }
-      }
-    };
-
-    synchronized (this) {
-      this.shutdownHooks.add(automaticRecoveryListener);
-      this.delegate.addShutdownListener(automaticRecoveryListener);
-    }
-  }
-
-  synchronized private void beginAutomaticRecovery() throws InterruptedException {
-    try {
-      Thread.sleep(networkRecoveryDelay);
-      this.recoverConnection();
-      this.recoverShutdownHooks();
-      this.recoverBlockedListeners();
-      this.recoverChannels();
-      if (automaticTopologyRecoveryEnabled()) {
-        this.recoverEntites();
-        this.recoverConsumers();
-      }
-
-      this.runRecoveryHooks();
-      this.runChannelRecoveryHooks();
-    } catch (Throwable t) {
-      System.err.println("Caught an exception during connection recovery!");
-      t.printStackTrace(System.err);
-    }
-
-  }
-
-  private void runRecoveryHooks() {
-    for (IFn f : recoveryHooks) {
-      f.invoke(this);
-    }
-  }
-
-  private void runChannelRecoveryHooks() {
-    for (Channel ch : this.channels.values()) {
-      ch.runRecoveryHooks();
-    }
-  }
-
-  private void recoverChannels() throws IOException {
-    for (Channel ch : this.channels.values()) {
-      try {
-        ch.automaticallyRecover(this, this.delegate);
-      } catch (Throwable t) {
-        System.err.println("Caught an exception when recovering channel " + ch.getChannelNumber());
-        t.printStackTrace(System.err);
-      }
-    }
-  }
-
-  private void recoverShutdownHooks() {
-    for (ShutdownListener sh : this.shutdownHooks) {
-      this.delegate.addShutdownListener(sh);
-    }
-  }
-
-  private void recoverBlockedListeners() {
-    for (BlockedListener bl : this.blockedListeners) {
-      this.delegate.addBlockedListener(bl);
-    }
-  }
-
-  private void recoverConnection() throws InterruptedException {
-    boolean recovering = true;
-    while (recovering) {
-      try {
-        ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
-        if(addresses.length > 0) {
-          this.delegate = cf.newConnection(es, addresses);
-        } else {
-          this.delegate = cf.newConnection(es);
-        }
-        recovering = false;
-      } catch (IOException ce) {
-        System.err.println("Failed to reconnect: " + ce.getMessage());
-        // TODO: exponential back-off
-        Thread.sleep(DEFAULT_RECONNECTION_PERIOD);
-      }
-    }
   }
 
   public boolean automaticRecoveryEnabled() {
@@ -224,8 +104,14 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
 
-  public void onRecovery(IFn f) {
-    this.recoveryHooks.add(f);
+  public void onRecovery(final IFn f) {
+    if (this.automaticRecoveryEnabled()) {
+      ((AutorecoveringConnection) this.delegate).addRecoveryListener(new RecoveryListener() {
+        public void handleRecovery(com.rabbitmq.client.Recoverable recoverable) {
+          f.invoke(recoverable);
+        }
+      });
+    }
   }
 
   /**
@@ -267,7 +153,6 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    */
   public void addShutdownListener(ShutdownListener listener) {
     delegate.addShutdownListener(listener);
-    this.shutdownHooks.add(listener);
   }
 
   /**
@@ -313,19 +198,13 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   /**
-   * Create a Langohr channel from a RabbitMQ channel and register it.
+   * Create a new channel, using an internally allocated channel number.
    *
-   * @param delegateChannel A RabbitMQ channel.
-   * @return The Langohr channel.
+   * @return a new channel descriptor, or null if none is available
+   * @throws java.io.IOException if an I/O problem is encountered
    */
-  private Channel wrapChannel(com.rabbitmq.client.Channel delegateChannel) {
-    final Channel channel = new Channel(this, delegateChannel);
-    if (delegateChannel == null) {
-      return null;
-    } else {
-      this.registerChannel(channel);
-      return channel;
-    }
+  public Channel createChannel() throws IOException {
+    return delegate.createChannel();
   }
 
   /**
@@ -336,7 +215,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    * @throws java.io.IOException if an I/O problem is encountered
    */
   public Channel createChannel(int channelNumber) throws IOException {
-    return this.wrapChannel(delegate.createChannel(channelNumber));
+    return delegate.createChannel(channelNumber);
   }
 
 
@@ -359,21 +238,6 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   @SuppressWarnings("unused")
   public com.rabbitmq.client.Connection getDelegate() {
     return delegate;
-  }
-
-  /**
-   * Create a new channel, using an internally allocated channel number.
-   *
-   * @return a new channel descriptor, or null if none is available
-   * @throws java.io.IOException if an I/O problem is encountered
-   */
-  public Channel createChannel() throws IOException {
-    com.rabbitmq.client.Channel ch = delegate.createChannel();
-    if (ch == null) {
-      return null;
-    } else {
-      return this.wrapChannel(ch);
-    }
   }
 
   /**
@@ -511,17 +375,13 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
 
   public void addBlockedListener(BlockedListener listener) {
     delegate.addBlockedListener(listener);
-    blockedListeners.add(listener);
   }
 
   public boolean removeBlockedListener(BlockedListener listener) {
-    boolean result = blockedListeners.remove(listener);
-    delegate.removeBlockedListener(listener);
-    return result;
+    return delegate.removeBlockedListener(listener);
   }
 
   public void clearBlockedListeners() {
-    blockedListeners.clear();
     delegate.clearBlockedListeners();
   }
 
@@ -529,170 +389,11 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     return delegate.getExceptionHandler();
   }
 
-
-  //
-  // Recovery
-  //
-
-  public void recoverEntites() throws TopologyRecoveryException {
-    // The recovery sequence is the following:
-    //
-    // 1. Recover exchanges
-    // 2. Recover queues
-    // 3. Recover bindings
-    // 4. Recover consumers
-    recoverExchanges();
-    recoverQueues();
-    recoverBindings();
+  public void addRecoveryListener(RecoveryListener listener) {
+    ((AutorecoveringConnection) this.delegate).addRecoveryListener(listener);
   }
 
-  private void recoverExchanges() throws TopologyRecoveryException {
-    // recorded exchanges are guaranteed to be
-    // non-predefined (we filter out predefined ones
-    // in exchangeDeclare). MK.
-    for (RecordedExchange x : this.recordedExchanges.values()) {
-      try {
-        x.recover();
-      } catch (Exception cause) {
-        throw new TopologyRecoveryException("Caught an exception while recovering exchange " + x.getName(), cause);
-      }
-    }
-  }
-
-  private void recoverQueues() throws TopologyRecoveryException {
-    for (Map.Entry<String, RecordedQueue> entry : this.recordedQueues.entrySet()) {
-      String oldName = entry.getKey();
-      RecordedQueue q = entry.getValue();
-      try {
-        q.recover();
-        String newName = q.getName();
-        // make sure server-named queues are re-added with
-        // their new names. MK.
-        synchronized (this.recordedQueues) {
-          deleteRecordedQueue(oldName);
-          this.recordedQueues.put(newName, q);
-          this.propagateQueueNameChangeToBindings(oldName, newName);
-          this.propagateQueueNameChangeToConsumers(oldName, newName);
-        }
-      } catch (Exception cause) {
-        throw new TopologyRecoveryException("Caught an exception while recovering queue " + oldName, cause);
-      }
-    }
-  }
-
-  private void propagateQueueNameChangeToBindings(String oldName, String newName) {
-    for (RecordedBinding b : this.recordedBindings) {
-      if (b.getDestination().equals(oldName)) {
-        b.setDestination(newName);
-      }
-    }
-  }
-
-  private void propagateQueueNameChangeToConsumers(String oldName, String newName) {
-    for (RecordedConsumer c : this.consumers.values()) {
-      if (c.getQueue().equals(oldName)) {
-        c.setQueue(newName);
-      }
-    }
-  }
-
-  private void recoverBindings() throws TopologyRecoveryException {
-    for (RecordedBinding b : this.recordedBindings) {
-      try {
-        b.recover();
-      } catch (Exception cause) {
-        final String msg = "Caught an exception while recovering binding between " + b.getSource() + " and " + b.getDestination();
-        throw new TopologyRecoveryException(msg, cause);
-      }
-    }
-  }
-
-  private void recoverConsumers() throws TopologyRecoveryException {
-    for (Map.Entry<String, RecordedConsumer> entry : this.consumers.entrySet()) {
-      String tag = entry.getKey();
-      RecordedConsumer consumer = entry.getValue();
-
-      try {
-        String newTag = (String) consumer.recover();
-        // make sure server-generated tags are re-added. MK.
-        synchronized (this.consumers) {
-          this.consumers.remove(tag);
-          this.consumers.put(newTag, consumer);
-        }
-      } catch (Exception cause) {
-        throw new TopologyRecoveryException("Caught an exception while recovering consumer " + tag, cause);
-      }
-    }
-  }
-
-
-  public synchronized void recordQueueBinding(Channel ch, String queue, String exchange, String routingKey, Map<String, Object> arguments) {
-    RecordedBinding binding = new RecordedQueueBinding(ch).
-        source(exchange).
-        destination(queue).
-        routingKey(routingKey).
-        arguments(arguments);
-    if (!this.recordedBindings.contains(binding)) {
-      this.recordedBindings.add(binding);
-    }
-  }
-
-  public synchronized boolean deleteRecordedQueueBinding(Channel ch, String queue, String exchange, String routingKey, Map<String, Object> arguments) {
-    RecordedBinding b = new RecordedQueueBinding(ch).
-        source(exchange).
-        destination(queue).
-        routingKey(routingKey).
-        arguments(arguments);
-    return this.recordedBindings.remove(b);
-  }
-
-  public synchronized void recordExchangeBinding(Channel ch, String destination, String source, String routingKey, Map<String, Object> arguments) {
-    RecordedBinding binding = new RecordedExchangeBinding(ch).
-        source(source).
-        destination(destination).
-        routingKey(routingKey).
-        arguments(arguments);
-    this.recordedBindings.add(binding);
-  }
-
-  public synchronized boolean deleteRecordedExchangeBinding(Channel ch, String destination, String source, String routingKey, Map<String, Object> arguments) {
-    RecordedBinding b = new RecordedExchangeBinding(ch).
-        source(source).
-        destination(destination).
-        routingKey(routingKey).
-        arguments(arguments);
-    return this.recordedBindings.remove(b);
-  }
-
-  public void recordQueue(AMQP.Queue.DeclareOk ok, RecordedQueue q) {
-    this.recordedQueues.put(ok.getQueue(), q);
-  }
-
-  public void deleteRecordedQueue(String queue) {
-    this.recordedQueues.remove(queue);
-  }
-
-  public void recordExchange(String exchange, RecordedExchange x) {
-    this.recordedExchanges.put(exchange, x);
-  }
-
-  public void deleteRecordedExchange(String exchange) {
-    this.recordedExchanges.remove(exchange);
-  }
-
-  public void recordConsumer(String result, RecordedConsumer consumer) {
-    this.consumers.put(result, consumer);
-  }
-
-  public void deleteRecordedConsumer(String consumerTag) {
-    this.consumers.remove(consumerTag);
-  }
-
-  public void registerChannel(Channel channel) {
-    this.channels.put(channel.getChannelNumber(), channel);
-  }
-
-  public void unregisterChannel(Channel channel) {
-    this.channels.remove(channel.getChannelNumber());
+  public void removeRecoveryListener(RecoveryListener listener) {
+    ((AutorecoveringConnection) this.delegate).removeRecoveryListener(listener);
   }
 }
