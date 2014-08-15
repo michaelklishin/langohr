@@ -37,24 +37,6 @@
       (is (.await latch 700 TimeUnit/MILLISECONDS))
       (is (= @cha (.getDelegate ch))))))
 
-(deftest test-connection-of
-  (with-open [^Connection conn (lhc/connect)]
-    (let [ch    (lch/open conn)
-          q     (lhq/declare-server-named ch)
-          latch    (java.util.concurrent.CountDownLatch. 1)
-          conn'    (atom nil)
-          f        (fn [consumer_tag ^ShutdownSignalException reason]
-                     (reset! conn' (lh/connection-of reason))
-                     (.countDown latch))
-          consumer (lhcons/create-default ch :handle-shutdown-signal-fn f)]
-      (lhb/consume ch q consumer)
-      (try
-        (lhq/bind ch "ugggggh" "amq.fanout")
-        (catch Exception e
-          (comment "Do nothing")))
-      (is (.await latch 700 TimeUnit/MILLISECONDS))
-      (is (= @conn' (.getDelegate conn))))))
-
 (deftest test-initiator-with-a-channel-exception
   (with-open [^Connection conn (lhc/connect)]
     (let [ch    (lch/open conn)
@@ -113,9 +95,9 @@
 
 (deftest test-custom-exception-handler
   (let [el (CountDownLatch. 1)
-        eh (lhc/exception-handler :handle-consumer-exception (fn [ch ex consumer
-                                                                  consumer-tag method-name]
-                                                               (.countDown el)))]
+        eh (lhc/exception-handler :handle-consumer-exception-fn (fn [ch ex consumer
+                                                                    consumer-tag method-name]
+                                                                 (.countDown el)))]
     (with-open [^Connection conn (lhc/connect {:exception-handler eh})]
       (let [ch    (lch/open conn)
             q     (lhq/declare-server-named ch)
