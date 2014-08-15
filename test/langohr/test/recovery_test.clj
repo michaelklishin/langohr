@@ -34,7 +34,7 @@
   (let [latch (CountDownLatch. 1)]
     (rmq/on-recovery conn (fn [_]
                             (.countDown latch)))
-    (.await latch (+ expected-recovery-period 250) TimeUnit/MILLISECONDS)))
+    (.await latch (+ expected-recovery-period 500) TimeUnit/MILLISECONDS)))
 
 (defn close-all-connections
   []
@@ -176,13 +176,14 @@
                                  :network-recovery-delay recovery-delay})]
     (let [ch    (lch/open conn)
           q     (str (UUID/randomUUID))
+          ctag  (str (UUID/randomUUID))
           latch (CountDownLatch. 1)
           hf    (fn [ch meta ^bytes payload]
                   (.countDown latch))
           f     (fn [ch q]
                   (lq/declare ch q :durable false)
                   (lq/purge ch q)
-                  (lc/subscribe ch q hf :auto-ack true))]
+                  (lc/subscribe ch q hf :auto-ack true :consumer-tag ctag))]
       (is (rmq/automatic-recovery-enabled? conn))
       (is (not (rmq/automatic-topology-recovery-enabled? conn)))
       (f ch q)

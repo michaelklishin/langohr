@@ -17,7 +17,7 @@
   (:import [com.rabbitmq.client AMQP$Queue$DeclareOk AMQP$Queue$BindOk AMQP$Queue$UnbindOk AMQP$Queue$DeleteOk AMQP$Queue$PurgeOk]
            java.util.Map
            [com.novemberain.langohr.queue DeclareOk BindOk UnbindOk DeleteOk PurgeOk]
-           com.novemberain.langohr.Channel))
+           com.rabbitmq.client.Channel))
 
 ;;
 ;; API

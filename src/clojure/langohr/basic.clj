@@ -20,7 +20,7 @@
             [clojurewerkz.support.bytes :refer [to-byte-array]])
   (:import [com.rabbitmq.client AMQP AMQP$BasicProperties AMQP$BasicProperties$Builder Consumer GetResponse ReturnListener]
            [java.util Map Date]
-           com.novemberain.langohr.Channel))
+           com.rabbitmq.client.Channel))
 
 
 ;;

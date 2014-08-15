@@ -18,11 +18,10 @@
   (:import [com.rabbitmq.client Connection Channel Address
             ConnectionFactory ShutdownListener BlockedListener
             Consumer TopologyRecoveryException
-            ExceptionHandler]
-           [com.rabbitmq.client.impl DefaultExceptionHandler]
-           [com.novemberain.langohr Recoverable]
+            ExceptionHandler Recoverable RecoveryListener]
+           [com.rabbitmq.client.impl DefaultExceptionHandler AMQConnection]
            [clojure.lang IFn]
-           [com.rabbitmq.client.impl AMQConnection])
+           java.util.concurrent.ThreadFactory)
   (:require langohr.channel
             [clojure.string :as s]
             [clojure.walk   :as walk]))
@@ -173,7 +172,9 @@
 (defn on-recovery
   "Registers a network recovery callback on a (Langohr) connection or channel"
   [^Recoverable target ^IFn callback]
-  (.onRecovery target callback))
+  (.addRecoveryListener target (reify RecoveryListener
+                                 (^void handleRecovery [this ^Recoverable it]
+                                   (callback it)))))
 
 
 ;;

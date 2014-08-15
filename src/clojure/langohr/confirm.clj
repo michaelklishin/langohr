@@ -15,7 +15,7 @@
    * http://clojurerabbitmq.info/articles/exchanges.html"
   (:import [com.rabbitmq.client ConfirmListener]
            com.novemberain.langohr.confirm.SelectOk
-           com.novemberain.langohr.Channel))
+           com.rabbitmq.client.Channel))
 
 
 ;;

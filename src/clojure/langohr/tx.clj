@@ -9,7 +9,7 @@
 
 (ns langohr.tx
   "Transaction operations"
-  (:import com.novemberain.langohr.Channel
+  (:import com.rabbitmq.client.Channel
            [com.novemberain.langohr.tx SelectOk CommitOk RollbackOk]))
 
 
