@@ -1,4 +1,8 @@
-## Changes between Langohr 2.11.x and 2.12.0
+## Changes between Langohr 2.11.x and 3.0.0
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.3.5`.
 
 ### Custom Exception Handlers
 
