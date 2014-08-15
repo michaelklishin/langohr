@@ -34,7 +34,7 @@
   (let [latch (CountDownLatch. 1)]
     (rmq/on-recovery conn (fn [_]
                             (.countDown latch)))
-    (.await latch (+ expected-recovery-period 250) TimeUnit/MILLISECONDS)))
+    (.await latch (+ expected-recovery-period 500) TimeUnit/MILLISECONDS)))
 
 (defn close-all-connections
   []
