@@ -5,6 +5,8 @@
 Langohr test suite now passes on JDK 8 (previously there was 1 failure
 in recovery test).
 
+GH issue: [#54](https://github.com/michaelklishin/langohr/issues/54).
+
 
 ### Connection Recovery Performed by Java Client
 
@@ -17,6 +19,8 @@ to do all the work.
 There is one public API change:
 `com.novemberain.langohr.Recoverable` is gone, `langohr.core/on-recovery`
 now uses `com.rabbitmq.client.Recoverable` instead in its signature.
+
+GH issue: [#58](https://github.com/michaelklishin/langohr/issues/58).
 
 
 ### RabbitMQ Java Client Upgrade
