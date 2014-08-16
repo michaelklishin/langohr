@@ -9,6 +9,7 @@
                  [cheshire                 "5.3.1"]]
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
+             :1.7 {:dependencies [[org.clojure/clojure "1.7.0-alpha1"]]}
              :master {:dependencies [[org.clojure/clojure "1.7.0-master-SNAPSHOT"]]}
              ;; this version of clj-http depends on HTTPCore 4.2.x which
              ;; some projects (e.g. using Spring's RestTemplate) can rely on,
@@ -29,7 +30,7 @@
                  "sonatype-snapshots" {:url "http://oss.sonatype.org/content/repositories/snapshots"
                                        :snapshots true
                                        :releases {:checksum :fail :update :always}}}
-  :aliases {"all" ["with-profile" "dev:dev,1.4:dev,1.5:dev,master:dev,cljhttp076:dev,1.5,cljhttp076"]}
+  :aliases {"all" ["with-profile" "dev:dev,1.4:dev,1.5:dev,1.7:dev,master:dev,cljhttp076:dev,1.5,cljhttp076"]}
   :global-vars {*warn-on-reflection* true}
   :jvm-opts ["-Xmx512m"]
   :test-selectors {:default        (fn [m]
