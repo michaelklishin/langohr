@@ -31,9 +31,9 @@ default exception handler RabbitMQ Java client uses:
 ``` clojure
 (require '[langohr.core :as rmq])
 
-(let [(rmq/exception-handler :handle-consumer-exception (fn [ch ex consumer
-                                                             consumer-tag method-name]
-                                                           ))]
+(let [(rmq/exception-handler :handle-consumer-exception-fn (fn [ch ex consumer
+                                                               consumer-tag method-name]
+                                                             ))]
   )
 ```
 
