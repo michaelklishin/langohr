@@ -55,11 +55,6 @@ Valid keys are:
 
 GH issue: [#47](https://github.com/michaelklishin/langohr/issues/47).
 
-### Shutdown Hooks Recovery for Channels
-
-Channels now record and recover shutdown hooks registered
-for them.
-
 
 ### langohr.core/version is Removed
 
