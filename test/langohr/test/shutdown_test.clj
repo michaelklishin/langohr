@@ -28,7 +28,7 @@
           f        (fn [consumer_tag ^ShutdownSignalException reason]
                      (reset! cha (lh/channel-of reason))
                      (.countDown latch))
-          consumer (lhcons/create-default ch :handle-shutdown-signal-fn f)]
+          consumer (lhcons/create-default ch {:handle-shutdown-signal-fn f})]
       (lhb/consume ch q consumer)
       (try
         (lhq/bind ch "ugggggh" "amq.fanout")
@@ -46,7 +46,7 @@
           f        (fn [consumer_tag ^ShutdownSignalException reason]
                      (reset! sse reason)
                      (.countDown latch))
-          consumer (lhcons/create-default ch :handle-shutdown-signal-fn f)]
+          consumer (lhcons/create-default ch {:handle-shutdown-signal-fn f})]
       (lhb/consume ch q consumer)
       (try
         (lhq/bind ch "ugggggh" "amq.fanout")
@@ -65,7 +65,7 @@
           f        (fn [consumer_tag ^ShutdownSignalException reason]
                      (reset! sse reason)
                      (.countDown latch))
-          consumer (lhcons/create-default ch :handle-shutdown-signal-fn f)]
+          consumer (lhcons/create-default ch {:handle-shutdown-signal-fn f})]
       (lhb/consume ch q consumer)
       (Thread/sleep 250)
       (lhc/close ch)
@@ -85,7 +85,7 @@
           ssf      (fn [consumer_tag ^ShutdownSignalException reason]
                      (reset! sse reason)
                      (.countDown latch))
-          consumer (lhcons/create-default ch :handle-delivery-fn dhf :handle-shutdown-signal-fn ssf)]
+          consumer (lhcons/create-default ch {:handle-delivery-fn dhf :handle-shutdown-signal-fn ssf})]
       (lhb/consume ch q consumer)
       (Thread/sleep 250)
       (lhb/publish ch "" q "message")
@@ -95,9 +95,9 @@
 
 (deftest test-custom-exception-handler
   (let [el (CountDownLatch. 1)
-        eh (lhc/exception-handler :handle-consumer-exception-fn (fn [ch ex consumer
-                                                                    consumer-tag method-name]
-                                                                 (.countDown el)))]
+        eh (lhc/exception-handler {:handle-consumer-exception-fn (fn [ch ex consumer
+                                                                      consumer-tag method-name]
+                                                                   (.countDown el))})]
     (with-open [^Connection conn (lhc/connect {:exception-handler eh})]
       (let [ch    (lch/open conn)
             q     (lhq/declare-server-named ch)

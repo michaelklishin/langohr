@@ -190,15 +190,15 @@
       (f r))))
 
 (defn exception-handler
-  [&{:keys [handle-connection-exception-fn
-            handle-return-listener-exception-fn
-            handle-flow-listener-exception-fn
-            handle-confirm-listener-exception-fn
-            handle-blocked-listener-exception-fn
-            handle-consumer-exception-fn
-            handle-connection-recovery-exception-fn
-            handle-channel-recovery-exception-fn
-            handle-topology-recovery-exception-fn]}]
+  [{:keys [handle-connection-exception-fn
+           handle-return-listener-exception-fn
+           handle-flow-listener-exception-fn
+           handle-confirm-listener-exception-fn
+           handle-blocked-listener-exception-fn
+           handle-consumer-exception-fn
+           handle-connection-recovery-exception-fn
+           handle-channel-recovery-exception-fn
+           handle-topology-recovery-exception-fn]}]
   (proxy [DefaultExceptionHandler] []
     (handleUnexpectedConnectionDriverException [^Connection conn ^Throwable t]
       (when handle-connection-exception-fn

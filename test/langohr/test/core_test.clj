@@ -28,8 +28,7 @@
 
 (deftest test-connection-with-overriden-parameters
   ;; see ./bin/ci/before_script.sh
-  (with-open [conn (lc/connect {
-                                :host "127.0.0.1" :port 5672
+  (with-open [conn (lc/connect {:host "127.0.0.1" :port 5672
                                 :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
                                 :requested-heartbeat 3 :connection-timeout 5})]
     (is (lc/open? conn))

@@ -25,7 +25,7 @@
               ch   (lc/create-channel conn)]
     (let [q (format "langohr.test.tls-test.%s" (str (java.util.UUID/randomUUID)))]
       (is (lc/open? conn))
-      (lq/declare ch q :exclusive true)
+      (lq/declare ch q {:exclusive true})
       (lb/publish ch "" q "TLS")
       (let [[_ payload] (lb/get ch q)]
         (is (= (String. ^bytes payload) "TLS")))
@@ -57,7 +57,7 @@
         ch              (lc/create-channel conn)
         q               (format "langohr.test.tls-test.%s" (str (java.util.UUID/randomUUID)))]
     (is (lc/open? ch))
-    (lq/declare ch q :exclusive true)
+    (lq/declare ch q {:exclusive true})
     (lb/publish ch "" q "verified TLS")
     (let [[_ payload] (lb/get ch q)]
       (is (= (String. ^bytes payload) "verified TLS")))

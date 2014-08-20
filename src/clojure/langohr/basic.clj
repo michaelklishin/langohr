@@ -64,32 +64,34 @@
   Example:
 
       (lhb/publish channel exchange queue payload :priority 8 :message-id msg-id :content-type content-type :headers { \"see you soon\" \"à bientôt\" })"
-  [^Channel channel ^String exchange ^String routing-key payload
-   &{:keys [^Boolean mandatory ^Boolean immediate ^String content-type ^String ^String content-encoding ^Map headers
+  ([^Channel ch ^String exchange ^String routing-key payload]
+     (publish ch exchange routing-key payload {}))
+  ([^Channel channel ^String exchange ^String routing-key payload
+    {:keys [^Boolean mandatory ^Boolean immediate ^String content-type ^String ^String content-encoding ^Map headers
             ^Boolean persistent ^Integer priority ^String correlation-id ^String reply-to ^String expiration ^String message-id
             ^Date timestamp ^String type ^String user-id ^String app-id ^String cluster-id]
      :or {mandatory false immediate false}}]
-  (let [bytes (to-byte-array payload)
-        pb    (doto (AMQP$BasicProperties$Builder.)
-                (.contentType     content-type)
-                (.contentEncoding content-encoding)
-                (.headers         headers)
-                (.deliveryMode    (Integer/valueOf (if persistent 2 1)))
-                (.priority        (if priority (Integer/valueOf ^Long priority) nil))
-                (.correlationId   correlation-id)
-                (.replyTo         reply-to)
-                (.expiration      expiration)
-                (.messageId       message-id)
-                (.timestamp       timestamp)
-                (.type            type)
-                (.userId          user-id)
-                (.appId           app-id)
-                (.clusterId       cluster-id))]
-    (.basicPublish channel
-                   exchange
-                   routing-key
-                   mandatory
-                   immediate (.build pb) bytes)))
+     (let [bytes (to-byte-array payload)
+           pb    (doto (AMQP$BasicProperties$Builder.)
+                   (.contentType     content-type)
+                   (.contentEncoding content-encoding)
+                   (.headers         headers)
+                   (.deliveryMode    (Integer/valueOf (if persistent 2 1)))
+                   (.priority        (if priority (Integer/valueOf ^Long priority) nil))
+                   (.correlationId   correlation-id)
+                   (.replyTo         reply-to)
+                   (.expiration      expiration)
+                   (.messageId       message-id)
+                   (.timestamp       timestamp)
+                   (.type            type)
+                   (.userId          user-id)
+                   (.appId           app-id)
+                   (.clusterId       cluster-id))]
+       (.basicPublish channel
+                      exchange
+                      routing-key
+                      mandatory
+                      immediate (.build pb) bytes))))
 
 
 (defn ^ReturnListener return-listener
@@ -129,12 +131,24 @@
 
    Options:
 
-     ^String :consumer-tag: a unique consumer (subscription) identifier. Pass an empty string to make RabbitMQ generate one for you.
-     ^Boolean :auto-ack (default false): true if the server should consider messages acknowledged once delivered, false if server should expect explicit acknowledgements.
-     ^Boolean :exclusive (default false): true if this is an exclusive consumer (no other consumer can consume given queue)"
-  [^Channel channel ^String queue ^Consumer consumer &{:keys [consumer-tag auto-ack exclusive arguments no-local]
-                                                       :or {consumer-tag "" auto-ack false exclusive false no-local false}}]
-  (.basicConsume ^Channel channel ^String queue ^Boolean auto-ack ^String consumer-tag ^Boolean no-local ^Boolean exclusive ^Map arguments ^Consumer consumer))
+     ^String :consumer-tag: a unique consumer (subscription) identifier.
+                            Omit the option or pass an empty string to make RabbitMQ generate one for you.
+     ^Boolean :auto-ack (default false): true if the server should consider messages acknowledged once delivered,
+                                         false if server should expect manual acknowledgements.
+     ^Boolean :exclusive (default false): true if this is an exclusive consumer
+                                          (no other consumer can consume given queue)"
+  ([^Channel ch ^String queue ^Consumer consumer]
+     (consume ch queue consumer {}))
+  ([^Channel ch ^String queue ^Consumer consumer {:keys [consumer-tag auto-ack exclusive arguments no-local]
+                                                  :or {consumer-tag "" auto-ack false exclusive false no-local false}}]
+     (.basicConsume ^Channel ch
+                    ^String queue
+                    ^Boolean auto-ack
+                    ^String consumer-tag
+                    ^Boolean no-local
+                    ^Boolean exclusive
+                    ^Map arguments
+                    ^Consumer consumer)))
 
 
 (defn cancel

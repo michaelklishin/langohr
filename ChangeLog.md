@@ -1,5 +1,26 @@
 ## Changes between Langohr 2.11.x and 3.0.0
 
+### Options as Maps
+
+Functions that take options now require a proper Clojure map instead of
+pseudo keyword arguments:
+
+``` clojure
+# in Langohr 2.x
+
+(lq/declare ch q :durable true)
+(lhcons/subscribe ch q (fn [_ _ _])
+                        :consumer-tag ctag :handle-cancel-ok (fn [_]))
+(lb/publish ch "" q "a message" :mandatory true)
+
+# in Langohr 3.x
+(lq/declare ch q {:durable true})
+(lhcons/subscribe ch q (fn [_ _ _])
+                        {:consumer-tag ctag :handle-cancel-ok (fn [_])})
+(lb/publish ch "" q "a message" {:mandatory true})
+```
+
+
 ### JDK 8 Compatibility
 
 Langohr test suite now passes on JDK 8 (previously there was 1 failure

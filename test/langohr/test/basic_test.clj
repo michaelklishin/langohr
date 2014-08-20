@@ -35,7 +35,7 @@
           ;; test suite. MK.
           payload    ""
           queue      "langohr.examples.publishing.using-default-exchange"
-          declare-ok (lhq/declare channel queue :auto-delete true)
+          declare-ok (lhq/declare channel queue {:auto-delete true})
           tag        (lhu/generate-consumer-tag "langohr.basic/consume-tests")
           content-type "text/plain"
           msg-id       (.toString (java.util.UUID/randomUUID))
@@ -48,14 +48,14 @@
                           (is (:message-id metadata))
                           (is (:priority metadata))
                           (.countDown latch))]
-      (lhcons/subscribe channel queue msg-handler :consumer-tag tag :auto-ack true)
+      (lhcons/subscribe channel queue msg-handler {:consumer-tag tag :auto-ack true})
       (.start (Thread. (fn []
                          (dotimes [i n]
                            (lhb/publish channel exchange queue payload
-                                        :priority 8
-                                        :message-id msg-id
-                                        :content-type content-type
-                                        :headers { "see you soon" "à bientôt" }))) "publisher"))
+                                        {:priority 8
+                                         :message-id msg-id
+                                         :content-type content-type
+                                         :headers {"see you soon" "à bientôt"}}))) "publisher"))
       (is (.await latch 3 TimeUnit/SECONDS)))))
 
 ;;
@@ -73,8 +73,8 @@
           msg-handler   (fn [ch metadata payload]
                           (.countDown latch))
           log-called (fn [tag] (fn [_] (swap! handler-called conj tag)))]
-      (lhcons/subscribe channel queue msg-handler :auto-ack true :handle-consume-ok-fn (log-called :handle-consume-ok-fn))
-      (lhcons/subscribe channel queue msg-handler :auto-ack true :handle-consume-ok (log-called :handle-consume-ok))
+      (lhcons/subscribe channel queue msg-handler {:auto-ack true :handle-consume-ok-fn (log-called :handle-consume-ok-fn)})
+      (lhcons/subscribe channel queue msg-handler {:auto-ack true :handle-consume-ok (log-called :handle-consume-ok)})
       (lhb/publish channel exchange queue "dummy payload")
       (is (.await latch 700 TimeUnit/MILLISECONDS))
       (is (= #{:handle-consume-ok-fn :handle-consume-ok} @handler-called)))))
@@ -86,7 +86,7 @@
     (let [queue1      (lhq/declare-server-named channel)
           queue2      (lhq/declare-server-named channel)
           queue3      (lhq/declare-server-named channel)]
-      (lhb/publish channel "" queue1 "1010" :headers { "CC" [queue2], "BCC" [queue3] })
+      (lhb/publish channel "" queue1 "1010" {:headers {"CC" [queue2] "BCC" [queue3]}})
       (is (lhb/get channel queue1))
       (is (lhb/get channel queue2))
       (is (lhb/get channel queue3)))))
@@ -103,12 +103,12 @@
               channel          (lhc/create-channel conn)]
     (let [exchange    ""
           payload     ""
-          queue       (.getQueue (lhq/declare channel "" :auto-delete true))
+          queue       (.getQueue (lhq/declare channel "" {:auto-delete true}))
           tag         (lhu/generate-consumer-tag "langohr.basic/consume-tests")
           counter     (atom 0)
           msg-handler (fn [ch metadata payload]
                         (swap! counter inc))]
-      (lhcons/subscribe channel queue msg-handler :consumer-tag tag, :auto-ack true)
+      (lhcons/subscribe channel queue msg-handler {:consumer-tag tag :auto-ack true})
       (lhb/publish channel exchange queue payload)
       (Thread/sleep 200)
       (is (= @counter 1))
@@ -128,7 +128,7 @@
     (let [exchange   ""
           body       "A message we will fetch with basic.get"
           queue      "langohr.examples.basic.get.queue1"]
-      (lhq/declare channel queue :auto-delete true)
+      (lhq/declare channel queue {:auto-delete true})
       (lhb/publish channel exchange queue body)
       (let [[metadata payload] (lhb/get channel queue)]
         (is (= (String. ^bytes payload) body))
@@ -294,8 +294,8 @@
                      (is (= (String. ^bytes body) "return-me"))
                      (.countDown latch))]
       (lhb/add-return-listener channel rl)
-      (lhe/declare channel exchange "direct" :auto-delete true)
-      (lhb/publish channel exchange (str (UUID/randomUUID)) "return-me" :mandatory true)
+      (lhe/declare channel exchange "direct" {:auto-delete true})
+      (lhb/publish channel exchange (str (UUID/randomUUID)) "return-me" {:mandatory true})
       (is (.await latch 1 TimeUnit/SECONDS))
       (lhe/delete channel exchange))))
 

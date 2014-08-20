@@ -29,9 +29,9 @@
               ch (lhc/create-channel conn)]
     (let [x     ""
           q     ""
-          qd-ok (lhq/declare ch q :exclusive true)
+          qd-ok (lhq/declare ch q {:exclusive true})
           body  (resource-as-bytes "payloads/200k_json_payload.json")
-          _     (lhb/publish ch x (.getQueue qd-ok) body :content-type "application-json")]
+          _     (lhb/publish ch x (.getQueue qd-ok) body {:content-type "application-json"})]
       (is (= 247894 (count body)))
       (Thread/sleep 200)
       (let [[_ fetched] (lhb/get ch q)]

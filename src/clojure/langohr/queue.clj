@@ -46,7 +46,8 @@
      (DeclareOk. (.queueDeclare ch)))
   ([^Channel ch ^String queue]
      (DeclareOk. (.queueDeclare ch queue false false true nil)))
-  ([^Channel ch ^String queue &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false exclusive false auto-delete true}}]
+  ([^Channel ch ^String queue {:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments]
+                               :or {durable false exclusive false auto-delete true}}]
      (DeclareOk. (.queueDeclare ch queue durable exclusive auto-delete arguments))))
 
 
@@ -59,7 +60,8 @@
   "Declares a server-named queue and returns its name."
   ([^Channel ch]
      (-> ch .queueDeclare .getQueue))
-  ([^Channel ch &{:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments] :or {durable false exclusive false auto-delete true}}]
+  ([^Channel ch {:keys [^Boolean durable ^Boolean exclusive ^Boolean auto-delete arguments]
+                 :or {durable false exclusive false auto-delete true}}]
      (-> ch
          (.queueDeclare "" durable exclusive auto-delete arguments)
          .getQueue)))
@@ -68,7 +70,8 @@
   "Binds a queue to an exchange using queue.bind AMQP method"
   ([^Channel ch ^String queue ^String exchange]
      (BindOk. (.queueBind ch queue exchange "")))
-  ([^Channel ch ^String queue ^String exchange &{:keys [routing-key arguments] :or {routing-key "" arguments nil}}]
+  ([^Channel ch ^String queue ^String exchange {:keys [routing-key arguments]
+                                                :or {routing-key "" arguments nil}}]
      (BindOk. (.queueBind ch queue exchange routing-key arguments))))
 
 

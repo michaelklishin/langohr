@@ -162,7 +162,7 @@
           q    "langohr.test.recovery.q1"]
       (is (rmq/automatic-recovery-enabled? conn))
       (is (rmq/automatic-topology-recovery-enabled? conn))
-      (lq/declare ch q :durable true)
+      (lq/declare ch q {:durable true})
       (lq/purge ch q)
       (is (lq/empty? ch q))
       (close-all-connections)
@@ -181,9 +181,9 @@
           hf    (fn [ch meta ^bytes payload]
                   (.countDown latch))
           f     (fn [ch q]
-                  (lq/declare ch q :durable false)
+                  (lq/declare ch q {:durable false})
                   (lq/purge ch q)
-                  (lc/subscribe ch q hf :auto-ack true :consumer-tag ctag))]
+                  (lc/subscribe ch q hf {:auto-ack true :consumer-tag ctag}))]
       (is (rmq/automatic-recovery-enabled? conn))
       (is (not (rmq/automatic-topology-recovery-enabled? conn)))
       (f ch q)
@@ -209,9 +209,9 @@
           latch (CountDownLatch. 1)
           f     (fn [_ _ _]
                   (.countDown latch))
-          q     (lq/declare-server-named ch :exclusive true)]
-      (lx/direct ch x :durable true)
-      (lq/bind ch q x :routing-key "test-basic-server-named-queue-recovery")
+          q     (lq/declare-server-named ch {:exclusive true})]
+      (lx/direct ch x {:durable true})
+      (lq/bind ch q x {:routing-key "test-basic-server-named-queue-recovery"})
       (lc/subscribe ch q f)
       (is (lq/empty? ch q))
       (close-all-connections)
@@ -229,9 +229,9 @@
           latch (CountDownLatch. 2)
           f     (fn [_ _ _]
                   (.countDown latch))
-          q1    (lq/declare-server-named ch :exclusive true)
-          q2    (lq/declare-server-named ch :exclusive true)]
-      (lx/fanout ch x :durable true)
+          q1    (lq/declare-server-named ch {:exclusive true})
+          q2    (lq/declare-server-named ch {:exclusive true})]
+      (lx/fanout ch x {:durable true})
       (lq/bind ch q1 x)
       (lq/bind ch q2 x)
       (lc/subscribe ch q1 f)
@@ -254,9 +254,9 @@
           latch (CountDownLatch. 1)
           f     (fn [_ _ _]
                   (.countDown latch))
-          q     (lq/declare-server-named ch :exclusive true)]
-      (lx/fanout ch x1 :durable true)
-      (lx/fanout ch x2 :durable true)
+          q     (lq/declare-server-named ch {:exclusive true})]
+      (lx/fanout ch x1 {:durable true})
+      (lx/fanout ch x2 {:durable true})
       (lx/bind ch x2 x1)
       (lq/bind ch q x2)
       (lc/subscribe ch q f)
@@ -277,9 +277,9 @@
           latch (CountDownLatch. 1)
           f     (fn [_ _ _]
                   (.countDown latch))
-          q     (lq/declare-server-named ch :exclusive true)]
-      (lx/fanout ch x1 :durable true)
-      (lx/fanout ch x2 :durable true)
+          q     (lq/declare-server-named ch {:exclusive true})]
+      (lx/fanout ch x1 {:durable true})
+      (lx/fanout ch x2 {:durable true})
       (lx/bind ch x2 x1)
       (lq/bind ch q x2)
       (lx/unbind ch x2 x1)
@@ -302,9 +302,9 @@
           latch (CountDownLatch. 1)
           f     (fn [_ _ _]
                   (.countDown latch))
-          q     (lq/declare-server-named ch1 :exclusive true)]
-      (lx/fanout ch1 x1 :durable true)
-      (lx/fanout ch1 x2 :durable true)
+          q     (lq/declare-server-named ch1 {:exclusive true})]
+      (lx/fanout ch1 x1 {:durable true})
+      (lx/fanout ch1 x2 {:durable true})
       (lx/bind ch1 x2 x1)
       (lq/bind ch2 q x2)
       (lx/unbind ch2 x2 x1)
@@ -327,8 +327,8 @@
           latch (CountDownLatch. 1)
           f     (fn [_ _ _]
                   (.countDown latch))]
-      (lx/fanout ch x :durable true)
-      (lq/declare ch q :durable true)
+      (lx/fanout ch x {:durable true})
+      (lq/declare ch q {:durable true})
       (lq/purge ch q)
       (lq/bind ch q x)
       (close-all-connections)
@@ -350,8 +350,8 @@
           latch (CountDownLatch. 1)
           f     (fn [_ _ _]
                   (.countDown latch))]
-      (lx/fanout ch x :durable true)
-      (lq/declare ch q :durable true)
+      (lx/fanout ch x {:durable true})
+      (lq/declare ch q {:durable true})
       (lq/purge ch q)
       (lq/bind ch q x)
       (lq/unbind ch q x)
@@ -371,7 +371,7 @@
     (let [ch    (lch/open conn)
           q     "langohr.test.recovery.q1"
           n     1024]
-      (lq/declare ch q :durable true)
+      (lq/declare ch q {:durable true})
       (dotimes [i n]
         (lc/subscribe ch q (fn [_ _ _] )))
       (close-all-connections)
@@ -388,7 +388,7 @@
           n     64]
       (dotimes [i n]
         (let [q (str (UUID/randomUUID))]
-          (lq/declare ch q :durable false :exclusive true)
+          (lq/declare ch q {:durable false :exclusive true})
           (swap! qs conj q)))
       (close-all-connections)
       (wait-for-recovery conn)
@@ -446,8 +446,7 @@
                      (when nq
                        (lb/publish ch x nq (format "message.%d" i)))
                      (.countDown latch))]
-            #_ (println (format "Declaring queue %s" q))
-            (lq/declare ch q :exclusive true)
+            (lq/declare ch q {:exclusive true})
             (lc/subscribe ch q f)))
         (close-all-connections)
         (wait-for-recovery conn)

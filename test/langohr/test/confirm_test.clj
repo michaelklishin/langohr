@@ -50,9 +50,9 @@
               ch   (lhc/create-channel conn)]
     (let [x     ""
           q     "langohr.publisher.confirms"
-          _     (lhq/declare ch q :exclusive true)
+          _     (lhq/declare ch q {:exclusive true})
           body  (.getBytes "message" "UTF-8")]
       (cfm/select ch)
-      (lhb/publish ch x q body :content-type "application-json")
+      (lhb/publish ch x q body {:content-type "application-json"})
       (cfm/wait-for-confirms ch 200)
       (is true))))

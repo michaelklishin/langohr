@@ -44,7 +44,8 @@
      :internal (default: false): If set, the exchange may not be used directly by publishers, but only when bound to other exchanges. Internal exchanges are used to construct wiring that is not visible to applications."
   ([^Channel channel ^String name ^String type]
      (DeclareOk. (.exchangeDeclare channel name type)))
-  ([^Channel channel ^String name ^String type &{:keys [durable auto-delete internal arguments] :or {durable false auto-delete false internal false}}]
+  ([^Channel channel ^String name ^String type {:keys [durable auto-delete internal arguments]
+                                                :or {durable false auto-delete false internal false}}]
      (DeclareOk. (.exchangeDeclare channel name type durable auto-delete internal arguments))))
 
 (defn ^com.novemberain.langohr.exchange.DeclareOk declare-passive
@@ -92,7 +93,8 @@
     :arguments (default: nil): A hash of optional arguments with the declaration. Headers exchange type uses these metadata attributes for routing matching. In addition, brokers may implement AMQP extensions using x-prefixed declaration arguments."
   ([^Channel channel ^String destination ^String source]
      (BindOk. (.exchangeBind channel destination source "")))
-  ([^Channel channel ^String destination ^String source &{:keys [routing-key arguments] :or {routing-key ""}}]
+  ([^Channel channel ^String destination ^String source {:keys [routing-key arguments]
+                                                         :or {routing-key ""}}]
      (BindOk. (.exchangeBind channel destination source routing-key arguments))))
 
 (defn ^com.novemberain.langohr.exchange.UnbindOk unbind

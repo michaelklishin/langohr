@@ -44,22 +44,22 @@
 (deftest test-declare-a-durable-direct-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct2"]
-    (lhe/declare channel exchange "direct" :auto-delete false :durable true)))
+    (lhe/declare channel exchange "direct" {:auto-delete false :durable true})))
 
 (deftest test-declare-a-durable-direct-exchange-shortcut
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct2"]
-    (lhe/direct channel exchange :auto-delete false :durable true)))
+    (lhe/direct channel exchange {:auto-delete false :durable true})))
 
 (deftest test-declare-an-auto-deleted-direct-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct3"]
-    (lhe/declare channel exchange "direct" :auto-delete true :durable false)))
+    (lhe/declare channel exchange "direct" {:auto-delete true :durable false})))
 
 (deftest test-declare-an-internal-direct-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct.internal"]
-    (lhe/declare channel exchange "direct" :auto-delete true :durable false :internal true)
+    (lhe/declare channel exchange "direct" {:auto-delete true :durable false :internal true})
     (lhe/delete channel exchange)))
 
 
@@ -70,7 +70,7 @@
         queue    (lhq/declare-server-named channel)]
 
     (lhe/declare channel exchange "direct")
-    (lhq/bind channel queue exchange :routing-key "abc")
+    (lhq/bind channel queue exchange {:routing-key "abc"})
 
     (lhb/publish channel exchange "abc" "")
     (lhb/publish channel exchange "xyz" "")
@@ -95,17 +95,17 @@
 (deftest test-declare-a-durable-fanout-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.fanout2"]
-    (lhe/declare channel exchange "fanout" :durable true)))
+    (lhe/declare channel exchange "fanout" {:durable true})))
 
 (deftest test-declare-a-durable-fanout-exchange-shortcut
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.fanout2"]
-    (lhe/fanout channel exchange :durable true)))
+    (lhe/fanout channel exchange {:durable true})))
 
 (deftest test-declare-an-auto-deleted-fanout-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.fanout3"]
-    (lhe/declare channel exchange "fanout" :auto-delete true)))
+    (lhe/declare channel exchange "fanout" {:auto-delete true})))
 
 
 (deftest test-fanount-exchange-broadcast-delivery
@@ -119,9 +119,7 @@
 
     (lhb/publish channel exchange "abc" "")
     (lhb/publish channel exchange "xyz" "")
-
     (Thread/sleep 200)
-
     (is (= 2 (lhq/message-count channel queue)))))
 
 ;; topic
@@ -139,17 +137,17 @@
 (deftest test-declare-a-durable-topic-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.topic2"]
-    (lhe/declare channel exchange "topic" :durable true)))
+    (lhe/declare channel exchange "topic" {:durable true})))
 
 (deftest test-declare-a-durable-topic-exchange-shortcut
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.topic2"]
-    (lhe/declare channel exchange "topic" :durable true)))
+    (lhe/declare channel exchange "topic" {:durable true})))
 
 (deftest test-declare-an-auto-deleted-topic-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.topic3"]
-    (lhe/declare channel exchange "topic" :auto-delete true)))
+    (lhe/declare channel exchange "topic" {:auto-delete true})))
 
 
 (deftest test-redeclare-an-auto-deleted-topic-exchange-with-different-attributes
@@ -160,8 +158,8 @@
                                              (println "Shutdown listener has fired")))]
     (try
       (.addShutdownListener channel shutdown-ln)
-      (lhe/declare channel exchange "topic" :auto-delete true)
-      (lhe/declare channel exchange "topic" :auto-delete false)
+      (lhe/declare channel exchange "topic" {:auto-delete true})
+      (lhe/declare channel exchange "topic" {:auto-delete false})
       (catch IOException ioe ;; see http://www.rabbitmq.com/api-guide.html#shutdown
         nil))))
 
@@ -172,7 +170,7 @@
         queue    (lhq/declare-server-named channel)]
 
     (lhe/declare channel exchange "topic")
-    (lhq/bind channel queue exchange :routing-key "log.*")
+    (lhq/bind channel queue exchange {:routing-key "log.*"})
 
     (lhb/publish channel exchange "accounts.signup" "")
     (lhb/publish channel exchange "log.info" "")
@@ -187,7 +185,7 @@
 (deftest test-passive-declare-with-existing-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct2"
-        _          (lhe/direct channel exchange :auto-delete false :durable true)
+        _          (lhe/direct channel exchange {:auto-delete false :durable true})
         declare-ok (lhe/declare-passive channel exchange)]
     (is declare-ok)))
 
@@ -224,8 +222,8 @@
         source      "langohr.tests.exchanges.source"
         destination "langohr.tests.exchanges.destination"
         queue       (lhq/declare-server-named channel)]
-    (lhe/declare channel source      "fanout" :auto-delete true)
-    (lhe/declare channel destination "fanout" :auto-delete true)
+    (lhe/declare channel source      "fanout" {:auto-delete true})
+    (lhe/declare channel destination "fanout" {:auto-delete true})
     (lhq/bind channel queue destination)
     (is (nil? (lhb/get channel queue)))
     (lhe/bind    channel destination source)
@@ -237,9 +235,9 @@
         source      "langohr.tests.exchanges.source2"
         destination "langohr.tests.exchanges.destination2"
         queue       (lhq/declare-server-named channel)]
-    (lhe/declare channel source      "fanout" :auto-delete true)
-    (lhe/declare channel destination "fanout" :auto-delete true)
-    (lhq/bind channel queue destination :arguments { "X-For-Some-Extension" "a value" })
+    (lhe/declare channel source      "fanout" {:auto-delete true})
+    (lhe/declare channel destination "fanout" {:auto-delete true})
+    (lhq/bind channel queue destination {:arguments {"X-For-Some-Extension" "a value"}})
     (is (nil? (lhb/get channel queue)))
     (lhe/bind    channel destination source)
     (lhb/publish channel source "" "")
@@ -257,13 +255,13 @@
         queue    (lhq/declare-server-named channel)]
 
     (lhe/declare channel exchange "headers")
-    (lhq/bind channel queue exchange :arguments { "x-match" "all" "arch" "x86_64" "os" "linux" })
+    (lhq/bind channel queue exchange {:arguments {"x-match" "all" "arch" "x86_64" "os" "linux"}})
 
-    (lhb/publish channel exchange "" "For linux/IA64"   :headers { "arch" "x86_64" "os" "linux" })
-    (lhb/publish channel exchange "" "For linux/x86"    :headers { "arch" "x86"  "os" "linux" })
-    (lhb/publish channel exchange "" "For any linux"    :headers { "os" "linux" })
-    (lhb/publish channel exchange "" "For OS X"         :headers { "os" "macosx" })
-    (lhb/publish channel exchange "" "For solaris/IA64" :headers { "os" "solaris" "arch" "x86_64" })
+    (lhb/publish channel exchange "" "For linux/IA64"   {:headers {"arch" "x86_64" "os" "linux"}})
+    (lhb/publish channel exchange "" "For linux/x86"    {:headers {"arch" "x86"  "os" "linux"}})
+    (lhb/publish channel exchange "" "For any linux"    {:headers {"os" "linux"}})
+    (lhb/publish channel exchange "" "For OS X"         {:headers {"os" "macosx"}})
+    (lhb/publish channel exchange "" "For solaris/IA64" {:headers {"os" "solaris" "arch" "x86_64"}})
 
     (Thread/sleep 200)
 
@@ -283,10 +281,10 @@
         latch       (java.util.concurrent.CountDownLatch. 1)
         msg-handler (fn [ch metadata payload]
                       (.countDown latch))]
-    (lhe/declare channel fe "fanout" :auto-delete true)
-    (lhe/declare channel de "direct" :auto-delete true :arguments {"alternate-exchange" fe})
+    (lhe/declare channel fe "fanout" {:auto-delete true})
+    (lhe/declare channel de "direct" {:auto-delete true :arguments {"alternate-exchange" fe}})
     (lhq/bind    channel queue fe)
-    (.start (Thread. #(lhcons/subscribe channel queue msg-handler :auto-ack true) "subscriber"))
+    (.start (Thread. #(lhcons/subscribe channel queue msg-handler {:auto-ack true}) "subscriber"))
     (.start (Thread. (fn []
-                       (lhb/publish channel de "" "1010" :mandatory true)) "publisher"))
+                       (lhb/publish channel de "" "1010" {:mandatory true})) "publisher"))
     (is (.await latch 700 TimeUnit/MILLISECONDS))))

@@ -42,7 +42,7 @@
   (with-open [^Connection conn (lhc/connect)]
     (let  [channel    (lhc/create-channel conn)
            queue-name "langohr.tests2.queues.client-named.durable.non-exclusive.non-auto-deleted"
-           {:keys [queue]} (lhq/declare channel queue-name :durable true :exclusive false :auto-delete false)]
+           {:keys [queue]} (lhq/declare channel queue-name {:durable true :exclusive false :auto-delete false})]
       (is (= queue queue-name)))))
 
 
@@ -55,8 +55,8 @@
                                                (println "Shutdown listener has fired")))]
       (try
         (.addShutdownListener channel shutdown-ln)
-        (lhq/declare channel queue :auto-delete true)
-        (lhq/declare channel queue :auto-delete false)
+        (lhq/declare channel queue {:auto-delete true})
+        (lhq/declare channel queue {:auto-delete false})
         (catch IOException ioe ;; see http://www.rabbitmq.com/api-guide.html#shutdown
           nil)))))
 
@@ -64,7 +64,7 @@
 (deftest test-queue-declaration-with-message-ttl
   (with-open [^Connection conn (lhc/connect)]
     (let [channel  (lhc/create-channel conn)
-          {:keys [queue]} (lhq/declare channel "" :auto-delete true :arguments { "x-message-ttl" 1500 } )]
+          {:keys [queue]} (lhq/declare channel "" {:auto-delete true :arguments {"x-message-ttl" 1500}})]
       (lhb/publish channel "" queue "")
       (Thread/sleep 1700)
       (is (nil? (lhb/get channel queue))))))
@@ -74,7 +74,7 @@
   (with-open [^Connection conn (lhc/connect)]
     (let [channel  (lhc/create-channel conn)
           queue    "langohr.test.leased.queue"]
-      (lhq/declare channel queue :auto-delete true :exclusive false :arguments { "x-expires" 1500 } )
+      (lhq/declare channel queue {:auto-delete true :exclusive false :arguments {"x-expires" 1500}})
       (lhq/declare-passive channel queue)
       (lhb/publish channel "" queue "")
       (Thread/sleep 1700)
@@ -114,7 +114,7 @@
     (let [channel  (lhc/create-channel conn)
           {:keys [queue]} (lhq/declare channel)
           exchange "amq.fanout"]
-      (lhq/bind   channel queue exchange :routing-key "abc")
+      (lhq/bind   channel queue exchange {:routing-key "abc"})
       (lhq/unbind channel queue exchange "abc"))))
 
 
