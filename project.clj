@@ -1,4 +1,4 @@
-(defproject com.novemberain/langohr "3.0.0-rc1"
+(defproject com.novemberain/langohr "3.0.0-rc2-SNAPSHOT"
   :description "An idiomatic Clojure client for RabbitMQ that embraces AMQP 0.9.1 model. Built on top of the RabbitMQ Java client"
   :min-lein-version "2.4.3"
   :license {:name "Eclipse Public License"}
