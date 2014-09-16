@@ -176,10 +176,10 @@
     (let [queue "langohr.examples.basic.ack.queue1"]
       (lhq/declare consumer-channel queue)
       (lhq/purge   producer-channel queue)
-      (.start (Thread. ^Callable (fn []
-                                   (lhb/publish producer-channel "" queue "One")
-                                   (lhb/publish producer-channel "" queue "Two")
-                                   (lhb/publish producer-channel "" queue "Three"))))
+      (.start (Thread. (fn []
+                         (lhb/publish producer-channel "" queue "One")
+                         (lhb/publish producer-channel "" queue "Two")
+                         (lhb/publish producer-channel "" queue "Three"))))
       (Thread/sleep 200)
       (let [[{delivery-tag :delivery-tag} _] (lhb/get consumer-channel queue false)]
         (is (= 1 delivery-tag))
@@ -193,10 +193,10 @@
     (let [queue "langohr.examples.basic.ack.queue2"]
       (lhq/declare consumer-channel queue)
       (lhq/purge   producer-channel queue)
-      (.start (Thread. ^Callable (fn []
-                                   (lhb/publish producer-channel "" queue "One")
-                                   (lhb/publish producer-channel "" queue "Two")
-                                   (lhb/publish producer-channel "" queue "Three"))))
+      (.start (Thread. (fn []
+                         (lhb/publish producer-channel "" queue "One")
+                         (lhb/publish producer-channel "" queue "Two")
+                         (lhb/publish producer-channel "" queue "Three"))))
       (Thread/sleep 200)
       (let [[{delivery-tag1 :delivery-tag} _] (lhb/get consumer-channel queue false)
             [{delivery-tag2 :delivery-tag} _] (lhb/get consumer-channel queue false)]
@@ -215,10 +215,10 @@
     (let [queue "langohr.examples.basic.nack.queue1"]
       (lhq/declare channel queue)
       (lhq/purge channel queue)
-      (.start (Thread. ^Callable (fn []
-                                   (lhb/publish channel "" queue "One")
-                                   (lhb/publish channel "" queue "Two")
-                                   (lhb/publish channel "" queue "Three"))))
+      (.start (Thread. (fn []
+                         (lhb/publish channel "" queue "One")
+                         (lhb/publish channel "" queue "Two")
+                         (lhb/publish channel "" queue "Three"))))
       (Thread/sleep 200)
       (let [[{:keys [delivery-tag]} _] (lhb/get channel queue false)]
         (is (= 1 delivery-tag))
@@ -231,10 +231,10 @@
     (let [queue "langohr.examples.basic.nack.queue2"]
       (lhq/declare channel queue)
       (lhq/purge channel queue)
-      (.start (Thread. ^Callable (fn []
-                                   (lhb/publish channel "" queue "One")
-                                   (lhb/publish channel "" queue "Two")
-                                   (lhb/publish channel "" queue "Three"))))
+      (.start (Thread. (fn []
+                         (lhb/publish channel "" queue "One")
+                         (lhb/publish channel "" queue "Two")
+                         (lhb/publish channel "" queue "Three"))))
       (Thread/sleep 200)
       (let [[{delivery-tag1 :delivery-tag} _] (lhb/get channel queue false)
             [{delivery-tag2 :delivery-tag} _] (lhb/get channel queue false)]
@@ -253,10 +253,10 @@
     (let [queue "langohr.examples.basic.reject.queue1"]
       (lhq/declare channel queue)
       (lhq/purge channel queue)
-      (.start (Thread. ^Callable (fn []
-                                   (lhb/publish channel "" queue "One")
-                                   (lhb/publish channel "" queue "Two")
-                                   (lhb/publish channel "" queue "Three"))))
+      (.start (Thread. (fn []
+                         (lhb/publish channel "" queue "One")
+                         (lhb/publish channel "" queue "Two")
+                         (lhb/publish channel "" queue "Three"))))
       (Thread/sleep 200)
       (let [[{:keys [delivery-tag]} _] (lhb/get channel queue false)]
         (is (= 1 delivery-tag))
@@ -268,10 +268,10 @@
               channel          (lhc/create-channel conn)]
     (let [queue "langohr.examples.basic.reject.queue2"]
       (lhq/declare channel queue)
-      (.start (Thread. ^Callable (fn []
-                                   (lhb/publish channel "" queue "One")
-                                   (lhb/publish channel "" queue "Two")
-                                   (lhb/publish channel "" queue "Three"))))
+      (.start (Thread. (fn []
+                         (lhb/publish channel "" queue "One")
+                         (lhb/publish channel "" queue "Two")
+                         (lhb/publish channel "" queue "Three"))))
       (Thread/sleep 200)
       (let [[{delivery-tag1 :delivery-tag} _] (lhb/get channel queue false)
             [{delivery-tag2 :delivery-tag} _] (lhb/get channel queue false)]
