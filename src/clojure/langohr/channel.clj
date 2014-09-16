@@ -14,7 +14,14 @@
 
    * http://clojurerabbitmq.info/articles/connecting.html"
   (:import [com.rabbitmq.client Connection Channel]
-           com.novemberain.langohr.channel.FlowOk))
+           com.novemberain.langohr.channel.FlowOk
+           com.rabbitmq.client.impl.recovery.AutorecoveringChannel))
+
+(defn ^Channel as-non-recovering-channel
+  [^Channel ch]
+  (if (instance? AutorecoveringChannel ch)
+    (.getDelegate ^AutorecoveringChannel ch)
+    ch))
 
 
 ;;

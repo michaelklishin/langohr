@@ -15,12 +15,11 @@
 
    * http://clojurerabbitmq.info/articles/queues.html"
   (:require [langohr.basic :as lhb]
-            [langohr.conversion :refer :all])
-  (:import [com.rabbitmq.client Consumer DefaultConsumer QueueingConsumer QueueingConsumer$Delivery ShutdownSignalException Envelope AMQP$BasicProperties QueueingConsumer$Delivery]
-           com.rabbitmq.client.Channel))
-
-
-
+            [langohr.conversion :refer :all]
+            [langohr.channel :refer [as-non-recovering-channel]])
+  (:import [com.rabbitmq.client Channel Consumer DefaultConsumer QueueingConsumer
+            QueueingConsumer$Delivery ShutdownSignalException Envelope
+            AMQP$BasicProperties QueueingConsumer$Delivery]))
 
 ;;
 ;; API
@@ -34,7 +33,7 @@
                             handle-shutdown-signal-fn
                             handle-recover-ok-fn
                             handle-delivery-fn]}]
-  (proxy [DefaultConsumer] [(.getDelegate ^Channel channel)]
+  (proxy [DefaultConsumer] [(as-non-recovering-channel channel)]
     (handleConsumeOk [^String consumer-tag]
       (when handle-consume-ok-fn
         (handle-consume-ok-fn consumer-tag)))
@@ -70,7 +69,7 @@
                             handle-cancel-ok-fn
                             handle-recover-ok-fn
                             handle-delivery-fn]}]
-  (proxy [QueueingConsumer] [(.getDelegate ^Channel channel)]
+  (proxy [QueueingConsumer] [(as-non-recovering-channel channel)]
     (handleConsumeOk [^String consumer-tag]
       (when handle-consume-ok-fn
         (handle-consume-ok-fn consumer-tag)))

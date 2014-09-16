@@ -10,7 +10,7 @@
 (ns langohr.test.shutdown-test
   (:require [langohr.queue     :as lhq]
             [langohr.core      :as lhc]
-            [langohr.channel   :as lch]
+            [langohr.channel   :as lch :refer [as-non-recovering-channel]]
             [langohr.basic     :as lhb]
             [langohr.consumers :as lhcons]
             [langohr.shutdown  :as lh]
@@ -35,7 +35,7 @@
         (catch Exception e
           (comment "Do nothing")))
       (is (.await latch 700 TimeUnit/MILLISECONDS))
-      (is (= @cha (.getDelegate ch))))))
+      (is (= @cha (as-non-recovering-channel ch))))))
 
 (deftest test-initiator-with-a-channel-exception
   (with-open [^Connection conn (lhc/connect)]
