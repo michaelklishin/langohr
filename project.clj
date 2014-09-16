@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"}
   :dependencies [[org.clojure/clojure      "1.6.0"]
                  [com.rabbitmq/amqp-client "3.3.5"]
-                 [clojurewerkz/support     "1.0.0"]
+                 [clojurewerkz/support     "1.1.0"]
                  [clj-http                 "1.0.0"]
                  [cheshire                 "5.3.1"]]
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
