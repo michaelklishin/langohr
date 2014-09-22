@@ -77,6 +77,10 @@ Valid keys are:
 GH issue: [#47](https://github.com/michaelklishin/langohr/issues/47).
 
 
+### Clojure 1.7 Support
+
+Clojure 1.7-specific compilation issues and warnings were eliminated.
+
 ### clj-http Upgrade
 
 clj-http dependency has been updated to `1.0.0`.
