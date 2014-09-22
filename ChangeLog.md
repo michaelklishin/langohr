@@ -77,6 +77,15 @@ Valid keys are:
 GH issue: [#47](https://github.com/michaelklishin/langohr/issues/47).
 
 
+### clj-http Upgrade
+
+clj-http dependency has been updated to `1.0.0`.
+
+### ClojureWerkz Support Upgrade
+
+`clojurewerkz/support` dependency has been updated to `1.1.0`.
+
+
 ### langohr.core/version is Removed
 
 `langohr.core/version` was removed.
