@@ -17,6 +17,7 @@
             [langohr.basic     :as lb]
             [langohr.consumers :as lc]
             [langohr.confirm   :as lcnf]
+            [langohr.shutdown  :as lsh]
             [clojure.test :refer :all]
             [langohr.http      :as mgmt])
   (:import [java.util.concurrent CountDownLatch
@@ -27,19 +28,27 @@
 ;; Helpers
 ;;
 
-(def ^:const expected-recovery-period 500)
+(def ^:const expected-recovery-period 3)
+(def ^:const expected-shutdown-period 2)
 (def ^:const recovery-delay           200)
 (defn wait-for-recovery
-  [conn]
+  [recoverable]
   (let [latch (CountDownLatch. 1)]
-    (rmq/on-recovery conn (fn [_]
-                            (.countDown latch)))
-    (.await latch (+ expected-recovery-period 500) TimeUnit/MILLISECONDS)))
+    (rmq/on-recovery recoverable (fn [_]
+                                   (.countDown latch)))
+    (.await latch expected-recovery-period TimeUnit/SECONDS)))
 
 (defn close-all-connections
   []
   (doseq [x (map :name (mgmt/list-connections))]
     (mgmt/close-connection x)))
+
+(defn wait-for-shutdown
+  [recoverable]
+  (let [latch (CountDownLatch. 1)]
+    (rmq/add-shutdown-listener recoverable (fn [_]
+                                             (.countDown latch)))
+    (.await latch expected-shutdown-period TimeUnit/SECONDS)))
 
 (defn ensure-queue-recovery
   [ch ^String q]
@@ -49,7 +58,7 @@
 
 (defn await-on
   ([^CountDownLatch latch]
-     (is (.await latch 500 TimeUnit/MILLISECONDS)))
+     (is (.await latch 2 TimeUnit/SECONDS)))
   ([^CountDownLatch latch ^long n ^TimeUnit tu]
      (is (.await latch n tu))))
 
@@ -205,20 +214,27 @@
                                  :automatically-recover-topology true
                                  :network-recovery-delay recovery-delay})]
     (let [ch   (lch/open conn)
-          x    "langohr.test.recovery.direct1"
-          latch (CountDownLatch. 1)
+          l1   (CountDownLatch. 1)
+          l2   (CountDownLatch. 1)
           f     (fn [_ _ _]
-                  (.countDown latch))
-          q     (lq/declare-server-named ch {:exclusive true})]
-      (lx/direct ch x {:durable true})
-      (lq/bind ch q x {:routing-key "test-basic-server-named-queue-recovery"})
+                  (.countDown l2))
+          q           (lq/declare-server-named ch {:exclusive true})
+          name-before (atom nil)
+          name-after  (atom nil)]
       (lc/subscribe ch q f)
       (is (lq/empty? ch q))
+      (rmq/on-queue-recovery conn (fn [^String old-name ^String new-name]
+                                    (reset! name-before old-name)
+                                    (reset! name-after  new-name)
+                                    (.countDown l1)))
       (close-all-connections)
       (wait-for-recovery conn)
+      (await-on l1)
+      (is (not (= @name-before @name-after)))
       (is (rmq/open? ch))
-      (lb/publish ch x "test-basic-server-named-queue-recovery" "a message")
-      (await-on latch))))
+      (lb/publish ch "" @name-after "a message")
+      (await-on l2)
+      (lq/delete ch q))))
 
 (deftest test-server-named-queue-recovery-with-multiple-queues
   (with-open [conn (rmq/connect {:automatically-recover true
@@ -229,8 +245,12 @@
           latch (CountDownLatch. 2)
           f     (fn [_ _ _]
                   (.countDown latch))
-          q1    (lq/declare-server-named ch {:exclusive true})
-          q2    (lq/declare-server-named ch {:exclusive true})]
+          q1    "langohr.test.recovery.q1"
+          q2    "langohr.test.recovery.q2"]
+      (lq/delete ch q1)
+      (lq/declare ch q1 {:exclusive false :durable false :auto-delete false})
+      (lq/delete ch q2)
+      (lq/declare ch q2 {:exclusive false :durable false :auto-delete false})
       (lx/fanout ch x {:durable true})
       (lq/bind ch q1 x)
       (lq/bind ch q2 x)
@@ -242,7 +262,9 @@
       (wait-for-recovery conn)
       (is (rmq/open? ch))
       (lb/publish ch x "" "a message")
-      (await-on latch))))
+      (await-on latch)
+      (lq/delete ch q1)
+      (lq/delete ch q2))))
 
 (deftest test-e2e-binding-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
@@ -254,7 +276,9 @@
           latch (CountDownLatch. 1)
           f     (fn [_ _ _]
                   (.countDown latch))
-          q     (lq/declare-server-named ch {:exclusive true})]
+          q     "langohr.test.recovery.e2e-queue"]
+      (lq/declare ch q {:durable false :auto-delete false :exclusive false})
+      (lcnf/select ch)
       (lx/fanout ch x1 {:durable true})
       (lx/fanout ch x2 {:durable true})
       (lx/bind ch x2 x1)
@@ -262,10 +286,15 @@
       (lc/subscribe ch q f)
       (is (lq/empty? ch q))
       (close-all-connections)
+      (wait-for-shutdown conn)
       (wait-for-recovery conn)
       (is (rmq/open? ch))
       (lb/publish ch x1 "" "a message")
-      (await-on latch))))
+      (lcnf/wait-for-confirms ch 500)
+      (await-on latch)
+      (lq/delete ch q)
+      (lx/delete ch x1)
+      (lx/delete ch x2))))
 
 (deftest test-removed-e2e-bindings-do-not-reappear-after-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
@@ -328,7 +357,8 @@
           f     (fn [_ _ _]
                   (.countDown latch))]
       (lx/fanout ch x {:durable true})
-      (lq/declare ch q {:durable true})
+      (lq/delete ch q)
+      (lq/declare ch q {:durable false :exclusive false :auto-delete false})
       (lq/purge ch q)
       (lq/bind ch q x)
       (close-all-connections)
@@ -337,8 +367,9 @@
       (close-all-connections)
       (wait-for-recovery conn)
       (lb/publish ch x "" "a message")
-      (is (.await latch 100 TimeUnit/MILLISECONDS))
-      (lx/delete ch x))))
+      (await-on latch)
+      (lx/delete ch x)
+      (lq/delete ch q))))
 
 (deftest test-removed-queue-binding-does-not-reappear-after-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
