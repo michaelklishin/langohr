@@ -69,7 +69,7 @@
 (defn ^com.novemberain.langohr.queue.BindOk bind
   "Binds a queue to an exchange using queue.bind AMQP method"
   ([^Channel ch ^String queue ^String exchange]
-     (BindOk. (.queueBind ch queue exchange "")))
+     (bind ch queue exchange {}))
   ([^Channel ch ^String queue ^String exchange {:keys [routing-key arguments]
                                                 :or {routing-key "" arguments nil}}]
      (BindOk. (.queueBind ch queue exchange routing-key arguments))))
