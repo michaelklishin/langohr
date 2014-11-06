@@ -37,7 +37,7 @@
 
 (def ^String keystore-path "./tmp/langohr/keystore/keystore")
 (def keystore-pwd  (.toCharArray "bunnies"))
-(def ^String pkcs12-cert-path "./test/resources/tls/client/keycert.p12")
+(def ^String pkcs12-cert-path "./test/resources/tls/client_key.p12")
 (def pkcs12-cert-pwd  (.toCharArray "bunnies"))
 
 (deftest ^{:tls true} test-connection-with-peer-verification
