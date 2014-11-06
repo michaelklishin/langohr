@@ -1,4 +1,4 @@
-;; Copyright (c) 2011-2014 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team
+;; Copyright72 (c) 2011-2014 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team
 ;;
 ;; The use and distribution terms for this software are covered by the
 ;; Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
@@ -58,22 +58,6 @@
                          :exclusive true})
       (lhb/cancel ch ctag)
       (is (.await latch 1000 TimeUnit/MILLISECONDS)))))
-
-(deftest t-basic-cancel-with-exclusive-consumer-on-different-connection
-  (with-open [^Connection conn (lhc/connect)
-              ch               (lch/open conn)
-              conn2            (lhc/connect)
-              ch2              (lch/open conn2)]
-    (let [q     (:queue (lhq/declare ch "" {:exclusive false}))
-          ctag  "langohr.consumer-tag"]
-      (lhcons/subscribe ch q (fn [_ _ _])
-                        {:consumer-tag ctag :exclusive true})
-      (is (thrown? java.io.IOException
-                   (lhb/cancel ch2 ctag)))
-      (try
-        (lhb/cancel ch2 ctag)
-        (catch java.io.IOException e
-          (is (= (.getMessage e) "Unknown consumerTag")))))))
 
 (deftest t-consume-ok-handler-with-queueing-consumer
   (with-open [^Connection conn (lhc/connect)
