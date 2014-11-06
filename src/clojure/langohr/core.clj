@@ -20,7 +20,8 @@
             Consumer TopologyRecoveryException
             ExceptionHandler Recoverable RecoveryListener]
            [com.rabbitmq.client.impl DefaultExceptionHandler AMQConnection]
-           [clojure.lang IFn]
+           [com.rabbitmq.client.impl.recovery AutorecoveringConnection QueueRecoveryListener]
+           clojure.lang.IFn
            java.util.concurrent.ThreadFactory)
   (:require langohr.channel
             [clojure.string :as s]
@@ -175,6 +176,20 @@
   (.addRecoveryListener target (reify RecoveryListener
                                  (^void handleRecovery [this ^Recoverable it]
                                    (callback it)))))
+
+(defn ^QueueRecoveryListener queue-recovery-listener
+  "Reifies a new queue recovery listener that delegates
+   to a Clojure function."
+  [^IFn f]
+  (reify QueueRecoveryListener
+    (^void queueRecovered [this ^String old-name ^String new-name]
+      (f old-name new-name))))
+
+(defn on-queue-recovery
+  "Called when server named queue gets a new name on recovery"
+  [^com.novemberain.langohr.Connection conn ^IFn f]
+  (.addQueueRecoveryListener (cast AutorecoveringConnection (.getDelegate conn))
+                             (queue-recovery-listener f)))
 
 
 ;;
