@@ -50,7 +50,7 @@ GH issue: [#58](https://github.com/michaelklishin/langohr/issues/58).
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `3.3.5`.
+RabbitMQ Java client dependency has been updated to `3.4.1`.
 
 ### Custom Exception Handlers
 
