@@ -37,9 +37,13 @@ behaviour changes but the functionality has now been pushed
 "upstream" in the Java client, so Langohr now relies on it
 to do all the work.
 
-There is one public API change:
-`com.novemberain.langohr.Recoverable` is gone, `langohr.core/on-recovery`
-now uses `com.rabbitmq.client.Recoverable` instead in its signature.
+There is two public API changes:
+
+ * `com.novemberain.langohr.Recoverable` is gone, `langohr.core/on-recovery`
+   now uses `com.rabbitmq.client.Recoverable` instead in its signature.
+
+ * Server-named queues will change after recovery. Use `langohr.core/on-queue-recovery`
+   to register a listener for queue name change.
 
 GH issue: [#58](https://github.com/michaelklishin/langohr/issues/58).
 
