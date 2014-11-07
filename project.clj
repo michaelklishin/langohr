@@ -28,7 +28,7 @@
                  "sonatype-snapshots" {:url "http://oss.sonatype.org/content/repositories/snapshots"
                                        :snapshots true
                                        :releases {:checksum :fail :update :always}}}
-  :aliases {"all" ["with-profile" "dev:dev,1.7:dev,master:dev,cljhttp076:dev,1.5,cljhttp076"]}
+  :aliases {"all" ["with-profile" "dev:dev,1.7:dev,master:dev,cljhttp076"]}
   :global-vars {*warn-on-reflection* true}
   :jvm-opts ["-Xmx512m"]
   :test-selectors {:default        (fn [m]
