@@ -396,4 +396,9 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   public void removeRecoveryListener(RecoveryListener listener) {
     ((AutorecoveringConnection) this.delegate).removeRecoveryListener(listener);
   }
+
+  @Override
+  public String toString() {
+    return this.delegate.toString();
+  }
 }
