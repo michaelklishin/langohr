@@ -116,8 +116,9 @@ on Twitter.
 
 Langohr is part of the group of libraries known as [ClojureWerkz](http://clojurewerkz.org), together with
 
- * [Monger](https://clojuremongodb.info)
+ * [Elastisch](https://clojureelasticsearch.info)
  * [Cassaforte](https://clojurecassandra.info)
+ * [Monger](https://clojuremongodb.info)
  * [Welle](https://clojureriak.info)
  * [Neocons](https://clojureneo4j.info)
  * [Quartzite](https://clojurequartz.info)
