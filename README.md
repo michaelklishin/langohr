@@ -128,9 +128,7 @@ Langohr is part of the group of libraries known as [ClojureWerkz](http://clojure
 ## Continuous Integration
 
 [![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/langohr.png)](http://travis-ci.org/michaelklishin/langohr)
-
-
-CI is hosted by [travis-ci.org](http://travis-ci.org)
+[![Dependencies Status](http://jarkeeper.com/michaelklishin/langohr/status.png)](http://jarkeeper.com/michaelklishin/langohr)
 
 
 ## Development
