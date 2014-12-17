@@ -77,7 +77,7 @@
 
 (defn ^{:private true} delete
   ([^String uri]
-     (delete {}))
+     (delete uri {}))
   ([^String uri {:keys [body] :as options}]
      (io! (:body (http/delete uri (merge *default-http-options* options {:basic-auth [*username* *password*]
                                                                          :body (json/encode body)}))) true)))
