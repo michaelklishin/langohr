@@ -346,7 +346,7 @@
       (lb/publish ch1 x1 "" "a message")
       (is (not (.await latch 100 TimeUnit/MILLISECONDS))))))
 
-(deftest test-queue-binding-recovery
+(deftest ^:focus test-queue-binding-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology true
                                  :network-recovery-delay recovery-delay})]
@@ -363,6 +363,8 @@
       (lq/bind ch q x)
       (close-all-connections)
       (wait-for-recovery conn)
+      ;; this test covers binding recovery, so use a non-auto-delete queue and
+      ;; add consumer after 1st recovery, that's sufficient. MK.
       (lc/subscribe ch q f)
       (close-all-connections)
       (wait-for-recovery conn)
