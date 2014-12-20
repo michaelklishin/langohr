@@ -84,9 +84,9 @@
     (is (:arguments r))))
 
 (deftest ^{:http true} test-get-non-existing-vhost
-  (let [response (hc/list-exchanges "amq.non-existing-vhost")]
-                                        ; since this vhost does not exist, there is no JSON response, just the body as a string
-    (is (string? response))))
+  (let [r (hc/list-exchanges "amq.non-existing-vhost")
+        m "Object Not Found"]
+    (is (= (:error r) m))))
 
 (deftest ^{:http true} test-declare-and-delete-exchange
   (let [s  "langohr.http.fanout"
