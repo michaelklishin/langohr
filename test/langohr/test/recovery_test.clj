@@ -373,6 +373,30 @@
       (lx/delete ch x)
       (lq/delete ch q))))
 
+
+(deftest test-queue-binding-recovery-with-auto-delete-queue
+  (with-open [conn (rmq/connect {:automatically-recover true
+                                 :automatically-recover-topology true
+                                 :network-recovery-delay recovery-delay})]
+    (let [ch    (lch/open conn)
+          x     "langohr.test.recovery.fanout1"
+          q     "langohr.test.recovery.q2"
+          latch (CountDownLatch. 1)
+          f     (fn [_ _ _]
+                  (.countDown latch))]
+      (lx/fanout ch x {:durable true})
+      (lq/delete ch q)
+      (lq/declare ch q {:durable false :exclusive false :auto-delete true})
+      (lq/purge ch q)
+      (lq/bind ch q x)
+      (close-all-connections)
+      (wait-for-recovery conn)
+      (lc/subscribe ch q f)
+      (lb/publish ch x "" "a message")
+      (await-on latch)
+      (lx/delete ch x)
+      (lq/delete ch q))))
+
 (deftest test-removed-queue-binding-does-not-reappear-after-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology true
