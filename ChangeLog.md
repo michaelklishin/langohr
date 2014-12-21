@@ -6,14 +6,14 @@ Functions that take options now require a proper Clojure map instead of
 pseudo keyword arguments:
 
 ``` clojure
-# in Langohr 2.x
+;; in Langohr 2.x
 
 (lq/declare ch q :durable true)
 (lhcons/subscribe ch q (fn [_ _ _])
                         :consumer-tag ctag :handle-cancel-ok (fn [_]))
 (lb/publish ch "" q "a message" :mandatory true)
 
-# in Langohr 3.x
+;; in Langohr 3.x
 (lq/declare ch q {:durable true})
 (lhcons/subscribe ch q (fn [_ _ _])
                         {:consumer-tag ctag :handle-cancel-ok (fn [_])})
