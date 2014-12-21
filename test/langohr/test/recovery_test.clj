@@ -346,7 +346,7 @@
       (lb/publish ch1 x1 "" "a message")
       (is (not (.await latch 100 TimeUnit/MILLISECONDS))))))
 
-(deftest ^:focus test-queue-binding-recovery
+(deftest test-queue-binding-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
                                  :automatically-recover-topology true
                                  :network-recovery-delay recovery-delay})]
