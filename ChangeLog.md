@@ -1,5 +1,14 @@
 ## Changes between Langohr 3.0.0 and 3.1.0
 
+### clj-http Upgrade
+
+clj-http dependency has been updated to `1.0.1`.
+
+### Cheshire Upgrade
+
+Cheshire dependency has been updated to `5.4.0`.
+
+
 ### langohr.consumers/blocking-subscribe No Longer Fails
 
 `langohr.consumers/blocking-subscribe` no longer fails with a function arity
