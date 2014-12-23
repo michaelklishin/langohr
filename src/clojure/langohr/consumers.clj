@@ -131,6 +131,6 @@
      (blocking-subscribe ch queue f {}))
   ([^Channel channel ^String queue f options]
      (let [consumer (QueueingConsumer. channel)]
-       (apply lhb/consume channel queue consumer options)
+       (lhb/consume channel queue consumer options)
        (doseq [^QueueingConsumer$Delivery d (deliveries-seq consumer)]
          (f channel (to-message-metadata d) (.getBody d))))))
