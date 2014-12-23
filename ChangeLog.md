@@ -1,3 +1,14 @@
+## Changes between Langohr 3.0.0 and 3.0.1
+
+### langohr.consumers/blocking-subscribe No Longer Fails
+
+`langohr.consumers/blocking-subscribe` no longer fails with a function arity
+exception.
+
+GH issue: [#65](https://github.com/michaelklishin/langohr/issues/65).
+
+
+
 ## Changes between Langohr 2.11.x and 3.0.0
 
 ### Options as Maps
