@@ -130,3 +130,22 @@
         (catch Exception e
           (comment "Ignore")))
       (is (.await latch 700 TimeUnit/MILLISECONDS)))))
+
+(deftest ^:focus test-delivery-to-blocking-consumer
+  (with-open [^Connection conn (lhc/connect)
+              ch               (lch/open conn)]
+    (let [x          ""
+          payload    ""
+          q          (lhq/declare-server-named ch)
+          n          300
+          latch      (CountDownLatch. (inc n))]
+      (.start (Thread. (fn []
+                         (try
+                           (lhcons/blocking-subscribe ch q
+                                                      (fn [ch metadata ^bytes payload]
+                                                        (.countDown latch)))
+                           (catch com.rabbitmq.client.ShutdownSignalException sse
+                             (comment "sse indicates a clean channel shutdown, ignore it"))))))
+      (dotimes [i (* 2 n)]
+        (lhb/publish ch x q payload))
+      (is (.await latch 700 TimeUnit/MILLISECONDS)))))
