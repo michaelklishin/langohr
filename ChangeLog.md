@@ -1,5 +1,11 @@
 ## Changes between Langohr 3.0.0 and 3.1.0
 
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.4.4`.
+
+It includes an important binding recovery bug fix.
+
 ### clj-http Upgrade
 
 clj-http dependency has been updated to `1.0.1`.
