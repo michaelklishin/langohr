@@ -12,17 +12,17 @@ Langohr is a [Clojure RabbitMQ client](http://clojurerabbitmq.info) that embrace
  * Support all of the RabbitMQ features, include [extensions to AMQP 0.9.1](http://www.rabbitmq.com/extensions.html).
  * Make error handling and recovery easier
 
-We've learned a lot from ~ 5 years history of the [Ruby amqp
-gem](http://rubyamqp.info) and [Bunny](http://rubybunny.info)
-development and try to apply this experience to Langohr design.
+We've learned a lot from over 6 years history of the [Ruby amqp
+gem](http://rubyamqp.info), [Bunny](http://rubybunny.info), and RabbitMQ Java
+client development and try to apply this experience to Langohr design.
 
 ## Project Anti-Goals
 
 Here is what Langohr *does not* try to be:
 
  * A replacement for the RabbitMQ Java client
- * Sugar-coated API for task queues that hides all the AMQP machinery from the developer
- * A port of Ruby amqp gem to Clojure
+ * Sugar-coated API for task queues that hides all the protocol machinery from the developer
+ * A port of Bunny to Clojure
 
 
 ## Artifacts
