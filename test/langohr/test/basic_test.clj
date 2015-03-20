@@ -298,12 +298,3 @@
       (lhb/publish channel exchange (str (UUID/randomUUID)) "return-me" {:mandatory true})
       (is (.await latch 1 TimeUnit/SECONDS))
       (lhe/delete channel exchange))))
-
-;;
-;; basic.recover, basic.recovery-async
-;;
-
-(deftest test-kind-of-deprecated-recovery-methods
-  (with-open [^Connection conn (lhc/connect)
-              channel          (lhc/create-channel conn)]
-    (lhb/recover-async channel true)))

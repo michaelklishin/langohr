@@ -227,7 +227,3 @@
      (.basicRecover channel))
   ([^Channel channel ^Boolean requeue]
      (.basicRecover channel requeue)))
-
-(defn recover-async
-  [^Channel channel ^Boolean requeue]
-  (.basicRecoverAsync channel requeue))
