@@ -42,7 +42,7 @@
   (:import [com.rabbitmq.client Connection Channel Address
             ConnectionFactory ShutdownListener BlockedListener
             Consumer TopologyRecoveryException
-            ExceptionHandler Recoverable RecoveryListener]
+            ExceptionHandler Recoverable RecoveryListener DefaultSaslConfig]
            [com.rabbitmq.client.impl DefaultExceptionHandler AMQConnection]
            [com.rabbitmq.client.impl.recovery AutorecoveringConnection QueueRecoveryListener]
            clojure.lang.IFn
@@ -299,6 +299,13 @@
                      "copyright"    "Copyright (C) 2011-2014 Michael S. Klishin, Alex Petrov"
                      "version"      "3.0.x"})
 
+(defn- auth-mechanism->sasl-config
+  [{:keys [authentication-mechanism]}]
+  (case authentication-mechanism
+    "PLAIN"    DefaultSaslConfig/PLAIN
+    "EXTERNAL" DefaultSaslConfig/EXTERNAL
+    nil))
+
 (defn- ^ConnectionFactory create-connection-factory
   "Creates connection factory from given attributes"
   [settings]
@@ -307,7 +314,8 @@
                 requested-channel-max thread-factory exception-handler]
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT
-              requested-channel-max ConnectionFactory/DEFAULT_CHANNEL_MAX}} (normalize-settings settings)
+              requested-channel-max ConnectionFactory/DEFAULT_CHANNEL_MAX
+              sasl-config (auth-mechanism->sasl-config settings)}} (normalize-settings settings)
               cf   (ConnectionFactory.)
               final-port (if (and ssl (= port ConnectionFactory/DEFAULT_AMQP_PORT))
                            ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT
