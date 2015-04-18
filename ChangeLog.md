@@ -1,5 +1,15 @@
 ## Changes between Langohr 3.1.x and 3.2.0
 
+### Authentication Mechanism Support
+
+Langohr now converts `:authentication-mechanism` option to a SASL
+mechanism. Two values are supported:
+
+ * `"PLAIN"`
+ * `"EXTERNAL"`
+
+Contributed by Tap.
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.5.x`.
