@@ -14,6 +14,10 @@ Contributed by Tap.
 
 RabbitMQ Java client dependency has been updated to `3.5.x`.
 
+### clj-http Upgrade
+
+clj-http dependency has been updated to `1.1.1`.
+
 
 ## Changes between Langohr 3.0.0 and 3.1.0
 
