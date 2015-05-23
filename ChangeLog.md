@@ -1,3 +1,10 @@
+## Changes between Langohr 3.2.x and 3.3.0
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.5.3`.
+
+
 ## Changes between Langohr 3.1.x and 3.2.0
 
 ### Authentication Mechanism Support
@@ -12,7 +19,7 @@ Contributed by Tap.
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `3.5.x`.
+RabbitMQ Java client dependency has been updated to `3.5.2`.
 
 ### clj-http Upgrade
 
