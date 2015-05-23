@@ -7,7 +7,7 @@
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
                  [clj-http                 "1.1.1"]
                  [cheshire                 "5.4.0"]]
-  :profiles {:1.7 {:dependencies [[org.clojure/clojure "1.7.0-beta1"]]}
+  :profiles {:1.7 {:dependencies [[org.clojure/clojure "1.7.0-beta2"]]}
              :master {:dependencies [[org.clojure/clojure "1.7.0-master-SNAPSHOT"]]}
              ;; this version of clj-http depends on HTTPCore 4.2.x which
              ;; some projects (e.g. using Spring's RestTemplate) can rely on,
