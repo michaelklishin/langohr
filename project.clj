@@ -8,7 +8,7 @@
                  [clj-http                 "1.1.1"]
                  [cheshire                 "5.4.0"]]
   :profiles {:1.7 {:dependencies [[org.clojure/clojure "1.7.0-RC1"]]}
-             :master {:dependencies [[org.clojure/clojure "1.7.0-master-SNAPSHOT"]]}
+             :master {:dependencies [[org.clojure/clojure "1.8.0-master-SNAPSHOT"]]}
              ;; this version of clj-http depends on HTTPCore 4.2.x which
              ;; some projects (e.g. using Spring's RestTemplate) can rely on,
              ;; so we test for compatibility with it. MK.
