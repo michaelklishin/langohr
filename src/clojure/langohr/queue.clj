@@ -56,7 +56,7 @@
        (lhq/declare channel) ;; will return a map that contains the name: {:queue \"amq.gen-QtE7OdDDjlHcxNGWuSoUb3\"}
 
        ;; creates named non-durable, exclusive, autodelete queue
-       (lhq/declare channel queue-name :durable false :exclusive true :auto-delete true)
+       (lhq/declare channel queue-name {:durable false :exclusive true :auto-delete true})
 
    Options
 
