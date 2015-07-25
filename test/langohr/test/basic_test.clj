@@ -153,9 +153,9 @@
 
 (deftest test-basic-get-with-an-empty-queue
   (with-open [^Connection conn (lhc/connect)
-              channel          (lhc/create-channel conn)]
-    (let [queue (lhq/declare-server-named channel)]
-      (is (nil? (lhb/get channel queue false))))))
+              ch          (lhc/create-channel conn)]
+    (let [queue (lhq/declare-server-named ch)]
+      (is (nil? (lhb/get ch queue false))))))
 
 ;;
 ;; basic.qos
@@ -172,39 +172,39 @@
 
 (deftest test-acknowledge-one-message
   (with-open [^Connection conn (lhc/connect)
-              producer-channel (lhc/create-channel conn)
-              consumer-channel (lhc/create-channel conn)]
+              producer-ch (lhc/create-channel conn)
+              consumer-ch (lhc/create-channel conn)]
     (let [queue "langohr.examples.basic.ack.queue1"]
-      (lhq/declare consumer-channel queue)
-      (lhq/purge   producer-channel queue)
+      (lhq/declare consumer-ch queue)
+      (lhq/purge   producer-ch queue)
       (.start (Thread. (fn []
-                         (lhb/publish producer-channel "" queue "One")
-                         (lhb/publish producer-channel "" queue "Two")
-                         (lhb/publish producer-channel "" queue "Three"))))
+                         (lhb/publish producer-ch "" queue "One")
+                         (lhb/publish producer-ch "" queue "Two")
+                         (lhb/publish producer-ch "" queue "Three"))))
       (Thread/sleep 200)
-      (let [[{delivery-tag :delivery-tag} _] (lhb/get consumer-channel queue false)]
+      (let [[{delivery-tag :delivery-tag} _] (lhb/get consumer-ch queue false)]
         (is (= 1 delivery-tag))
-        (lhb/ack consumer-channel delivery-tag))
-      (lhq/delete consumer-channel queue))))
+        (lhb/ack consumer-ch delivery-tag))
+      (lhq/delete consumer-ch queue))))
 
 (deftest test-acknowledge-multiple-messages
   (with-open [^Connection conn (lhc/connect)
-              producer-channel (lhc/create-channel conn)
-              consumer-channel (lhc/create-channel conn)]
+              producer-ch (lhc/create-channel conn)
+              consumer-ch (lhc/create-channel conn)]
     (let [queue "langohr.examples.basic.ack.queue2"]
-      (lhq/declare consumer-channel queue)
-      (lhq/purge   producer-channel queue)
+      (lhq/declare consumer-ch queue)
+      (lhq/purge   producer-ch queue)
       (.start (Thread. (fn []
-                         (lhb/publish producer-channel "" queue "One")
-                         (lhb/publish producer-channel "" queue "Two")
-                         (lhb/publish producer-channel "" queue "Three"))))
+                         (lhb/publish producer-ch "" queue "One")
+                         (lhb/publish producer-ch "" queue "Two")
+                         (lhb/publish producer-ch "" queue "Three"))))
       (Thread/sleep 200)
-      (let [[{delivery-tag1 :delivery-tag} _] (lhb/get consumer-channel queue false)
-            [{delivery-tag2 :delivery-tag} _] (lhb/get consumer-channel queue false)]
+      (let [[{delivery-tag1 :delivery-tag} _] (lhb/get consumer-ch queue false)
+            [{delivery-tag2 :delivery-tag} _] (lhb/get consumer-ch queue false)]
         (is (= 1 delivery-tag1))
         (is (= 2 delivery-tag2))
-        (lhb/ack consumer-channel delivery-tag1 true))
-      (lhq/delete producer-channel queue))))
+        (lhb/ack consumer-ch delivery-tag1 true))
+      (lhq/delete producer-ch queue))))
 
 ;;
 ;; basic.nack
@@ -212,37 +212,37 @@
 
 (deftest test-nack-one-message-to-requeue-it
   (with-open [^Connection conn (lhc/connect)
-              channel          (lhc/create-channel conn)]
+              ch          (lhc/create-channel conn)]
     (let [queue "langohr.examples.basic.nack.queue1"]
-      (lhq/declare channel queue)
-      (lhq/purge channel queue)
+      (lhq/declare ch queue)
+      (lhq/purge ch queue)
       (.start (Thread. (fn []
-                         (lhb/publish channel "" queue "One")
-                         (lhb/publish channel "" queue "Two")
-                         (lhb/publish channel "" queue "Three"))))
+                         (lhb/publish ch "" queue "One")
+                         (lhb/publish ch "" queue "Two")
+                         (lhb/publish ch "" queue "Three"))))
       (Thread/sleep 200)
-      (let [[{:keys [delivery-tag]} _] (lhb/get channel queue false)]
+      (let [[{:keys [delivery-tag]} _] (lhb/get ch queue false)]
         (is (= 1 delivery-tag))
-        (lhb/nack channel delivery-tag false true))
-      (lhq/delete channel queue))))
+        (lhb/nack ch delivery-tag false true))
+      (lhq/delete ch queue))))
 
 (deftest test-nack-multiple-messages-without-requeueing
   (with-open [^Connection conn (lhc/connect)
-              channel          (lhc/create-channel conn)]
+              ch          (lhc/create-channel conn)]
     (let [queue "langohr.examples.basic.nack.queue2"]
-      (lhq/declare channel queue)
-      (lhq/purge channel queue)
+      (lhq/declare ch queue)
+      (lhq/purge ch queue)
       (.start (Thread. (fn []
-                         (lhb/publish channel "" queue "One")
-                         (lhb/publish channel "" queue "Two")
-                         (lhb/publish channel "" queue "Three"))))
+                         (lhb/publish ch "" queue "One")
+                         (lhb/publish ch "" queue "Two")
+                         (lhb/publish ch "" queue "Three"))))
       (Thread/sleep 200)
-      (let [[{delivery-tag1 :delivery-tag} _] (lhb/get channel queue false)
-            [{delivery-tag2 :delivery-tag} _] (lhb/get channel queue false)]
+      (let [[{delivery-tag1 :delivery-tag} _] (lhb/get ch queue false)
+            [{delivery-tag2 :delivery-tag} _] (lhb/get ch queue false)]
         (is (= 1 delivery-tag1))
         (is (= 2 delivery-tag2))
-        (lhb/nack channel delivery-tag1 true false))
-      (lhq/delete channel queue))))
+        (lhb/nack ch delivery-tag1 true false))
+      (lhq/delete ch queue))))
 
 ;;
 ;; basic.reject
@@ -250,36 +250,36 @@
 
 (deftest test-reject-one-message-to-requeue-it
   (with-open [^Connection conn (lhc/connect)
-              channel          (lhc/create-channel conn)]
+              ch          (lhc/create-channel conn)]
     (let [queue "langohr.examples.basic.reject.queue1"]
-      (lhq/declare channel queue)
-      (lhq/purge channel queue)
+      (lhq/declare ch queue)
+      (lhq/purge ch queue)
       (.start (Thread. (fn []
-                         (lhb/publish channel "" queue "One")
-                         (lhb/publish channel "" queue "Two")
-                         (lhb/publish channel "" queue "Three"))))
+                         (lhb/publish ch "" queue "One")
+                         (lhb/publish ch "" queue "Two")
+                         (lhb/publish ch "" queue "Three"))))
       (Thread/sleep 200)
-      (let [[{:keys [delivery-tag]} _] (lhb/get channel queue false)]
+      (let [[{:keys [delivery-tag]} _] (lhb/get ch queue false)]
         (is (= 1 delivery-tag))
-        (lhb/reject channel delivery-tag true))
-      (lhq/delete channel queue))))
+        (lhb/reject ch delivery-tag true))
+      (lhq/delete ch queue))))
 
 (deftest test-reject-one-message-without-requeueing
   (with-open [^Connection conn (lhc/connect)
-              channel          (lhc/create-channel conn)]
+              ch          (lhc/create-channel conn)]
     (let [queue "langohr.examples.basic.reject.queue2"]
-      (lhq/declare channel queue)
+      (lhq/declare ch queue)
       (.start (Thread. (fn []
-                         (lhb/publish channel "" queue "One")
-                         (lhb/publish channel "" queue "Two")
-                         (lhb/publish channel "" queue "Three"))))
+                         (lhb/publish ch "" queue "One")
+                         (lhb/publish ch "" queue "Two")
+                         (lhb/publish ch "" queue "Three"))))
       (Thread/sleep 200)
-      (let [[{delivery-tag1 :delivery-tag} _] (lhb/get channel queue false)
-            [{delivery-tag2 :delivery-tag} _] (lhb/get channel queue false)]
+      (let [[{delivery-tag1 :delivery-tag} _] (lhb/get ch queue false)
+            [{delivery-tag2 :delivery-tag} _] (lhb/get ch queue false)]
         (is (= 1 delivery-tag1))
         (is (= 2 delivery-tag2))
-        (lhb/reject channel delivery-tag1 false))
-      (lhq/delete channel queue))))
+        (lhb/reject ch delivery-tag1 false))
+      (lhq/delete ch queue))))
 
 ;;
 ;; basic.return
@@ -287,15 +287,15 @@
 
 (deftest test-handling-of-returned-mandatory-messages-with-a-listener-instance
   (with-open [^Connection conn (lhc/connect)
-              channel          (lhc/create-channel conn)]
+              ch          (lhc/create-channel conn)]
     (let [exchange "langohr.tests.basic.return1"
           latch    (java.util.concurrent.CountDownLatch. 1)
           rl       (fn [reply-code reply-text exchange routing-key properties body]
                      (is (= reply-text "NO_ROUTE"))
                      (is (= (String. ^bytes body) "return-me"))
                      (.countDown latch))]
-      (lhb/add-return-listener channel rl)
-      (lhe/declare channel exchange "direct" {:auto-delete true})
-      (lhb/publish channel exchange (str (UUID/randomUUID)) "return-me" {:mandatory true})
+      (lhb/add-return-listener ch rl)
+      (lhe/declare ch exchange "direct" {:auto-delete true})
+      (lhb/publish ch exchange (str (UUID/randomUUID)) "return-me" {:mandatory true})
       (is (.await latch 1 TimeUnit/SECONDS))
-      (lhe/delete channel exchange))))
+      (lhe/delete ch exchange))))
