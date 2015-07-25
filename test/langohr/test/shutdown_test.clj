@@ -73,26 +73,6 @@
       (is (not (lh/initiated-by-broker? @sse)))
       (is (lh/initiated-by-application? @sse)))))
 
-(deftest test-initiator-with-an-unhandled-consumer-exception
-  (with-open [^Connection conn (lhc/connect)]
-    (let [ch    (lch/open conn)
-          q     (lhq/declare-server-named ch)
-          latch    (java.util.concurrent.CountDownLatch. 1)
-          sse      (atom nil)
-          dhf      (fn [ch metadata payload]
-                     ;; something terrible happens
-                     (throw (RuntimeException. "the monster, it is out! Run for life!")))
-          ssf      (fn [consumer_tag ^ShutdownSignalException reason]
-                     (reset! sse reason)
-                     (.countDown latch))
-          consumer (lhcons/create-default ch {:handle-delivery-fn dhf :handle-shutdown-signal-fn ssf})]
-      (lhb/consume ch q consumer)
-      (Thread/sleep 250)
-      (lhb/publish ch "" q "message")
-      (is (.await latch 700 TimeUnit/MILLISECONDS))
-      (is (not (lh/initiated-by-broker? @sse)))
-      (is (lh/initiated-by-application? @sse)))))
-
 (deftest test-custom-exception-handler
   (let [el (CountDownLatch. 1)
         eh (lhc/exception-handler {:handle-consumer-exception-fn (fn [ch ex consumer
