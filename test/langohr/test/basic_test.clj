@@ -124,30 +124,31 @@
 
 (deftest test-basic-get-with-automatic-ack
   (with-open [^Connection conn (lhc/connect)
-              channel          (lhc/create-channel conn)]
+              ch          (lhc/create-channel conn)]
     (let [exchange   ""
           body       "A message we will fetch with basic.get"
           queue      "langohr.examples.basic.get.queue1"]
-      (lhq/declare channel queue {:auto-delete true})
-      (lhb/publish channel exchange queue body)
-      (let [[metadata payload] (lhb/get channel queue)]
+      (lhq/declare ch queue {:auto-delete true})
+      (lhb/publish ch exchange queue body)
+      (let [[metadata payload] (lhb/get ch queue)]
         (is (= (String. ^bytes payload) body))
         (is (= (:message-count metadata) 0))
         (is (= (:exchange metadata) exchange))
         (is (= (:routing-key metadata) queue)))
-      (lhq/delete channel queue))))
+      (lhq/delete ch queue))))
 
 (deftest test-basic-get-with-explicit-ack
   (with-open [^Connection conn (lhc/connect)
-              channel          (lhc/create-channel conn)]
+              ch          (lhc/create-channel conn)]
     (let [exchange   ""
           body       "A message we will fetch with basic.get"
           queue      "langohr.examples.basic.get.queue2"]
-      (lhq/declare channel queue)
-      (lhb/publish channel exchange queue body)
-      (let [[metadata payload] (lhb/get channel queue false)]
-        (is (= (String. ^bytes payload) body)))
-      (lhq/delete channel queue))))
+      (lhq/declare ch queue)
+      (lhb/publish ch exchange queue body)
+      (let [[metadata payload] (lhb/get ch queue false)]
+        (is (= (String. ^bytes payload) body))
+        (lhb/ack ch (:delivery-tag metadata)))
+      (lhq/delete ch queue))))
 
 
 (deftest test-basic-get-with-an-empty-queue
