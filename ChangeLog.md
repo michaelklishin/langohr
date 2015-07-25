@@ -2,7 +2,22 @@
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `3.5.3`.
+RabbitMQ Java client dependency has been updated to `3.5.4`.
+
+### clj-http Upgrade
+
+clj-http dependency has been updated to `2.0.0`.
+
+This version of clj-http bumps Apache HTTP client version to 4.5.
+If this is undesirable for your project, you can exclude Langohr's
+dependency on clj-http and use another version.
+
+See Langohr's `project.clj` (the `cljhttp076` profile).
+
+### Cheshire Upgrade
+
+Cheshire dependency has been updated to `5.5.0`.
+
 
 
 ## Changes between Langohr 3.1.x and 3.2.0
