@@ -2,12 +2,12 @@
   :description "An idiomatic Clojure client for RabbitMQ that embraces AMQP 0.9.1 model. Built on top of the RabbitMQ Java client"
   :min-lein-version "2.5.1"
   :license {:name "Eclipse Public License"}
-  :dependencies [[org.clojure/clojure      "1.6.0"]
+  :dependencies [[org.clojure/clojure      "1.7.0"]
                  [com.rabbitmq/amqp-client "3.5.4"]
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
                  [clj-http                 "2.0.0"]
                  [cheshire                 "5.5.0"]]
-  :profiles {:1.7 {:dependencies [[org.clojure/clojure "1.7.0-RC1"]]}
+  :profiles {:1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
              :master {:dependencies [[org.clojure/clojure "1.8.0-master-SNAPSHOT"]]}
              ;; this version of clj-http depends on HTTPCore 4.2.x which
              ;; some projects (e.g. using Spring's RestTemplate) can rely on,
@@ -28,7 +28,7 @@
                  "sonatype-snapshots" {:url "http://oss.sonatype.org/content/repositories/snapshots"
                                        :snapshots true
                                        :releases {:checksum :fail :update :always}}}
-  :aliases {"all" ["with-profile" "dev:dev,1.7:dev,cljhttp076"]}
+  :aliases {"all" ["with-profile" "dev:dev,1.6:dev,cljhttp076"]}
   :global-vars {*warn-on-reflection* true}
   :jvm-opts ["-Xmx512m"]
   :test-selectors {:default        (fn [m]
