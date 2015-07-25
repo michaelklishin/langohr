@@ -3,7 +3,7 @@
   :min-lein-version "2.5.1"
   :license {:name "Eclipse Public License"}
   :dependencies [[org.clojure/clojure      "1.6.0"]
-                 [com.rabbitmq/amqp-client "3.5.3"]
+                 [com.rabbitmq/amqp-client "3.5.4"]
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
                  [clj-http                 "1.1.1"]
                  [cheshire                 "5.4.0"]]
