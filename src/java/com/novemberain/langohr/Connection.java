@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Alternative {@link com.rabbitmq.client.Connection} implementation that wraps
@@ -79,12 +80,12 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   @SuppressWarnings("unused")
-  public Connection init() throws IOException {
+  public Connection init() throws IOException, TimeoutException {
     return init(new Address[]{});
   }
 
   @SuppressWarnings("unused")
-  public Connection init(Address[] addresses) throws IOException {
+  public Connection init(Address[] addresses) throws IOException, TimeoutException {
     ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
     if (addresses.length > 0) {
       this.delegate = cf.newConnection(es, addresses);
