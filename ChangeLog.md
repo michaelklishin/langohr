@@ -1,5 +1,12 @@
 ## Changes between Langohr 3.2.x and 3.3.0
 
+### Forgiving Exception Handler by Default
+
+Langohr now uses Java client's [forgiving exception handler](https://github.com/rabbitmq/rabbitmq-server/releases/tag/rabbitmq_v3_5_4)
+by default. This means unhandled consumer exceptions
+won't result in channel closure.
+
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.5.4`.
