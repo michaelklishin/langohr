@@ -43,7 +43,7 @@
             ConnectionFactory ShutdownListener BlockedListener
             Consumer TopologyRecoveryException
             ExceptionHandler Recoverable RecoveryListener DefaultSaslConfig]
-           [com.rabbitmq.client.impl DefaultExceptionHandler AMQConnection]
+           [com.rabbitmq.client.impl ForgivingExceptionHandler AMQConnection]
            [com.rabbitmq.client.impl.recovery AutorecoveringConnection QueueRecoveryListener]
            clojure.lang.IFn
            java.util.concurrent.ThreadFactory)
@@ -238,7 +238,7 @@
            handle-connection-recovery-exception-fn
            handle-channel-recovery-exception-fn
            handle-topology-recovery-exception-fn]}]
-  (proxy [DefaultExceptionHandler] []
+  (proxy [ForgivingExceptionHandler] []
     (handleUnexpectedConnectionDriverException [^Connection conn ^Throwable t]
       (when handle-connection-exception-fn
         (handle-connection-exception-fn conn t)))
@@ -339,7 +339,8 @@
       (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context))
     (when thread-factory
       (.setThreadFactory cf ^ThreadFactory thread-factory))
-    (when exception-handler
-      (.setExceptionHandler cf ^ExceptionHandler exception-handler))
+    (if exception-handler
+      (.setExceptionHandler cf ^ExceptionHandler exception-handler)
+      (.setExceptionHandler cf (ForgivingExceptionHandler.)))
     cf))
 
