@@ -1,3 +1,10 @@
+## Changes between Langohr 3.3.x and 3.4.0
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.5.5`.
+
+
 ## Changes between Langohr 3.2.x and 3.3.0
 
 ### Forgiving Exception Handler by Default
