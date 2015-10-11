@@ -2,7 +2,7 @@
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `3.5.5`.
+RabbitMQ Java client dependency has been updated to `3.5.6`.
 
 
 ## Changes between Langohr 3.2.x and 3.3.0
