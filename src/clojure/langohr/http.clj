@@ -37,7 +37,7 @@
    Relevant documentation guides:
 
    * http://www.rabbitmq.com/management.html
-   * https://raw.githack.com/rabbitmq/rabbitmq-management/rabbitmq_v3_5_2/priv/www/api/index.html"
+   * https://raw.githack.com/rabbitmq/rabbitmq-management/rabbitmq_v3_5_6/priv/www/api/index.html"
   (:refer-clojure :exclude [get])
   (:require [clj-http.client :as http]
             [cheshire.core   :as json]
