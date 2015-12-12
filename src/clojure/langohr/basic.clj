@@ -58,7 +58,7 @@
   the exchange configuration and distributed to any active consumers when the transaction, if any, is committed.
 
   ^String :exchange: name of the exchange to publish to. Can be an empty string, which means default exchange.
-  ^String :routing-key: the routing key for the message. Used for ourting messages depending on exchange configuration.
+  ^String :routing-key: the routing key for the message. Used for routing messages depending on exchange configuration.
 
   Payload can be anything the langohr.conversion/BytePayload protocol is extended for, Langohr ships with
   an implementation for byte arrays and strings.
@@ -120,7 +120,7 @@
 
 (defn ^ReturnListener return-listener
   "Creates new return listener. Usually used in order to be notified of failed deliveries when basic-publish is called with :mandatory or :immediate flags set, but
-   message coudn't be delivered.
+   message couldn't be delivered.
 
    If the client has not configured a return listener for a particular channel, then the associated returned message will be silently dropped.
 
