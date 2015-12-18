@@ -41,9 +41,8 @@ definition to your `pom.xml`:
 
 With [Leiningen](http://leiningen.org):
 
-``` clojure
-[com.novemberain/langohr "3.4.1"]
-```
+[![Clojars Project](http://clojars.org/com.novemberain/langohr/latest-version.svg)](http://clojars.org/com.novemberain/langohr)
+
 
 With Maven:
 
