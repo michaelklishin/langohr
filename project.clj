@@ -16,9 +16,8 @@
              :cljhttp076 {:dependencies [[clj-http "0.7.6"]]}
              :dev {:dependencies [[org.clojure/tools.cli "0.3.1" :exclusions [org.clojure/clojure]]]
                    :resource-paths ["test/resources"]
-                   :plugins [[codox "0.9.0"]]
-                   :codox {:sources ["src/clojure"]
-                           :output-dir "doc/api"}}}
+                   :plugins [[lein-codox "0.9.0"]]
+                   :codox {:source-paths ["src/clojure"]}}}
   :source-paths      ["src/clojure"]
   :java-source-paths ["src/java"]
   :javac-options     ["-target" "1.6" "-source" "1.6"]
