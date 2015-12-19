@@ -1,3 +1,11 @@
+## Changes between Langohr 3.4.1 and 3.4.2
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.5.7`.
+
+
+
 ## Changes between Langohr 3.3.x and 3.4.0
 
 ### RabbitMQ Java Client Upgrade
