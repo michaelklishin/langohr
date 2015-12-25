@@ -65,9 +65,11 @@
 (defn safe-json-decode
   "Try to parse json response. If the content-type is not json, just return the body (string)."
   [{body :body {content-type "content-type"} :headers}]
-  (if (.contains (.toLowerCase ^String content-type) "json")
-    (json/decode body true)
-    body))
+  (if (or (nil? body) (.isEmpty body))
+    nil
+    (if (.contains (.toLowerCase ^String content-type) "json")
+      (json/decode body true)
+      body)))
 
 (defn ^{:private true} post
   ([^String uri]

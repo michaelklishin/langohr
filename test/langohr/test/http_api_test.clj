@@ -84,9 +84,9 @@
     (is (:arguments r))))
 
 (deftest ^{:http true} test-get-non-existing-vhost
-  (let [r (hc/list-exchanges "amq.non-existing-vhost")
-        m "Object Not Found"]
-    (is (= (:error r) m))))
+  (let [r (hc/list-exchanges "amq.non-existing-vhost")]
+    (is (or (nil? r)
+            (= (:error r) "Object Not Found")))))
 
 (deftest ^{:http true} test-declare-and-delete-exchange
   (let [s  "langohr.http.fanout"
