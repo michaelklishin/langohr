@@ -65,7 +65,6 @@
 
   Options:
   ^Boolean :mandatory (default false): specifies reaction of server if the message can't be routed to a queue.
-  ^Boolean :immediate (default false): specifies reaction of server if the message can't be delivered to a consumer immediately.
 
 
   Basic properties:
