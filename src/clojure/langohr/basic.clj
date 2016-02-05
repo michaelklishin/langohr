@@ -87,7 +87,7 @@
 
   Example:
 
-      (lhb/publish channel exchange queue payload :priority 8 :message-id msg-id :content-type content-type :headers { \"see you soon\" \"à bientôt\" })"
+      (lhb/publish channel exchange queue payload {:priority 8 :message-id msg-id :content-type content-type :headers { \"key\" \"value\" }})"
   ([^Channel ch ^String exchange ^String routing-key payload]
      (publish ch exchange routing-key payload {}))
   ([^Channel channel ^String exchange ^String routing-key payload
