@@ -3,6 +3,13 @@
 No changes yet.
 
 
+## Changes between Langohr 3.5.x and 3.5.1 (Feb 5th, 2016)
+
+### API reference corrections.
+
+GH issue: [#79](https://github.com/michaelklishin/langohr/issues/79).
+
+
 
 ## Changes between Langohr 3.4.x and 3.5.0 (Jan 13th, 2016)
 
