@@ -60,7 +60,7 @@
   ^String :exchange: name of the exchange to publish to. Can be an empty string, which means default exchange.
   ^String :routing-key: the routing key for the message. Used for routing messages depending on exchange configuration.
 
-  Payload can be anything the langohr.conversion/BytePayload protocol is extended for, Langohr ships with
+  Payload can be anything the clojurewerkz.support.bytes/ByteSource protocol is extended for, Langohr ships with
   an implementation for byte arrays and strings.
 
   Options:
