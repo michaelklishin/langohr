@@ -5,8 +5,8 @@
   :dependencies [[org.clojure/clojure      "1.8.0"]
                  [com.rabbitmq/amqp-client "3.6.2"]
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
-                 [clj-http                 "2.0.0"]
-                 [cheshire                 "5.5.0"]]
+                 [clj-http                 "3.1.0"]
+                 [cheshire                 "5.6.1"]]
   :profiles {:1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
              :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :1.9 {:dependencies [[org.clojure/clojure "1.9.0-alpha3"]]}
