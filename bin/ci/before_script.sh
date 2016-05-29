@@ -1,25 +1,25 @@
 #!/bin/sh
 
-${RABBITMQCTL:="sudo rabbitmqctl"}
-${RABBITMQ_PLUGINS:="sudo rabbitmq-plugins"}
+${LANGOHR_RABBITMQCTL:="sudo rabbitmqctl"}
+${LANGOHR_RABBITMQ_PLUGINS:="sudo rabbitmq-plugins"}
 
 # guest:guest has full access to /
 
-$RABBITMQCTL add_vhost /
-$RABBITMQCTL add_user guest guest
-$RABBITMQCTL set_permissions -p / guest ".*" ".*" ".*"
+$LANGOHR_RABBITMQCTL add_vhost /
+$LANGOHR_RABBITMQCTL add_user guest guest
+$LANGOHR_RABBITMQCTL set_permissions -p / guest ".*" ".*" ".*"
 
 
 # langohr:langohr.password has full access to / and langohr_testbed
 
-$RABBITMQCTL add_vhost langohr_testbed
-$RABBITMQCTL add_user langohr "langohr.password"
-$RABBITMQCTL set_permissions -p /               langohr ".*" ".*" ".*"
-$RABBITMQCTL set_permissions -p langohr_testbed langohr ".*" ".*" ".*"
+$LANGOHR_RABBITMQCTL add_vhost langohr_testbed
+$LANGOHR_RABBITMQCTL add_user langohr "langohr.password"
+$LANGOHR_RABBITMQCTL set_permissions -p /               langohr ".*" ".*" ".*"
+$LANGOHR_RABBITMQCTL set_permissions -p langohr_testbed langohr ".*" ".*" ".*"
 
-$RABBITMQCTL set_permissions -p /               guest ".*" ".*" ".*"
-$RABBITMQCTL set_permissions -p langohr_testbed guest ".*" ".*" ".*"
+$LANGOHR_RABBITMQCTL set_permissions -p /               guest ".*" ".*" ".*"
+$LANGOHR_RABBITMQCTL set_permissions -p langohr_testbed guest ".*" ".*" ".*"
 
-$RABBITMQ_PLUGINS enable rabbitmq_management
+$LANGOHR_RABBITMQ_PLUGINS enable rabbitmq_management
 
 sleep 3
