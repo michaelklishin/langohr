@@ -1,6 +1,8 @@
 ## Changes between Langohr 3.5.x and 3.6.0 (unreleased)
 
-No changes yet.
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `3.6.2`.
 
 
 ## Changes between Langohr 3.5.x and 3.5.1 (Feb 5th, 2016)
