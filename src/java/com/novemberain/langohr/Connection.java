@@ -286,6 +286,19 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   }
 
   /**
+   * Returns client-provided connection name, if any. Note that the value
+   * returned does not uniquely identify a connection and cannot be used
+   * as a connection identifier in HTTP API requests.
+   *
+   * @return client-provided connection name, if any
+   * @see ConnectionFactory#newConnection(Address[], String)
+   * @see ConnectionFactory#newConnection(ExecutorService, Address[], String)
+   */
+  public String getClientProvidedName() {
+    return delegate.getClientProvidedName();
+  }
+
+  /**
    * Close this connection and all its channels.
    * <p/>
    * Waits for all the close operations to complete.
