@@ -264,7 +264,7 @@
         (handle-connection-recovery-exception-fn conn t)))
     (handleChannelRecoveryException [^Channel ch ^Throwable t]
       (when handle-channel-recovery-exception-fn
-        (handle-channel-recovery-exception-fn )))
+        (handle-channel-recovery-exception-fn ch t)))
     (handleTopologyRecoveryException [^Connection conn ^Channel ch
                                       ^TopologyRecoveryException t]
       (when handle-topology-recovery-exception-fn
