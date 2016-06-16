@@ -90,7 +90,7 @@ stable release is highly recommended.
 
 ## Supported RabbitMQ Versions
 
-Langohr depends on RabbitMQ Java client 3.4.x and requires
+Langohr depends on RabbitMQ Java client 3.x and requires
 RabbitMQ versions 3.3 and later.
 
 
