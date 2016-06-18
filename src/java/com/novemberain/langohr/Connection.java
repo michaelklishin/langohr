@@ -41,7 +41,7 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   private static final Keyword NETWORK_RECOVERY_DELAY_KEYWORD = Keyword.intern(null, NETWORK_RECOVERY_DELAY_KEYWORD_NAME);
   private static final long DEFAULT_NETWORK_RECOVERY_DELAY = 5000;
   private static final Keyword EXECUTOR_KEYWORD = Keyword.intern(null, "executor");
-  private static final Keyword HOSTS_KEYWORD = Keyword.intern(null, "hosts");
+  private static final Keyword CONNECTION_NAME_KEYWORD = Keyword.intern(null, "connection-name");
   private final IPersistentMap options;
 
   private com.rabbitmq.client.Connection delegate;
@@ -87,10 +87,21 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
   @SuppressWarnings("unused")
   public Connection init(Address[] addresses) throws IOException, TimeoutException {
     ExecutorService es = (ExecutorService) this.options.valAt(EXECUTOR_KEYWORD);
+
+    String cn = (String) this.options.valAt(CONNECTION_NAME_KEYWORD);
+
     if (addresses.length > 0) {
-      this.delegate = cf.newConnection(es, addresses);
+      if(cn != null) {
+        this.delegate = cf.newConnection(es, addresses, cn);
+      } else {
+        this.delegate = cf.newConnection(es, addresses);
+      }
     } else {
-      this.delegate = cf.newConnection(es);
+      if(cn != null) {
+        this.delegate = cf.newConnection(es, cn);
+      } else {
+        this.delegate = cf.newConnection(es);
+      }
     }
 
     return this;
