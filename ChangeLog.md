@@ -1,4 +1,9 @@
-## Changes between Langohr 3.5.x and 3.6.0 (unreleased)
+## Changes between Langohr 3.6.1 and 3.6.2 (unreleased)
+
+No changes yet.
+
+
+## Changes between Langohr 3.5.x and 3.6.1 (June 18th, 2016)
 
 ### Client-Provided Connection Name
 
