@@ -1,5 +1,11 @@
 ## Changes between Langohr 3.5.x and 3.6.0 (unreleased)
 
+### Client-Provided Connection Name
+
+`:connection-name` is a new connection option supported by Langohr `3.6.0` and RabbitMQ
+server `3.6.2` or later. It can be used to set a client- or application-specific
+connection name that will be displayed in the management UI.
+
 ### RabbitMQ Java Client Upgrade
 
 RabbitMQ Java client dependency has been updated to `3.6.2`.
