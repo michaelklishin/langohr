@@ -50,7 +50,7 @@ With Maven:
 <dependency>
   <groupId>com.novemberain</groupId>
   <artifactId>langohr</artifactId>
-  <version>3.5.1</version>
+  <version>3.6.0</version>
 </dependency>
 ```
 
@@ -90,7 +90,7 @@ stable release is highly recommended.
 
 ## Supported RabbitMQ Versions
 
-Langohr depends on RabbitMQ Java client 3.4.x and requires
+Langohr depends on RabbitMQ Java client 3.6.x and requires
 RabbitMQ versions 3.3 and later.
 
 
