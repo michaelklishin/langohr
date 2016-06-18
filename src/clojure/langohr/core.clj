@@ -297,7 +297,7 @@
                      "platform"     (platform-string)
                      "capabilities" (get (AMQConnection/defaultClientProperties) "capabilities")
                      "copyright"    "Copyright (C) 2011-2016 Michael S. Klishin, Alex Petrov"
-                     "version"      "3.6.1"})
+                     "version"      "3.6.2"})
 
 (defn- auth-mechanism->sasl-config
   [{:keys [authentication-mechanism]}]
