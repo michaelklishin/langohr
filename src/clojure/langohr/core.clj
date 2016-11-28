@@ -196,10 +196,19 @@
 
 (defn on-recovery
   "Registers a network recovery callback on a (Langohr) connection or channel"
-  [^Recoverable target ^IFn callback]
-  (.addRecoveryListener target (reify RecoveryListener
-                                 (^void handleRecovery [this ^Recoverable it]
-                                   (callback it)))))
+  ([^Recoverable target ^IFn callback]
+     (.addRecoveryListener target (reify RecoveryListener
+                                    (^void handleRecovery [this ^Recoverable it]
+                                      (callback it))
+                                    (^void handleRecoveryStarted [this ^Recoverable it]
+                                      ;; intentionally no-op
+                                      (fn [_] )))))
+  ([^Recoverable target ^IFn recovery-started-fn ^IFn recovery-finished-fn]
+     (.addRecoveryListener target (reify RecoveryListener
+                                    (^void handleRecoveryStarted [this ^Recoverable it]
+                                      (recovery-started-fn it))
+                                    (^void handleRecovery [this ^Recoverable it]
+                                      (recovery-finished-fn it))))))
 
 (defn ^QueueRecoveryListener queue-recovery-listener
   "Reifies a new queue recovery listener that delegates

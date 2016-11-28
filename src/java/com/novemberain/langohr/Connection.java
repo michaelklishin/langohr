@@ -115,17 +115,6 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     return automaticallyRecoverTopology;
   }
 
-
-  public void onRecovery(final IFn f) {
-    if (this.automaticRecoveryEnabled()) {
-      ((AutorecoveringConnection) this.delegate).addRecoveryListener(new RecoveryListener() {
-        public void handleRecovery(com.rabbitmq.client.Recoverable recoverable) {
-          f.invoke(recoverable);
-        }
-      });
-    }
-  }
-
   /**
    * Abort this connection and all its channels
    * with the {@link com.rabbitmq.client.AMQP#REPLY_SUCCESS} close code
@@ -379,6 +368,14 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
    */
   public int getFrameMax() {
     return delegate.getFrameMax();
+  }
+
+  public void setId(String id) {
+    delegate.setId(id);
+  }
+
+  public String getId() {
+    return delegate.getId();
   }
 
   /**
