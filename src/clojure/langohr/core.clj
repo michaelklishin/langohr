@@ -202,7 +202,7 @@
                                       (callback it))
                                     (^void handleRecoveryStarted [this ^Recoverable it]
                                       ;; intentionally no-op
-                                      (fn [_] )))))
+                                      (fn [this ^Recoverable it] )))))
   ([^Recoverable target ^IFn recovery-started-fn ^IFn recovery-finished-fn]
      (.addRecoveryListener target (reify RecoveryListener
                                     (^void handleRecoveryStarted [this ^Recoverable it]
