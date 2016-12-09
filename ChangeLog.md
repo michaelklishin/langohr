@@ -1,4 +1,10 @@
-## Changes between Langohr 3.6.1 and 3.7.0 (unreleased)
+## Changes between Langohr 3.7.0 and 4.0.0 (unreleased)
+
+No changes yet.
+
+
+
+## Changes between Langohr 3.6.1 and 3.7.0 (December 9th, 2016)
 
 ### RabbitMQ Java Client Upgrade
 
