@@ -138,7 +138,7 @@ See [CONTRIBUTING.md](https://github.com/michaelklishin/langohr/blob/master/CONT
 
 ## License
 
-Copyright (C) 2011-2016 Michael S. Klishin and the ClojureWerkz Team.
+Copyright (C) 2011-2017 Michael S. Klishin and the ClojureWerkz Team.
 
 Double licensed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html) (the same as Clojure) or
 the [Apache Public License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
