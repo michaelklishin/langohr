@@ -72,7 +72,7 @@
     ^String :content content-type: MIME Content type
     ^String :content-encoding: MIME Content encoding
     ^Map :headers: headers that will be passed to subscribers, given in Map format.
-    ^Integer :persistent: should this message be persisted to disk?
+    ^Boolean :persistent: should this message be persisted to disk?
     ^Integer :priority: message priority, number from 0 to 9
     ^String :correlation-id: application correlation identifier. Useful for cases when it's required to match request with the response.
                              Usually a unique value.
