@@ -1,6 +1,13 @@
+sudo: required
+
 language: clojure
-before_script: ./bin/ci/before_script.sh
+
+before_script:
+  - ./bin/ci/install_on_debian.sh
+  - ./bin/ci/before_build.sh
+
 script: lein2 all test
+
 jdk:
   - oraclejdk8
 services:
