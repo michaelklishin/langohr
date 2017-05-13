@@ -18,6 +18,20 @@
 (hc/connect! "http://127.0.0.1:15672" "guest" "guest")
 
 ;;
+;; Implementation
+;;
+
+(defn await-event-propagation
+  "Gives management plugin stats database a chance to update
+   (updates happen asynchronously)"
+  []
+  (Thread/sleep 1150))
+
+;;
+;; Tests
+;;
+
+;;
 ;; These tests are pretty basic and make sure we don't
 ;; have any obvious issues. The results are returns as
 ;; JSON responses parsed into Clojure maps.
@@ -50,6 +64,7 @@
               ch   (lch/open conn)]
     (dotimes [i 100]
       (lq/declare-server-named ch))
+    (await-event-propagation)
     (let [r           (hc/list-definitions)
           vhosts      (:vhosts r)
           exchanges   (:exchanges r)
@@ -104,6 +119,7 @@
 (deftest ^{:http true} test-declare-and-delete-queue
   (let [s  "langohr.http.queue"
         r1 (hc/declare-queue "/" s {:durable false :auto_delete true :arguments {}})
+        _  (await-event-propagation)
         r2 (hc/delete-queue "/" s)]
     (is (= true r1))
     (is (= true r2))))
@@ -112,6 +128,7 @@
 (deftest ^{:http true} test-declare-and-purge-queue
   (let [s  "langohr.http.queue"
         r1 (hc/declare-queue "/" s {:durable false :auto_delete true :arguments {}})
+        _  (await-event-propagation)
         r2 (hc/purge-queue "/" s)
         _  (hc/delete-queue "/" s)]
     (is (= true r1))
@@ -156,11 +173,13 @@
           c1   (rmq/connect opts)
           c2   (rmq/connect opts)
           c3   (rmq/connect)]
+      (await-event-propagation)
       (is (rmq/open? c1))
       (is (rmq/open? c2))
       (is (rmq/open? c3))
       (is (= 2 (count (hc/list-connections-from u))))
       (hc/close-connections-from u)
+      (await-event-propagation)
       (is (= 0 (count (hc/list-connections-from u))))
       (is (not (rmq/open? c1)))
       (is (not (rmq/open? c2)))
