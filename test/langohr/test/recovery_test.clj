@@ -28,6 +28,12 @@
 ;; Helpers
 ;;
 
+(defn await-event-propagation
+  "Gives management plugin stats database a chance to update
+   (updates happen asynchronously)"
+  []
+  (Thread/sleep 1150))
+
 (def ^:const expected-recovery-period 3)
 (def ^:const expected-shutdown-period 2)
 (def ^:const recovery-delay           200)
@@ -41,7 +47,8 @@
 (defn close-all-connections
   []
   (doseq [x (map :name (mgmt/list-connections))]
-    (mgmt/close-connection x)))
+    (mgmt/close-connection x))
+  (await-event-propagation))
 
 (defn wait-for-shutdown
   [recoverable]
@@ -53,12 +60,12 @@
 (defn ensure-queue-recovery
   [ch ^String q]
   (lb/publish ch "" q "a message")
-  (Thread/sleep 75)
+  (Thread/sleep 100)
   (is (not (lq/empty? ch q))))
 
 (defn await-on
   ([^CountDownLatch latch]
-     (is (.await latch 2 TimeUnit/SECONDS)))
+     (is (.await latch 3 TimeUnit/SECONDS)))
   ([^CountDownLatch latch ^long n ^TimeUnit tu]
      (is (.await latch n tu))))
 
@@ -72,9 +79,8 @@
                                  :network-recovery-delay recovery-delay})]
     (is (rmq/automatic-recovery-enabled? conn))
     (is (rmq/open? conn))
+    (await-event-propagation)
     (close-all-connections)
-    (Thread/sleep 100)
-    (is (not (rmq/open? conn)))
     ;; wait for recovery to finish
     (wait-for-recovery conn)
     (is (rmq/open? conn))))
@@ -89,6 +95,7 @@
           q  (lq/declare-server-named ch)]
       (is (rmq/open? ch))
       (lq/declare-passive ch q)
+      (await-event-propagation)
       (close-all-connections)
       (Thread/sleep 100)
       (wait-for-recovery conn)
@@ -104,10 +111,8 @@
           ch2  (lch/open conn)]
       (is (rmq/open? ch1))
       (is (rmq/open? ch2))
+      (await-event-propagation)
       (close-all-connections)
-      (Thread/sleep 50)
-      (is (not (rmq/open? ch1)))
-      (is (not (rmq/open? ch2)))
       ;; wait for recovery to finish
       (wait-for-recovery conn)
       (is (rmq/open? ch1))
@@ -120,9 +125,8 @@
         latch (CountDownLatch. 2)]
     (rmq/add-shutdown-listener conn (fn [_]
                                       (.countDown latch)))
+    (await-event-propagation)
     (close-all-connections)
-    (Thread/sleep 50)
-    (is (not (rmq/open? conn)))
     ;; wait for recovery to finish
     (wait-for-recovery conn)
     (is (rmq/open? conn))
@@ -137,11 +141,11 @@
         ch    (lch/open conn)]
     (rmq/add-shutdown-listener ch (fn [_]
                                     (.countDown latch)))
+    (await-event-propagation)
     (close-all-connections)
-    (Thread/sleep 50)
-    (is (not (rmq/open? conn)))
     (wait-for-recovery conn)
     (is (rmq/open? conn))
+    (await-event-propagation)
     (close-all-connections)
     (wait-for-recovery conn)
     (is (rmq/open? conn))
@@ -156,6 +160,7 @@
           q   (lq/declare-server-named ch)]
       (lcnf/select ch)
       (is (rmq/open? ch))
+      (await-event-propagation)
       (close-all-connections)
       ;; wait for recovery to finish
       (wait-for-recovery conn)
@@ -174,6 +179,7 @@
       (lq/declare ch q {:durable true})
       (lq/purge ch q)
       (is (lq/empty? ch q))
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (is (rmq/open? ch))
@@ -199,6 +205,7 @@
       (rmq/on-recovery ch
                        (fn [ch]
                          (f ch q)))
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (is (rmq/open? ch))
@@ -227,6 +234,7 @@
                                     (reset! name-before old-name)
                                     (reset! name-after  new-name)
                                     (.countDown l1)))
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (await-on l1)
@@ -258,6 +266,7 @@
       (lc/subscribe ch q2 f)
       (is (lq/empty? ch q1))
       (is (lq/empty? ch q2))
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (is (rmq/open? ch))
@@ -285,6 +294,7 @@
       (lq/bind ch q x2)
       (lc/subscribe ch q f)
       (is (lq/empty? ch q))
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-shutdown conn)
       (wait-for-recovery conn)
@@ -314,6 +324,7 @@
       (lx/unbind ch x2 x1)
       (lc/subscribe ch q f)
       (is (lq/empty? ch q))
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (is (rmq/open? ch))
@@ -339,6 +350,7 @@
       (lx/unbind ch2 x2 x1)
       (lc/subscribe ch1 q f)
       (is (lq/empty? ch2 q))
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (is (rmq/open? ch1))
@@ -361,11 +373,13 @@
       (lq/declare ch q {:durable false :exclusive false :auto-delete false})
       (lq/purge ch q)
       (lq/bind ch q x)
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       ;; this test covers binding recovery, so use a non-auto-delete queue and
       ;; add consumer after 1st recovery, that's sufficient. MK.
       (lc/subscribe ch q f)
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (lb/publish ch x "" "a message")
@@ -389,6 +403,7 @@
       (lq/declare ch q {:durable false :exclusive false :auto-delete true})
       (lq/purge ch q)
       (lq/bind ch q x)
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (lc/subscribe ch q f)
@@ -412,9 +427,11 @@
       (lq/purge ch q)
       (lq/bind ch q x)
       (lq/unbind ch q x)
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (lc/subscribe ch q f)
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (lb/publish ch x "" "a message")
@@ -431,6 +448,7 @@
       (lq/declare ch q {:durable true})
       (dotimes [i n]
         (lc/subscribe ch q (fn [_ _ _] )))
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (is (= n (lq/consumer-count ch q)))
@@ -447,6 +465,7 @@
         (let [q (str (UUID/randomUUID))]
           (lq/declare ch q {:durable false :exclusive true})
           (swap! qs conj q)))
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (doseq [q @qs]
@@ -460,8 +479,10 @@
           f     (fn [_]
                   (.countDown latch))]
       (rmq/on-recovery conn f)
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (is (.await latch 100 TimeUnit/MILLISECONDS)))))
@@ -474,8 +495,10 @@
           f     (fn [_]
                   (.countDown latch))]
       (rmq/on-recovery ch f)
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
+      (await-event-propagation)
       (close-all-connections)
       (wait-for-recovery conn)
       (is (.await latch 100 TimeUnit/MILLISECONDS)))))
@@ -505,6 +528,7 @@
                      (.countDown latch))]
             (lq/declare ch q {:exclusive true})
             (lc/subscribe ch q f)))
+        (await-event-propagation)
         (close-all-connections)
         (wait-for-recovery conn)
         (is (rmq/open? ch))
