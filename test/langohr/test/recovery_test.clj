@@ -47,8 +47,7 @@
 (defn close-all-connections
   []
   (doseq [x (map :name (mgmt/list-connections))]
-    (mgmt/close-connection x))
-  (await-event-propagation))
+    (mgmt/close-connection x)))
 
 (defn wait-for-shutdown
   [recoverable]
