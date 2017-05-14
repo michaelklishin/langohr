@@ -1,6 +1,17 @@
-## Changes between Langohr 3.7.0 and 4.0.0 (unreleased)
+## Changes between Langohr 4.0.0 and 4.1.0 (unreleased)
 
 No changes yet.
+
+
+## Changes between Langohr 3.7.0 and 4.0.0 (May 15th, 2017)
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `4.0.0`.
+
+### clj-http Upgrade
+
+clj-http dependency has been updated to `3.5.0`.
 
 
 

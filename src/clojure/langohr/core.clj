@@ -305,8 +305,8 @@
                      "information"  "See http://clojurerabbitmq.info/"
                      "platform"     (platform-string)
                      "capabilities" (get (AMQConnection/defaultClientProperties) "capabilities")
-                     "copyright"    "Copyright (C) 2011-2016 Michael S. Klishin, Alex Petrov"
-                     "version"      "4.0.0"})
+                     "copyright"    "Copyright (C) 2011-2017 Michael S. Klishin, Alex Petrov"
+                     "version"      "4.1.0-SNAPSHOT"})
 
 (defn- auth-mechanism->sasl-config
   [{:keys [authentication-mechanism]}]

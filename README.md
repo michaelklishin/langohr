@@ -50,7 +50,7 @@ With Maven:
 <dependency>
   <groupId>com.novemberain</groupId>
   <artifactId>langohr</artifactId>
-  <version>3.7.0</version>
+  <version>4.0.0</version>
 </dependency>
 ```
 
