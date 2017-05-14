@@ -70,7 +70,7 @@
      (DeclareOk. (.exchangeDeclare channel name type)))
   ([^Channel channel ^String name ^String type {:keys [durable auto-delete internal arguments]
                                                 :or {durable false auto-delete false internal false}}]
-     (DeclareOk. (.exchangeDeclare channel name type durable auto-delete internal arguments))))
+     (DeclareOk. (.exchangeDeclare channel name type ^Boolean durable ^Boolean auto-delete ^Boolean internal ^Map arguments))))
 
 (defn ^com.novemberain.langohr.exchange.DeclareOk declare-passive
   "Performs a passive exchange declaration (checks if an exchange exists)"
