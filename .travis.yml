@@ -4,7 +4,7 @@ language: clojure
 
 before_script:
   - ./bin/ci/install_on_debian.sh
-  - ./bin/ci/before_build.sh
+  - ./bin/ci/before_script.sh
 
 script: lein2 all test
 
