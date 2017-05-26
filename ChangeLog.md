@@ -1,6 +1,14 @@
 ## Changes between Langohr 4.0.0 and 4.1.0 (unreleased)
 
-No changes yet.
+### clj-http Upgrade
+
+clj-http dependency has been updated to `3.6.0`.
+
+### Cheshire Upgrade
+
+Cheshire dependency has been updated to `5.7.1`.
+
+
 
 
 ## Changes between Langohr 3.7.0 and 4.0.0 (May 15th, 2017)
