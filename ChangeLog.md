@@ -1,4 +1,10 @@
-## Changes between Langohr 4.0.0 and 4.1.0 (unreleased)
+## Changes between Langohr 4.1.0 and 4.2.0 (unreleased)
+
+No changes yet.
+
+
+
+## Changes between Langohr 4.0.0 and 4.1.0 (July 23rd, 2017)
 
 ### clj-http Upgrade
 
