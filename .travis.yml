@@ -7,7 +7,7 @@ before_script:
   - ./bin/ci/install_on_debian.sh
   - ./bin/ci/before_script.sh
 
-script: lein2 all test
+script: lein all test
 
 jdk:
   - oraclejdk8
