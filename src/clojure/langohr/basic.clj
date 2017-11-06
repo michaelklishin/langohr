@@ -90,7 +90,7 @@
   ([^Channel ch ^String exchange ^String routing-key payload]
      (publish ch exchange routing-key payload {}))
   ([^Channel channel ^String exchange ^String routing-key payload
-    {:keys [^Boolean mandatory ^String content-type ^String ^String content-encoding ^Map headers
+    {:keys [^Boolean mandatory ^String content-type ^String content-encoding ^Map headers
             ^Boolean persistent ^Integer priority ^String correlation-id ^String reply-to ^String expiration ^String message-id
             ^Date timestamp ^String type ^String user-id ^String app-id ^String cluster-id]
      :or {mandatory false}}]
