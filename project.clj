@@ -3,14 +3,14 @@
   :min-lein-version "2.5.1"
   :license {:name "Eclipse Public License"}
   :dependencies [[org.clojure/clojure      "1.8.0"]
-                 [com.rabbitmq/amqp-client "4.2.0"]
+                 [com.rabbitmq/amqp-client "4.4.1"]
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
                  [clj-http                 "3.6.1"]
                  [cheshire                 "5.7.1"]]
   :profiles {:1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
              :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
-             :1.9 {:dependencies [[org.clojure/clojure "1.9.0-alpha16"]]}
-             :master {:dependencies [[org.clojure/clojure "1.9.0-master-SNAPSHOT"]]}
+             :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
+             :master {:dependencies [[org.clojure/clojure "1.10.0-master-SNAPSHOT"]]}
              ;; this version of clj-http depends on HTTPCore 4.2.x which
              ;; some projects (e.g. using Spring's RestTemplate) can rely on,
              ;; so we test for compatibility with it. MK.
