@@ -1,6 +1,30 @@
-## Changes between Langohr 4.1.0 and 4.2.0 (unreleased)
+## Changes between Langohr 4.2.0 and 5.0.0 (unreleased)
 
 No changes yet.
+
+
+
+## Changes between Langohr 4.1.0 and 4.2.0 (December 27th, 2017)
+
+### Type Hinting Improvements
+
+Deleted a redundant type hint.
+
+Contributed by Michal Masztalski.
+
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `4.4.1`.
+
+### clj-http Upgrade
+
+clj-http dependency has been updated to `3.7.0`.
+
+### Cheshire Upgrade
+
+Cheshire dependency has been updated to `5.8.0`.
+
 
 
 
