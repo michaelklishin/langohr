@@ -18,7 +18,7 @@
             [clojure.test :refer :all])
   (:import [com.rabbitmq.client Connection Channel AMQP
             AMQP$BasicProperties AMQP$BasicProperties$Builder
-            QueueingConsumer GetResponse AMQP$Queue$DeclareOk]
+            GetResponse AMQP$Queue$DeclareOk]
            java.util.UUID
            java.util.concurrent.TimeUnit))
 

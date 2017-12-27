@@ -59,16 +59,6 @@
       (lhb/cancel ch ctag)
       (is (.await latch 1000 TimeUnit/MILLISECONDS)))))
 
-(deftest t-consume-ok-handler-with-queueing-consumer
-  (with-open [^Connection conn (lhc/connect)
-              channel          (lch/open conn)]
-    (let [queue    (:queue (lhq/declare channel))
-          latch    (CountDownLatch. 1)
-          consumer (lhcons/create-queueing channel {:handle-consume-ok-fn (fn [consumer-tag]
-                                                                            (.countDown latch))})]
-      (lhb/consume channel queue consumer)
-      (is (.await latch 700 TimeUnit/MILLISECONDS)))))
-
 
 (deftest t-cancel-ok-handler
   (with-open [^Connection conn (lhc/connect)
@@ -129,23 +119,4 @@
         (lhq/bind ch "ugggggh" "amq.fanout")
         (catch Exception e
           (comment "Ignore")))
-      (is (.await latch 700 TimeUnit/MILLISECONDS)))))
-
-(deftest ^:focus test-delivery-to-blocking-consumer
-  (with-open [^Connection conn (lhc/connect)
-              ch               (lch/open conn)]
-    (let [x          ""
-          payload    ""
-          q          (lhq/declare-server-named ch)
-          n          300
-          latch      (CountDownLatch. (inc n))]
-      (.start (Thread. (fn []
-                         (try
-                           (lhcons/blocking-subscribe ch q
-                                                      (fn [ch metadata ^bytes payload]
-                                                        (.countDown latch)))
-                           (catch com.rabbitmq.client.ShutdownSignalException sse
-                             (comment "sse indicates a clean channel shutdown, ignore it"))))))
-      (dotimes [i (* 2 n)]
-        (lhb/publish ch x q payload))
       (is (.await latch 700 TimeUnit/MILLISECONDS)))))

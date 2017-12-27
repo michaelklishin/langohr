@@ -1,6 +1,34 @@
 ## Changes between Langohr 4.2.0 and 5.0.0 (unreleased)
 
-No changes yet.
+This release includes **breaking public API changes**.
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `5.x`.
+
+
+### JDK 8 is Now Required
+
+RabbitMQ Java client 5.x requires JDK 8. It's a good chance
+to drop support for older JDKs in Langohr. Langohr `4.x` continues
+to use a JDK 6 and 7-compatible version of the Java client.
+
+
+### Queueing/Blocking Consumers are Removed
+
+RabbitMQ Java client 5.0 removed a long deprecated queueing consumer
+abstraction that used an internal `j.u.c` queue for deliveries and acted as
+an iterator. That consumer implementation never supported automatic connection
+recovery and isn't necessary with modern consumer operation dispatch pool.
+
+Langohr follows suit and removes the following functions based on the `QueueingConsumer`:
+
+ * `langohr.basic/blocking-subscribe`
+ * `langohr.consumers/create-queueing`
+ * `langohr.consumers/deliveries-seq`
+
+`langohr.consumers/deliveries-seq` may be reintroduced in the future if a reasonable
+imlementation for it comes to mind/is contributed.
 
 
 
@@ -368,7 +396,7 @@ used by Langohr connections. The factory will be used to instantiate
 all threads created by the client under the hood.
 
 The primary use case for this is running on Google App Engine which
-prohibits direct thread instantiation and requires apps to use 
+prohibits direct thread instantiation and requires apps to use
 thread manager (or thread factory) from GAE SDK instead.
 
 To provide a custom thread factory, pass it as `:thread-factory` to
