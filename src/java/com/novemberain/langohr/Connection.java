@@ -156,6 +156,10 @@ public class Connection implements com.rabbitmq.client.Connection, Recoverable {
     delegate.addShutdownListener(listener);
   }
 
+  public BlockedListener addBlockedListener(BlockedCallback blockedCallback, UnblockedCallback unblockedCallback) {
+    return delegate.addBlockedListener(blockedCallback, unblockedCallback);
+  }
+
   /**
    * Close this connection and all its channels.
    * <p/>
