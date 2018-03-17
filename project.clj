@@ -3,7 +3,7 @@
   :min-lein-version "2.5.1"
   :license {:name "Eclipse Public License"}
   :dependencies [[org.clojure/clojure      "1.9.0"]
-                 [com.rabbitmq/amqp-client "5.1.1"]
+                 [com.rabbitmq/amqp-client "5.2.0"]
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
                  [clj-http                 "3.7.0"]
                  [cheshire                 "5.8.0"]]
@@ -16,11 +16,11 @@
   :source-paths      ["src/clojure"]
   :java-source-paths ["src/java"]
   :javac-options     ["-target" "1.8" "-source" "1.8"]
-  :url "http://clojurerabbitmq.info"
-  :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
+  :url "https://clojurerabbitmq.info"
+  :repositories {"sonatype" {:url "https://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
                              :releases {:checksum :fail :update :always}}
-                 "sonatype-snapshots" {:url "http://oss.sonatype.org/content/repositories/snapshots"
+                 "sonatype-snapshots" {:url "https://oss.sonatype.org/content/repositories/snapshots"
                                        :snapshots true
                                        :releases {:checksum :fail :update :always}}}
   :aliases {"all" ["with-profile" "dev:dev,1.8:dev,master"]}
