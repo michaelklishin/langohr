@@ -1,4 +1,9 @@
-## Changes between Langohr 4.2.0 and 5.0.0 (unreleased)
+## Changes between Langohr 5.0.0 and 5.1.0 (unreleased)
+
+No changes yet.
+
+
+## Changes between Langohr 4.2.0 and 5.0.0 (March 21st, 2018)
 
 This release includes **breaking public API changes**.
 
@@ -6,13 +11,11 @@ This release includes **breaking public API changes**.
 
 RabbitMQ Java client dependency has been updated to `5.x`.
 
-
 ### JDK 8 is Now Required
 
 RabbitMQ Java client 5.x requires JDK 8. It's a good chance
 to drop support for older JDKs in Langohr. Langohr `4.x` continues
 to use a JDK 6 and 7-compatible version of the Java client.
-
 
 ### Queueing/Blocking Consumers are Removed
 
@@ -30,6 +33,9 @@ Langohr follows suit and removes the following functions based on the `QueueingC
 `langohr.consumers/deliveries-seq` may be reintroduced in the future if a reasonable
 imlementation for it comes to mind/is contributed.
 
+### clj-http Upgrade
+
+clj-http dependency has been updated to `3.8.x`.
 
 
 ## Changes between Langohr 4.1.0 and 4.2.0 (December 27th, 2017)
