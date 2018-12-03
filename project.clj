@@ -3,13 +3,13 @@
   :min-lein-version "2.5.1"
   :license {:name "Eclipse Public License"}
   :dependencies [[org.clojure/clojure      "1.9.0"]
-                 [com.rabbitmq/amqp-client "5.2.0"]
+                 [com.rabbitmq/amqp-client "5.5.0"]
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
-                 [clj-http                 "3.8.0"]
-                 [cheshire                 "5.8.0"]]
+                 [clj-http                 "3.9.1"]
+                 [cheshire                 "5.8.1"]]
   :profiles {:1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}
              :master {:dependencies [[org.clojure/clojure "1.10.0-master-SNAPSHOT"]]}
-             :dev {:dependencies [[org.clojure/tools.cli "0.3.1" :exclusions [org.clojure/clojure]]]
+             :dev {:dependencies [[org.clojure/tools.cli "0.4.1" :exclusions [org.clojure/clojure]]]
                    :resource-paths ["test/resources"]
                    :plugins [[lein-codox "0.10.3"]]
                    :codox {:source-paths ["src/clojure"]}}}
