@@ -2,8 +2,8 @@
   :description "An idiomatic Clojure client for RabbitMQ that embraces the AMQP 0.9.1 model. Built on top of the RabbitMQ Java client"
   :min-lein-version "2.5.1"
   :license {:name "Eclipse Public License"}
-  :dependencies [[org.clojure/clojure      "1.9.0"]
-                 [com.rabbitmq/amqp-client "5.5.0"]
+  :dependencies [[org.clojure/clojure      "1.10.0"]
+                 [com.rabbitmq/amqp-client "5.5.2"]
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
                  [clj-http                 "3.9.1"]
                  [cheshire                 "5.8.1"]]
@@ -23,7 +23,7 @@
                  "sonatype-snapshots" {:url "https://oss.sonatype.org/content/repositories/snapshots"
                                        :snapshots true
                                        :releases {:checksum :fail :update :always}}}
-  :aliases {"all" ["with-profile" "dev:dev,1.8:dev,master"]}
+  :aliases {"all" ["with-profile" "dev:dev,1.9:dev,1.8:dev,master"]}
   :global-vars {*warn-on-reflection* true}
   :jvm-opts ["-Xmx512m"]
   :test-selectors {:default        (fn [m]
