@@ -1,6 +1,18 @@
-## Changes between Langohr 5.0.0 and 5.1.0 (unreleased)
+## Changes between Langohr 5.1.0 and 5.2.0 (unreleased)
 
 No changes yet.
+
+
+
+## Changes between Langohr 5.0.0 and 5.1.0 (January 14th, 2019)
+
+### Clojure Dependency Update
+
+Langohr now depends on Clojure `1.10.0` by default.
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `5.5.x`.
 
 
 ## Changes between Langohr 4.2.0 and 5.0.0 (March 21st, 2018)
