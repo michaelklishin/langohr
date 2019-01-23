@@ -8,7 +8,8 @@
                  [clj-http                 "3.9.1"]
                  [cheshire                 "5.8.1"]]
   :profiles {:1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}
-             :master {:dependencies [[org.clojure/clojure "1.10.0-master-SNAPSHOT"]]}
+             :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
+             :master {:dependencies [[org.clojure/clojure "1.11.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/tools.cli "0.4.1" :exclusions [org.clojure/clojure]]]
                    :resource-paths ["test/resources"]
                    :plugins [[lein-codox "0.10.3"]]
