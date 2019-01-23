@@ -12,7 +12,7 @@ script: lein all test
 
 jdk:
   - openjdk8
-  - oraclejdk13
+  - openjdk11
 services:
   - rabbitmq
 notifications:
