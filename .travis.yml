@@ -11,7 +11,10 @@ before_script:
 script: lein all test
 
 jdk:
-  - oraclejdk8
+  - openjdk8
+  - oraclejdk9
+  - oraclejdk12
+  - oraclejdk13  
 services:
   - rabbitmq
 notifications:
