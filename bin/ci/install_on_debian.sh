@@ -8,7 +8,10 @@ deb https://dl.bintray.com/rabbitmq/debian xenial main
 EOF
 
 sudo apt-get update -y
+sudo apt-get upgrade -y
 sudo apt-get install -y rabbitmq-server
 
-until lsof -i:5672; do echo "Waiting for RabbitMQ to start..."; sleep 1; done
+sudo service rabbitmq-server start
+
+until sudo lsof -i:5672; do echo "Waiting for RabbitMQ to start..."; sleep 1; done
 
