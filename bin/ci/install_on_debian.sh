@@ -1,6 +1,7 @@
 #!/bin/sh
 
-sudo apt-key adv --keyserver "hkps.pool.sks-keyservers.net" --recv-keys "0x6B73A36E6026DFCA"
+sudo apt-get install -y wget
+wget -O - "https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc" | sudo apt-key add -
 
 sudo tee /etc/apt/sources.list.d/bintray.rabbitmq.list <<EOF
 deb https://dl.bintray.com/rabbitmq-erlang/debian xenial erlang
