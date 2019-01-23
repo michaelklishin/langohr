@@ -1,11 +1,14 @@
 #!/bin/sh
 
+sudo apt-key adv --keyserver "hkps.pool.sks-keyservers.net" --recv-keys "0x6B73A36E6026DFCA"
+
+sudo tee /etc/apt/sources.list.d/bintray.rabbitmq.list <<EOF
+deb https://dl.bintray.com/rabbitmq-erlang/debian xenial erlang
+deb https://dl.bintray.com/rabbitmq/debian xenial main
+EOF
+
 sudo apt-get update -y
-sudo apt-get install -y init-system-helpers socat adduser logrotate
+sudo apt-get install -y rabbitmq-server
 
-cd /tmp/ || exit 1
-wget https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_10/rabbitmq-server_3.6.10-1_all.deb
-sudo dpkg --install rabbitmq-server_3.6.10-1_all.deb
-sudo rm rabbitmq-server_3.6.10-1_all.deb
+until lsof -i:5672; do echo "Waiting for RabbitMQ to start..."; sleep 1; done
 
-sleep 3
