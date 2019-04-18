@@ -111,10 +111,14 @@
   ;; settings
   ([settings]
      (let [settings'             (normalize-settings settings)
+           tls                   (get settings' :ssl false)
+           default-port          (if tls
+                                     ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT
+                                     ConnectionFactory/DEFAULT_AMQP_PORT)
            ^ConnectionFactory cf (create-connection-factory settings')
            xs                    (address-array-from (get settings' :hosts #{})
-                                                     (get settings' :port ConnectionFactory/DEFAULT_AMQP_PORT))]
-       (doto (com.novemberain.langohr.Connection. cf (dissoc settings :password :username))
+                                                     (get settings' :port default-port))]
+       (doto (com.novemberain.langohr.Connection. cf (dissoc settings' :password :username))
          (.init xs)))))
 
 (defn ^Channel create-channel
@@ -319,7 +323,7 @@
   "Creates connection factory from given attributes"
   [settings]
   (let [{:keys [host port username password vhost
-                requested-heartbeat connection-timeout ssl ssl-context socket-factory sasl-config
+                requested-heartbeat connection-timeout ssl ssl-context verify-hostname socket-factory sasl-config
                 requested-channel-max thread-factory exception-handler]
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT
@@ -345,11 +349,14 @@
     (when sasl-config
       (.setSaslConfig cf sasl-config))
     (when ssl-context
-      (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context))
+      (do
+        (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context)
+        (.setPort cf final-port)))
+    (when verify-hostname
+      (.enableHostnameVerification cf))
     (when thread-factory
       (.setThreadFactory cf ^ThreadFactory thread-factory))
     (if exception-handler
       (.setExceptionHandler cf ^ExceptionHandler exception-handler)
       (.setExceptionHandler cf (ForgivingExceptionHandler.)))
     cf))
-
