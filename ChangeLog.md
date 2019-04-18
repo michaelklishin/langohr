@@ -1,6 +1,23 @@
 ## Changes between Langohr 5.1.0 and 5.2.0 (unreleased)
 
-No changes yet.
+### Corrected Arity of `langohr.http/get-node`
+
+Correct a typo in `langohr.http/get-node` that made the "short
+arity" version fail.
+
+GitHub issue: #101.
+
+### Hostname Verification Support
+
+`langohr.core/connect` now support hostname verification via the new `:verify-hostname`
+option (a boolean). Hostname verification is one part of [TLS peer verification](https://www.rabbitmq.com/ssl.html#peer-verification)
+supported by RabbitMQ Java client and now Langohr.
+
+GitHub issue: #100.
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `5.7.x`.
 
 
 
