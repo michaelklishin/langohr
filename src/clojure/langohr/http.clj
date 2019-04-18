@@ -162,8 +162,8 @@
      (get-and-decode-json (url-with-path "/api/nodes") m)))
 
 (defn get-node
-  ([]
-     (get-node {}))
+  ([^String node]
+     (get-node node {}))
   ([^String node m]
      (get-and-decode-json (url-with-path (str "/api/nodes/" node)) m)))
 
