@@ -2,8 +2,8 @@
   :description "An idiomatic Clojure client for RabbitMQ that embraces the AMQP 0.9.1 model. Built on top of the RabbitMQ Java client"
   :min-lein-version "2.5.1"
   :license {:name "Eclipse Public License"}
-  :dependencies [[org.clojure/clojure      "1.10.0"]
-                 [com.rabbitmq/amqp-client "5.7.0"]
+  :dependencies [[org.clojure/clojure      "1.10.1"]
+                 [com.rabbitmq/amqp-client "5.8.0"]
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
                  [clj-http                 "3.9.1"]
                  [cheshire                 "5.8.1"]]
