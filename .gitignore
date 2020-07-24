@@ -3,7 +3,6 @@ pom.xml*
 /lib/
 /classes/
 .lein-*
-docs/*
 doc/*
 deploy.docs.sh
 target/*

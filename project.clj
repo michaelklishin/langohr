@@ -14,6 +14,7 @@
                    :resource-paths ["test/resources"]
                    :plugins [[lein-codox "0.10.7"]]
                    :codox {:source-paths ["src/clojure"]
+                           :output-path "./docs"
                            :source-uri "https://github.com/michaelklishin/langohr/blob/v{version}/{filepath}#L{line}"}}}
   :source-paths      ["src/clojure"]
   :java-source-paths ["src/java"]
