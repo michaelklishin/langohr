@@ -13,7 +13,8 @@
              :dev {:dependencies [[org.clojure/tools.cli "0.4.1" :exclusions [org.clojure/clojure]]]
                    :resource-paths ["test/resources"]
                    :plugins [[lein-codox "0.10.3"]]
-                   :codox {:source-paths ["src/clojure"]}}}
+                   :codox {:source-paths ["src/clojure"]
+                           :source-uri "https://github.com/michaelklishin/langohr/blob/v{version}/{filepath}#L{line}"}}}
   :source-paths      ["src/clojure"]
   :java-source-paths ["src/java"]
   :javac-options     ["-target" "1.8" "-source" "1.8"]
