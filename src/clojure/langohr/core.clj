@@ -324,20 +324,23 @@
   [settings]
   (let [{:keys [host port username password vhost
                 requested-heartbeat connection-timeout ssl ssl-context verify-hostname socket-factory sasl-config
-                requested-channel-max thread-factory exception-handler]
+                requested-channel-max thread-factory exception-handler
+                connection-name]
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT
               requested-channel-max ConnectionFactory/DEFAULT_CHANNEL_MAX
               sasl-config (auth-mechanism->sasl-config settings)}} (normalize-settings settings)
-              cf   (ConnectionFactory.)
-              final-port (if (and ssl (= port ConnectionFactory/DEFAULT_AMQP_PORT))
-                           ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT
-                           port)]
+        cf   (ConnectionFactory.)
+        final-port (if (and ssl (= port ConnectionFactory/DEFAULT_AMQP_PORT))
+                     ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT
+                     port)
+        final-properties (cond-> client-properties
+                           connection-name (assoc "connection_name" connection-name))]
     (when (or ssl
               (= port ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT))
       (.useSslProtocol cf))
     (doto cf
-      (.setClientProperties   client-properties)
+      (.setClientProperties   final-properties)
       (.setUsername           username)
       (.setPassword           password)
       (.setVirtualHost        vhost)
