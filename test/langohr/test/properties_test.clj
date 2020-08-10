@@ -32,6 +32,19 @@
   (with-open [conn (rmq/connect {:connection-name "George"})]
     (is (rmq/open? conn))
     (await-event-propagation)
-    (let [conns (mgmt/list-connections)]
-      (is (= 1 (count conns)))
-      (is (= "George" (-> conns first :user_provided_name))))))
+    (let [conn (last (mgmt/list-connections))]
+      (is (= "George" (:user_provided_name conn))))))
+
+(deftest test-update-client-properties
+  (with-open [conn (rmq/connect {:update-client-properties
+                                 (fn [p] (-> p
+                                             (assoc "more" "properties"
+                                                    "numbers" 123)
+                                             (update "product" #(str "Wrapper of " %))))})]
+    (is (rmq/open? conn))
+    (await-event-propagation)
+    (let [conn (last (mgmt/list-connections))
+          props (:client_properties conn)]
+      (is (= "properties" (:more props)))
+      (is (= 123 (:numbers props)))
+      (is (= "Wrapper of Langohr" (:product props))))))
