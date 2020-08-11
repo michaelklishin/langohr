@@ -1,5 +1,11 @@
 ## Changes between Langohr 5.1.0 and 5.2.0 (unreleased)
 
+### Support for Overriding of CLient Properties and Client-Provided Connection Name
+
+Contributed by Glen Mailer.
+
+GitHub issue: [#107](https://github.com/michaelklishin/langohr/pull/107)
+
 ### Corrected Arity of `langohr.http/get-node`
 
 Correct a typo in `langohr.http/get-node` that made the "short
