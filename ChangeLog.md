@@ -1,10 +1,21 @@
-## Changes between Langohr 5.1.0 and 5.2.0 (unreleased)
+## Changes between Langohr 5.2.0 and 5.3.0 (unreleased)
+
+No changes yet.
+
+
+## Changes between Langohr 5.1.0 and 5.2.0 (August 11, 2020)
 
 ### Support for Overriding of CLient Properties and Client-Provided Connection Name
 
 Contributed by Glen Mailer.
 
 GitHub issue: [#107](https://github.com/michaelklishin/langohr/pull/107)
+
+### A Way to Close All Connections
+
+`langohr.http/close-all-connections` is a new function that closes all client
+connections on the target nodes. This is primarily useful in integration tests
+and certain monitoring scenarios.
 
 ### Corrected Arity of `langohr.http/get-node`
 
@@ -23,7 +34,7 @@ GitHub issue: #100.
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `5.7.x`.
+RabbitMQ Java client dependency has been updated to `5.9.x`.
 
 
 
