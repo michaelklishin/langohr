@@ -10,7 +10,7 @@
 (ns langohr.test.channel-test
   (:require [langohr.core    :as lc]
             [langohr.channel :as lch]
-            [clojure.test :refer :all])
+            [clojure.test :refer [deftest is]])
   (:import com.rabbitmq.client.Connection))
 
 (deftest test-open-a-channel

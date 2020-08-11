@@ -18,7 +18,7 @@
             [langohr.consumers :as lc]
             [langohr.confirm   :as lcnf]
             [langohr.shutdown  :as lsh]
-            [clojure.test :refer :all]
+            [clojure.test :refer [deftest is]]
             [langohr.http      :as mgmt])
   (:import [java.util.concurrent CountDownLatch
             TimeUnit]

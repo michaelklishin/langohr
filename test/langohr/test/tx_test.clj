@@ -11,7 +11,7 @@
   (:import [com.rabbitmq.client Connection AMQP$Tx$SelectOk AMQP$Tx$CommitOk AMQP$Tx$RollbackOk])
   (:require langohr.tx
             [langohr.core :as lhc]
-            [clojure.test :refer :all]))
+            [clojure.test :refer [deftest is]]))
 
 (deftest t-tx-select-in-isolation
   (with-open [^Connection conn (lhc/connect)]

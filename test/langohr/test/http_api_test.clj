@@ -9,7 +9,7 @@
 
 (ns langohr.test.http-api-test
   (:require [langohr.http :as hc]
-            [clojure.test :refer :all]
+            [clojure.test :refer [deftest is]]
             [clojure.set :refer [subset?]]
             [langohr.core    :as rmq]
             [langohr.channel :as lch]

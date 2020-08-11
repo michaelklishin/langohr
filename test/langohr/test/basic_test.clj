@@ -15,7 +15,7 @@
             [langohr.exchange  :as lhe]
             [langohr.basic     :as lhb]
             [langohr.util      :as lhu]
-            [clojure.test :refer :all])
+            [clojure.test :refer [deftest is]])
   (:import [com.rabbitmq.client Connection Channel AMQP
             AMQP$BasicProperties AMQP$BasicProperties$Builder
             GetResponse AMQP$Queue$DeclareOk]
@@ -69,7 +69,7 @@
     (let [exchange   ""
           queue (lhq/declare-server-named channel)
           latch        (java.util.concurrent.CountDownLatch. 1)
-          handler-called (atom #{}) 
+          handler-called (atom #{})
           msg-handler   (fn [ch metadata payload]
                           (.countDown latch))
           log-called (fn [tag] (fn [_] (swap! handler-called conj tag)))]
