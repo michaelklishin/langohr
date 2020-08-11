@@ -7,12 +7,12 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns langohr.test.properties-test
+(ns langohr.test.client-properties-test
   "Connection recovery tests"
   (:refer-clojure :exclude [await])
   (:require [langohr.core     :as rmq]
             [langohr.http    :as mgmt]
-            [clojure.test :refer :all]))
+            [clojure.test :refer [deftest is]]))
 
 ;;
 ;; Helpers
@@ -29,6 +29,7 @@
 ;;
 
 (deftest test-connection-name
+  (mgmt/close-all-connections)
   (with-open [conn (rmq/connect {:connection-name "George"})]
     (is (rmq/open? conn))
     (await-event-propagation)
@@ -36,6 +37,7 @@
       (is (= "George" (:user_provided_name conn))))))
 
 (deftest test-update-client-properties
+  (mgmt/close-all-connections)
   (with-open [conn (rmq/connect {:update-client-properties
                                  (fn [p] (-> p
                                              (assoc "more" "properties"

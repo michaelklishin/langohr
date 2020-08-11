@@ -10,7 +10,7 @@
 (ns langohr.test.http-api-test
   (:require [langohr.http :as hc]
             [clojure.test :refer :all]
-            [clojure.set :refer [subset? superset?]]
+            [clojure.set :refer [subset?]]
             [langohr.core    :as rmq]
             [langohr.channel :as lch]
             [langohr.queue   :as lq]))
