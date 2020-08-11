@@ -215,6 +215,11 @@
      (doseq [^String cn (map :name (list-connections-from user m))]
        (close-connection cn m))))
 
+(defn close-all-connections
+  []
+  (doseq [^String cn (map :name (list-connections))]
+       (close-connection cn {})))
+
 (defn list-channels
   ([]
      (list-channels {}))
