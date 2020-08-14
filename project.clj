@@ -12,8 +12,9 @@
              :master {:dependencies [[org.clojure/clojure "1.11.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/tools.cli "0.4.1" :exclusions [org.clojure/clojure]]]
                    :resource-paths ["test/resources"]
-                   :plugins [[lein-codox "0.10.3"]]
+                   :plugins [[lein-codox "0.10.7"]]
                    :codox {:source-paths ["src/clojure"]
+                           :output-path "./docs"
                            :source-uri "https://github.com/michaelklishin/langohr/blob/v{version}/{filepath}#L{line}"}}}
   :source-paths      ["src/clojure"]
   :java-source-paths ["src/java"]

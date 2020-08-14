@@ -72,7 +72,7 @@ If you are only starting out, please see our [Getting Started guide](http://cloj
 
 ### API Reference
 
-For existing users, there is [API reference](http://reference.clojurerabbitmq.info).
+For existing users, there is [API reference](http://https://michaelklishin.github.io/langohr/index.html).
 
 
 ### Code Examples
