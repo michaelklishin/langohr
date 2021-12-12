@@ -43,7 +43,8 @@
     (let  [channel    (lhc/create-channel conn)
            queue-name "langohr.tests2.queues.client-named.durable.non-exclusive.non-auto-deleted"
            {:keys [queue]} (lhq/declare channel queue-name {:durable true :exclusive false :auto-delete false})]
-      (is (= queue queue-name)))))
+      (is (= queue queue-name))
+      (lhq/delete channel queue-name))))
 
 
 (deftest test-redeclare-an-auto-deleted-queue-with-different-attributes
@@ -58,6 +59,8 @@
         (lhq/declare channel queue {:auto-delete true})
         (lhq/declare channel queue {:auto-delete false})
         (catch IOException ioe ;; see http://www.rabbitmq.com/api-guide.html#shutdown
+          (let [tmp-ch (lhc/create-channel conn)]
+            (lhq/delete tmp-ch queue))
           nil)))))
 
 
@@ -102,7 +105,8 @@
           queue    "langohr.tests2.queues.client-named.non-durable.non-exclusive.auto-deleted"
           exchange "amq.fanout"]
       (lhq/declare channel queue)
-      (lhq/bind    channel queue exchange))))
+      (lhq/bind    channel queue exchange)
+      (lhq/delete  channel queue))))
 
 
 ;;
@@ -115,7 +119,8 @@
           {:keys [queue]} (lhq/declare channel)
           exchange "amq.fanout"]
       (lhq/bind   channel queue exchange {:routing-key "abc"})
-      (lhq/unbind channel queue exchange "abc"))))
+      (lhq/unbind channel queue exchange "abc")
+      (lhq/delete channel queue))))
 
 
 

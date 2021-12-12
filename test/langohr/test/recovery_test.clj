@@ -182,7 +182,8 @@
       (close-all-connections)
       (wait-for-recovery conn)
       (is (rmq/open? ch))
-      (ensure-queue-recovery ch q))))
+      (ensure-queue-recovery ch q)
+      (lq/delete ch q))))
 
 (deftest test-manual-client-named-queue-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
@@ -441,7 +442,8 @@
       (wait-for-recovery conn)
       (lb/publish ch x "" "a message")
       (is (not (.await latch 100 TimeUnit/MILLISECONDS)))
-      (lx/delete ch x))))
+      (lx/delete ch x)
+      (lq/delete ch q))))
 
 (deftest test-recovery-of-all-consumers
   (with-open [conn (rmq/connect {:automatically-recover true
