@@ -328,7 +328,10 @@
       (wait-for-recovery conn)
       (is (rmq/open? ch))
       (lb/publish ch x1 "" "a message")
-      (is (not (.await latch 100 TimeUnit/MILLISECONDS))))))
+      (is (not (.await latch 100 TimeUnit/MILLISECONDS)))
+
+      (lx/delete ch x1)
+      (lx/delete ch x2))))
 
 (deftest test-removed-e2e-bindings-declared-and-deleted-on-separate-channels-do-not-reappear-after-recovery
   (with-open [conn (rmq/connect {:automatically-recover true
@@ -355,7 +358,10 @@
       (is (rmq/open? ch1))
       (is (rmq/open? ch2))
       (lb/publish ch1 x1 "" "a message")
-      (is (not (.await latch 100 TimeUnit/MILLISECONDS))))))
+      (is (not (.await latch 100 TimeUnit/MILLISECONDS)))
+
+      (lx/delete ch1 x1)
+      (lx/delete ch1 x2))))
 
 (deftest test-queue-binding-recovery
   (with-open [conn (rmq/connect {:automatically-recover true

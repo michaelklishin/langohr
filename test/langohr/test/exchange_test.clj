@@ -34,27 +34,32 @@
 (deftest test-declare-a-direct-exchange-with-default-attributes
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct1"]
-    (lhe/declare channel exchange "direct")))
+    (lhe/declare channel exchange "direct")
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-a-direct-exchange-with-default-attributes-shortcut
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct1"]
-    (lhe/direct channel exchange)))
+    (lhe/direct channel exchange)
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-a-durable-direct-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct2"]
-    (lhe/declare channel exchange "direct" {:auto-delete false :durable true})))
+    (lhe/declare channel exchange "direct" {:auto-delete false :durable true})
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-a-durable-direct-exchange-shortcut
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct2"]
-    (lhe/direct channel exchange {:auto-delete false :durable true})))
+    (lhe/direct channel exchange {:auto-delete false :durable true})
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-an-auto-deleted-direct-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.direct3"]
-    (lhe/declare channel exchange "direct" {:auto-delete true :durable false})))
+    (lhe/declare channel exchange "direct" {:auto-delete true :durable false})
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-an-internal-direct-exchange
   (let [channel    (lhc/create-channel conn)
@@ -77,7 +82,8 @@
 
     (Thread/sleep 200)
 
-    (is (= 1 (lhq/message-count channel queue)))))
+    (is (= 1 (lhq/message-count channel queue)))
+    (lhe/delete channel exchange)))
 
 
 ;; fanout
@@ -85,27 +91,32 @@
 (deftest test-declare-a-fanout-exchange-with-default-attributes
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.fanout1"]
-    (lhe/declare channel exchange "fanout")))
+    (lhe/declare channel exchange "fanout")
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-a-fanout-exchange-with-default-attributes-shortcut
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.fanout1"]
-    (lhe/fanout channel exchange)))
+    (lhe/fanout channel exchange)
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-a-durable-fanout-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.fanout2"]
-    (lhe/declare channel exchange "fanout" {:durable true})))
+    (lhe/declare channel exchange "fanout" {:durable true})
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-a-durable-fanout-exchange-shortcut
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.fanout2"]
-    (lhe/fanout channel exchange {:durable true})))
+    (lhe/fanout channel exchange {:durable true})
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-an-auto-deleted-fanout-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.fanout3"]
-    (lhe/declare channel exchange "fanout" {:auto-delete true})))
+    (lhe/declare channel exchange "fanout" {:auto-delete true})
+    (lhe/delete channel exchange)))
 
 
 (deftest test-fanount-exchange-broadcast-delivery
@@ -120,34 +131,40 @@
     (lhb/publish channel exchange "abc" "")
     (lhb/publish channel exchange "xyz" "")
     (Thread/sleep 200)
-    (is (= 2 (lhq/message-count channel queue)))))
+    (is (= 2 (lhq/message-count channel queue)))
+    (lhe/delete channel exchange)))
 
 ;; topic
 
 (deftest test-declare-a-topic-exchange-with-default-attributes
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.topic1"]
-    (lhe/declare channel exchange "topic")))
+    (lhe/declare channel exchange "topic")
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-a-topic-exchange-with-default-attributes-shortcut
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.topic1"]
-    (lhe/topic channel exchange)))
+    (lhe/topic channel exchange)
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-a-durable-topic-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.topic2"]
-    (lhe/declare channel exchange "topic" {:durable true})))
+    (lhe/declare channel exchange "topic" {:durable true})
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-a-durable-topic-exchange-shortcut
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.topic2"]
-    (lhe/declare channel exchange "topic" {:durable true})))
+    (lhe/declare channel exchange "topic" {:durable true})
+    (lhe/delete channel exchange)))
 
 (deftest test-declare-an-auto-deleted-topic-exchange
   (let [channel    (lhc/create-channel conn)
         exchange   "langohr.tests.exchanges.topic3"]
-    (lhe/declare channel exchange "topic" {:auto-delete true})))
+    (lhe/declare channel exchange "topic" {:auto-delete true})
+    (lhe/delete channel exchange)))
 
 
 (deftest test-redeclare-an-auto-deleted-topic-exchange-with-different-attributes
@@ -161,6 +178,8 @@
       (lhe/declare channel exchange "topic" {:auto-delete true})
       (lhe/declare channel exchange "topic" {:auto-delete false})
       (catch IOException ioe ;; see http://www.rabbitmq.com/api-guide.html#shutdown
+        (let [tmp-ch (lhc/create-channel conn)]
+          (lhe/delete tmp-ch exchange))
         nil))))
 
 (deftest test-topic-exchange-wildcard-delivery
@@ -178,7 +197,9 @@
 
     (Thread/sleep 200)
 
-    (is (= 2 (lhq/message-count channel queue)))))
+    (is (= 2 (lhq/message-count channel queue)))
+
+    (lhe/delete channel exchange)))
 
 ;; passive declaration
 
@@ -187,7 +208,8 @@
         exchange   "langohr.tests.exchanges.direct2"
         _          (lhe/direct channel exchange {:auto-delete false :durable true})
         declare-ok (lhe/declare-passive channel exchange)]
-    (is declare-ok)))
+    (is declare-ok)
+    (lhe/delete channel exchange)))
 
 (deftest test-passive-declare-with-non-existing-exchange
   (let [channel    (lhc/create-channel conn)
@@ -228,7 +250,10 @@
     (is (nil? (lhb/get channel queue)))
     (lhe/bind    channel destination source)
     (lhb/publish channel source "" "")
-    (is (lhb/get channel queue))))
+    (is (lhb/get channel queue))
+
+    (lhe/delete channel source)
+    (lhe/delete channel destination)))
 
 (deftest test-exchange-bind-with-arguments
   (let [channel     (lhc/create-channel conn)
@@ -241,7 +266,10 @@
     (is (nil? (lhb/get channel queue)))
     (lhe/bind    channel destination source)
     (lhb/publish channel source "" "")
-    (is (lhb/get channel queue))))
+    (is (lhb/get channel queue))
+
+    (lhe/delete channel source)
+    (lhe/delete channel destination)))
 
 
 ;;
@@ -265,7 +293,9 @@
 
     (Thread/sleep 200)
 
-    (is (= 1 (lhq/message-count channel queue)))))
+    (is (= 1 (lhq/message-count channel queue)))
+
+    (lhe/delete channel exchange)))
 
 
 
@@ -287,4 +317,7 @@
     (.start (Thread. #(lhcons/subscribe channel queue msg-handler {:auto-ack true}) "subscriber"))
     (.start (Thread. (fn []
                        (lhb/publish channel de "" "1010" {:mandatory true})) "publisher"))
-    (is (.await latch 700 TimeUnit/MILLISECONDS))))
+    (is (.await latch 700 TimeUnit/MILLISECONDS))
+
+    (lhe/delete channel fe)
+    (lhe/delete channel de)))
