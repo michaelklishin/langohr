@@ -26,6 +26,7 @@
                  "sonatype-snapshots" {:url "https://oss.sonatype.org/content/repositories/snapshots"
                                        :snapshots true
                                        :releases {:checksum :fail :update :always}}}
+  :deploy-repositories {"releases" {:url "https://repo.clojars.org" :creds :gpg}}
   :aliases {"all" ["with-profile" "dev:dev,1.9:dev,1.8:dev,master"]}
   :global-vars {*warn-on-reflection* true}
   :jvm-opts ["-Xmx512m"]
