@@ -68,7 +68,6 @@
     (let [r           (hc/list-definitions)
           vhosts      (:vhosts r)
           users       (:users r)
-          policies    (:policies r)
           permissions (:permissions r)]
       (is (:rabbitmq_version r))
       (is (:name (first vhosts)))
