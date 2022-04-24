@@ -50,7 +50,7 @@ With Maven:
 <dependency>
   <groupId>com.novemberain</groupId>
   <artifactId>langohr</artifactId>
-  <version>5.2.0</version>
+  <version>5.4.0</version>
 </dependency>
 ```
 
@@ -90,8 +90,8 @@ stable release is highly recommended.
 
 ## Supported RabbitMQ Versions
 
-Langohr depends on RabbitMQ Java client 3.x and requires
-RabbitMQ versions 3.3 and later.
+Langohr depends on RabbitMQ Java client 5.x and requires
+a [supported RabbitMQ version](https://www.rabbitmq.com/versions.html).
 
 
 ## Project Maturity
@@ -138,7 +138,7 @@ See [CONTRIBUTING.md](https://github.com/michaelklishin/langohr/blob/master/CONT
 
 ## License
 
-Copyright (C) 2011-2018 Michael S. Klishin and the ClojureWerkz Team.
+Copyright (C) 2011-2022 Michael S. Klishin and the ClojureWerkz Team.
 
 Double licensed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html) (the same as Clojure) or
 the [Apache Public License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
