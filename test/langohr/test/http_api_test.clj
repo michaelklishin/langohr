@@ -67,13 +67,12 @@
     (await-event-propagation)
     (let [r           (hc/list-definitions)
           vhosts      (:vhosts r)
-          exchanges   (:exchanges r)
-          parameters  (:parameters r)
+          users       (:users r)
           policies    (:policies r)
           permissions (:permissions r)]
-      (is (:rabbit_version r))
+      (is (:rabbitmq_version r))
       (is (:name (first vhosts)))
-      (is (:name (first exchanges)))
+      (is (:name (first users)))
       (is (:user (first permissions))))))
 
 (deftest ^{:http true} test-list-connections
