@@ -11,3 +11,6 @@ debug/*
 tmp/*
 checkouts/*
 .nrepl-*
+
+.clj-kondo/*
+.lsp/*
