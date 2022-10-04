@@ -47,10 +47,9 @@
            [com.rabbitmq.client.impl.recovery AutorecoveringConnection QueueRecoveryListener RetryHandler]
            clojure.lang.IFn
            java.util.concurrent.ThreadFactory
-           (javax.net SocketFactory))
+           [javax.net SocketFactory])
   (:require langohr.channel
-            [clojure.string :as s]
-            [clojure.walk   :as walk]))
+            [clojure.walk :as walk]))
 
 ;;
 ;; Implementation
