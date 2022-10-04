@@ -40,13 +40,14 @@
     * http://clojurerabbitmq.info/articles/connecting.html
     * http://clojurerabbitmq.info/articles/tls.html"
   (:import [com.rabbitmq.client Connection Channel Address
-            ConnectionFactory ShutdownListener BlockedListener
-            Consumer TopologyRecoveryException
-            ExceptionHandler Recoverable RecoveryListener DefaultSaslConfig]
+                                ConnectionFactory ShutdownListener BlockedListener
+                                Consumer TopologyRecoveryException
+                                ExceptionHandler Recoverable RecoveryListener DefaultSaslConfig]
            [com.rabbitmq.client.impl ForgivingExceptionHandler AMQConnection]
-           [com.rabbitmq.client.impl.recovery AutorecoveringConnection QueueRecoveryListener]
+           [com.rabbitmq.client.impl.recovery AutorecoveringConnection QueueRecoveryListener RetryHandler]
            clojure.lang.IFn
-           java.util.concurrent.ThreadFactory)
+           java.util.concurrent.ThreadFactory
+           (javax.net SocketFactory))
   (:require langohr.channel
             [clojure.string :as s]
             [clojure.walk   :as walk]))
@@ -325,7 +326,7 @@
   (let [{:keys [host port username password vhost
                 requested-heartbeat connection-timeout ssl ssl-context verify-hostname socket-factory sasl-config
                 requested-channel-max thread-factory exception-handler
-                connection-name update-client-properties]
+                connection-name update-client-properties topology-recovery-retry-handler]
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT
               requested-channel-max ConnectionFactory/DEFAULT_CHANNEL_MAX
@@ -360,6 +361,10 @@
       (.enableHostnameVerification cf))
     (when thread-factory
       (.setThreadFactory cf ^ThreadFactory thread-factory))
+    (when topology-recovery-retry-handler
+      (.setTopologyRecoveryRetryHandler cf ^RetryHandler topology-recovery-retry-handler))
+    (when socket-factory
+      (.setSocketFactory cf ^SocketFactory socket-factory))
     (if exception-handler
       (.setExceptionHandler cf ^ExceptionHandler exception-handler)
       (.setExceptionHandler cf (ForgivingExceptionHandler.)))
