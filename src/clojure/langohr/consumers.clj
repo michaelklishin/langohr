@@ -42,45 +42,32 @@
             [langohr.conversion :refer :all]
             [langohr.channel :refer [as-non-recovering-channel]])
   (:import [com.rabbitmq.client Channel Consumer Delivery DefaultConsumer
-            ShutdownSignalException Envelope AMQP$BasicProperties]))
+            ShutdownSignalException Envelope AMQP$BasicProperties]
+           [com.novemberain.langohr FnConsumer]))
 
 ;;
 ;; API
 ;;
 
 (defn ^Consumer create-default
-  "Instantiates and returns a new consumer that handles various consumer life cycle events. See also langohr.basic/consume."
-  [^Channel channel {:keys [handle-consume-ok-fn
-                            handle-cancel-fn
-                            handle-cancel-ok-fn
-                            handle-shutdown-signal-fn
-                            handle-recover-ok-fn
-                            handle-delivery-fn]}]
-  (proxy [DefaultConsumer] [(as-non-recovering-channel channel)]
-    (handleConsumeOk [^String consumer-tag]
-      (when handle-consume-ok-fn
-        (handle-consume-ok-fn consumer-tag)))
-
-    (handleCancelOk [^String consumer-tag]
-      (when handle-cancel-ok-fn
-        (handle-cancel-ok-fn consumer-tag)))
-
-
-    (handleCancel [^String consumer-tag]
-      (when handle-cancel-fn
-        (handle-cancel-fn consumer-tag)))
-
-    (handleRecoverOk []
-      (when handle-recover-ok-fn
-        (handle-recover-ok-fn)))
-
-    (handleShutdownSignal [^String consumer-tag ^ShutdownSignalException sig]
-      (when handle-shutdown-signal-fn
-        (handle-shutdown-signal-fn consumer-tag sig)))
-
-    (handleDelivery [^String consumer-tag ^Envelope envelope ^AMQP$BasicProperties properties ^bytes body]
-      (when handle-delivery-fn
-        (handle-delivery-fn channel (to-message-metadata (Delivery. envelope properties body)) body)))))
+  "Instantiates and returns a new consumer that handles various consumer life cycle events. 
+   Various handlers can be provided (per below): 
+   
+   :handle-consume-ok-fn => fn [consumer-tag]
+   :handle-cancel-fn     => fn [consumer-tag]
+   :handle-cancel-ok-fn  => fn [consumer-tag]
+   :handle-recover-ok-fn => fn [consumer-tag]
+   :handle-delivery-fn   => fn [channel delivery-meta ^bytes body]
+   :handle-shutdown-signal-fn => fn [tag, ShutdownSignalException]
+  
+   See also langohr.basic/consume."
+  [^Channel channel handlers]
+  (->> (fn [h]
+         (when (some? h) 
+           (fn [tag ^Envelope envelope ^AMQP$BasicProperties properties ^bytes body]
+             (h channel (to-message-metadata (Delivery. envelope properties body)) body))))
+       (update handlers :handle-delivery-fn)
+       (FnConsumer. channel)))
 
 
 (defn subscribe
