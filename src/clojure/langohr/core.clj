@@ -225,7 +225,7 @@
 (defn on-queue-recovery
   "Called when server named queue gets a new name on recovery"
   [^com.novemberain.langohr.Connection conn ^IFn f]
-  (.addQueueRecoveryListener (cast AutorecoveringConnection (.getDelegate conn))
+  (.addQueueRecoveryListener ^AutorecoveringConnection (.getDelegate conn)
                              (queue-recovery-listener f)))
 
 
