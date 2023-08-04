@@ -8,24 +8,32 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns langohr.test.http-api-test
-  (:require [langohr.http :as hc]
-            [clojure.test :refer [deftest is]]
+  (:require [langohr.http2 :as hc]
+            [clojure.test :refer [deftest is use-fixtures]]
             [clojure.set :refer [subset?]]
             [langohr.core    :as rmq]
             [langohr.channel :as lch]
             [langohr.queue   :as lq]))
 
-(hc/connect! "http://127.0.0.1:15672" "guest" "guest")
+(defn- with-local-conn 
+  [run-all-tests!]
+  (hc/with-tmp-global-host 
+    {:endpoint "http://localhost:15672"
+     :username "guest"
+     :password "guest"}
+    (run-all-tests!)))
+
+(use-fixtures :once with-local-conn)
 
 ;;
 ;; Implementation
 ;;
 
-(defn await-event-propagation
+(defn- await-event-propagation
   "Gives management plugin stats database a chance to update
    (updates happen asynchronously)"
   []
-  (Thread/sleep 1150))
+  (Thread/sleep 1500))
 
 ;;
 ;; Tests

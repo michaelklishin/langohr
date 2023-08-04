@@ -6,7 +6,8 @@
                  [com.rabbitmq/amqp-client "5.18.0"]
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
                  [clj-http                 "3.12.3"]
-                 [cheshire                 "5.10.1"]]
+                 [hato                     "0.9.0"]
+                 [cheshire                 "5.11.0"]]
   :profiles {:1.10 {:dependencies [[org.clojure/clojure "1.10.2"]]}
              :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
              :master {:dependencies [[org.clojure/clojure "1.12.0-master-SNAPSHOT"]]}
@@ -18,7 +19,7 @@
                            :source-uri "https://github.com/michaelklishin/langohr/blob/v{version}/{filepath}#L{line}"}}}
   :source-paths      ["src/clojure"]
   :java-source-paths ["src/java"]
-  :javac-options     ["-target" "1.8" "-source" "1.8"]
+  :javac-options     ["-target" "11" "-source" "1.8"]
   :url "https://clojurerabbitmq.info"
   :repositories {"sonatype" {:url "https://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
@@ -42,7 +43,7 @@
                    :time-consuming :time-consuming
                    :performance    :performance
                    :tls            :tls
-                   :ci             (fn [m] (not (:tls m)))}
+                   :ci             (complement :tls)}
   :mailing-list {:name "clojure-rabbitmq"
                  :archive "https://groups.google.com/group/clojure-rabbitmq"
                  :post "clojure-rabbitmq@googlegroups.com"})
