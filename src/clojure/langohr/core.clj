@@ -244,7 +244,7 @@
 (defn exception-handler
   [{:keys [handle-connection-exception-fn
            handle-return-listener-exception-fn
-           handle-flow-listener-exception-fn
+           ;handle-flow-listener-exception-fn
            handle-confirm-listener-exception-fn
            handle-blocked-listener-exception-fn
            handle-consumer-exception-fn
@@ -258,9 +258,6 @@
     (handleReturnListenerException [_ channel throwable]
       (when handle-return-listener-exception-fn
         (handle-return-listener-exception-fn channel throwable)))
-    (handleFlowListenerException [_ channel throwable]
-      (when handle-flow-listener-exception-fn
-        (handle-flow-listener-exception-fn channel throwable)))
     (handleConfirmListenerException [_ channel throwable]
       (when handle-confirm-listener-exception-fn
         (handle-confirm-listener-exception-fn channel throwable)))
