@@ -353,9 +353,8 @@
     (when sasl-config
       (.setSaslConfig cf sasl-config))
     (when ssl-context
-      (do
-        (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context)
-        (.setPort cf final-port)))
+      (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context)
+      (.setPort cf final-port))
     (when verify-hostname
       (.enableHostnameVerification cf))
     (when thread-factory
