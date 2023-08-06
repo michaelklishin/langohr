@@ -294,11 +294,10 @@
 
 (defn- platform-string
   []
-  (let []
-    (format "Clojure %s on %s %s"
-            (clojure-version)
-            (System/getProperty "java.vm.name")
-            (System/getProperty "java.version"))))
+  (format "Clojure %s on %s %s"
+          (clojure-version)
+          (System/getProperty "java.vm.name")
+          (System/getProperty "java.version")))
 
 (def ^{:private true}
   client-properties {"product"      "Langohr"
