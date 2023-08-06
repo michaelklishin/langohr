@@ -19,7 +19,7 @@
                            :source-uri "https://github.com/michaelklishin/langohr/blob/v{version}/{filepath}#L{line}"}}}
   :source-paths      ["src/clojure"]
   :java-source-paths ["src/java"]
-  :javac-options     ["-target" "11" "-source" "1.8"]
+  :javac-options     ["-target" "11" "-source" "11"]
   :url "https://clojurerabbitmq.info"
   :repositories {"sonatype" {:url "https://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
