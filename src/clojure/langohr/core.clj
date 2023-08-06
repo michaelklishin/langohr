@@ -251,37 +251,36 @@
            handle-connection-recovery-exception-fn
            handle-channel-recovery-exception-fn
            handle-topology-recovery-exception-fn]}]
-  (proxy [ForgivingExceptionHandler] []
-    (handleUnexpectedConnectionDriverException [^Connection conn ^Throwable t]
+  (reify ExceptionHandler 
+    (handleUnexpectedConnectionDriverException [_ conn throwable]
       (when handle-connection-exception-fn
-        (handle-connection-exception-fn conn t)))
-    (handleReturnListenerException [^Channel ch ^Throwable t]
+        (handle-connection-exception-fn conn throwable)))
+    (handleReturnListenerException [_ channel throwable]
       (when handle-return-listener-exception-fn
-        (handle-return-listener-exception-fn ch t)))
-    (handleFlowListenerException [^Channel ch ^Throwable t]
+        (handle-return-listener-exception-fn channel throwable)))
+    (handleFlowListenerException [_ channel throwable]
       (when handle-flow-listener-exception-fn
-        (handle-flow-listener-exception-fn ch t)))
-    (handleConfirmListenerException [^Channel ch ^Throwable t]
+        (handle-flow-listener-exception-fn channel throwable)))
+    (handleConfirmListenerException [_ channel throwable]
       (when handle-confirm-listener-exception-fn
-        (handle-confirm-listener-exception-fn ch t)))
-    (handleBlockedListenerException [^Connection conn ^Throwable t]
+        (handle-confirm-listener-exception-fn channel throwable)))
+    (handleBlockedListenerException [_ conn throwable]
       (when handle-blocked-listener-exception-fn
-        (handle-blocked-listener-exception-fn conn t)))
-    (handleConsumerException [^Channel ch ^Throwable t
-                              ^Consumer consumer ^String consumer-tag
-                              ^String method-name]
+        (handle-blocked-listener-exception-fn conn throwable)))
+    (handleConsumerException [_ channel throwable consumer consumer-tag method-name]
       (when handle-consumer-exception-fn
-        (handle-consumer-exception-fn ch t consumer consumer-tag method-name)))
-    (handleConnectionRecoveryException [^Connection conn ^Throwable t]
+        (handle-consumer-exception-fn channel throwable consumer consumer-tag method-name)))
+    (handleConnectionRecoveryException [_ conn throwable]
       (when handle-connection-recovery-exception-fn
-        (handle-connection-recovery-exception-fn conn t)))
-    (handleChannelRecoveryException [^Channel ch ^Throwable t]
+        (handle-connection-recovery-exception-fn conn throwable)))
+    (handleChannelRecoveryException [_ channel throwable]
       (when handle-channel-recovery-exception-fn
-        (handle-channel-recovery-exception-fn ch t)))
-    (handleTopologyRecoveryException [^Connection conn ^Channel ch
-                                      ^TopologyRecoveryException t]
+        (handle-channel-recovery-exception-fn channel throwable)))
+    (handleTopologyRecoveryException [_ conn channel tre] ;; TopologyRecoveryException
       (when handle-topology-recovery-exception-fn
-        (handle-topology-recovery-exception-fn conn ch t)))))
+        (handle-topology-recovery-exception-fn conn channel tre)))
+    )
+  )
 
 ;;
 ;; Implementation
