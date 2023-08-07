@@ -14,9 +14,9 @@ import clojure.lang.RT;
 import clojure.lang.Keyword;
 import clojure.lang.IFn;
 
-public class FnConsumer extends DefaultConsumer {
+public final class FnConsumer extends DefaultConsumer {
 
-    final IFn handleConsumeOK, handleCancel, handleCancelOK, handleShutdownSignal, handleRecoverOK, handleDelivery;
+    private final IFn handleConsumeOK, handleCancel, handleCancelOK, handleShutdownSignal, handleRecoverOK, handleDelivery;
 
     public static Channel asNonRecovering(Channel c) {
         if (c instanceof AutorecoveringChannel) {
