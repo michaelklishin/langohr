@@ -329,9 +329,14 @@
         cf   (ConnectionFactory.)
         final-properties (cond-> client-properties
                            connection-name (assoc "connection_name" connection-name)
-                           update-client-properties update-client-properties)]
-    (when (or ssl
-              (= port ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT))
+                           update-client-properties update-client-properties)
+        tls-expected (or ssl
+                        (not (nil? ssl-context))
+                        (= port ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT))
+        final-port  (or port (if tls-expected
+                               ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT
+                               ConnectionFactory/DEFAULT_AMQP_PORT))]
+    (when tls-expected
       (.useSslProtocol cf))
     (doto cf
       (.setClientProperties   final-properties)
