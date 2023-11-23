@@ -7,7 +7,7 @@
                  [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
                  [clj-http                 "3.12.3"]
                  [hato                     "0.9.0"]
-                 [cheshire                 "5.11.0"]]
+                 [cheshire                 "5.12.0"]]
   :profiles {:1.10 {:dependencies [[org.clojure/clojure "1.10.2"]]}
              :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
              :master {:dependencies [[org.clojure/clojure "1.12.0-master-SNAPSHOT"]]}
