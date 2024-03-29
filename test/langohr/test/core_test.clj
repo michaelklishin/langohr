@@ -22,7 +22,7 @@
 (deftest test-connection-with-default-parameters
   (with-open [conn (lc/connect)]
     (is (instance? com.rabbitmq.client.Connection conn))
-    (is (lc/automatically-recover? conn))
+    (is (lc/automatic-recovery-enabled? conn))
     (is (lc/automatic-recovery-enabled? conn))
     (is (lc/open? conn))))
 
@@ -32,7 +32,7 @@
                                 :vhost "langohr_testbed" :username "langohr" :password "langohr.password"
                                 :requested-heartbeat 3 :connection-timeout 5})]
     (is (lc/open? conn))
-    (is (lc/automatically-recover? conn))
+    (is (lc/automatic-recovery-enabled? conn))
     (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
     (is (= 5672        (.getPort conn)))
     (is (= 3           (.getHeartbeat conn)))))
@@ -53,7 +53,9 @@
 (deftest test-connection-with-custom-executor
   (with-open [conn (lc/connect {:executor (Executors/newFixedThreadPool 16)})]
     (is (lc/open? conn))
-    (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
+    (let [addr (-> conn .getAddress .getHostAddress)]
+      (is (or (= "0:0:0:0:0:0:0:1" addr)
+              (= "127.0.0.1" addr))))
     (is (= 5672        (.getPort conn)))))
 
 (deftest test-connection-with-custom-thread-factory
@@ -73,13 +75,15 @@
 (deftest test-connection-with-uri
   (with-open [conn (lc/connect {:uri "amqp://127.0.0.1:5672"})]
     (is (lc/open? conn))
-    (is (= "127.0.0.1" (-> conn .getAddress .getHostAddress)))
+    (let [addr (-> conn .getAddress .getHostAddress)]
+      (is (or (= "0:0:0:0:0:0:0:1" addr)
+              (= "127.0.0.1" addr))))
     (is (= 5672        (.getPort conn)))
     (is (-> conn .getServerProperties (get "capabilities") (get "publisher_confirms")))))
 
 (deftest test-connection-with-connection-recovery-enabled
   (with-open [conn (lc/connect {:automatically-recover true})]
-    (is (lc/automatically-recover? conn))
+    (is (lc/automatic-recovery-enabled? conn))
     (is (lc/open? conn))))
 
 (deftest test-broker-capabilities
@@ -150,7 +154,7 @@
   (let [conn  (lc/connect {:automatically-recover true})
         ch    (lc/create-channel conn)
         latch (java.util.concurrent.CountDownLatch. 1)]
-    (is (lc/automatically-recover? conn))
+    (is (lc/automatic-recovery-enabled? conn))
     (lc/on-recovery conn (fn [new-conn] (is false  "should not start recovery after explicit shutdown")))
     (lc/add-shutdown-listener conn
                               (fn [sse]
