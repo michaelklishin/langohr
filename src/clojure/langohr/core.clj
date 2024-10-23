@@ -320,8 +320,15 @@
   [settings]
   (let [{:keys [host port username password vhost
                 requested-heartbeat connection-timeout ssl ssl-context verify-hostname socket-factory sasl-config
-                requested-channel-max thread-factory exception-handler
-                connection-name update-client-properties topology-recovery-retry-handler]
+                requested-channel-max thread-factory exception-handler ssl-context-factory
+                credentials-provider metrics-collector requested-frame-max handshake-timeout shutdown-timeout
+                socket-configurator shutdown-executor heartbeat-executor topology-recovery-executor
+                observation-collector credentials-refresh-service recovery-delay-handler nio-params
+                channel-should-check-rpc-response-type? work-pool-timeout error-on-write-listener
+                topology-recovery-filter connection-recovery-triggering-condition recovered-queue-name-supplier
+                traffic-listener use-nio? use-blocking-io? channel-rpc-timeout max-inbound-message-body-size
+                connection-name update-client-properties topology-recovery-retry-handler
+                update-connection-factory]
          :or {requested-heartbeat ConnectionFactory/DEFAULT_HEARTBEAT
               connection-timeout  ConnectionFactory/DEFAULT_CONNECTION_TIMEOUT
               requested-channel-max ConnectionFactory/DEFAULT_CHANNEL_MAX
@@ -340,14 +347,63 @@
       (.useSslProtocol cf))
     (doto cf
       (.setClientProperties   final-properties)
-      (.setUsername           username)
-      (.setPassword           password)
       (.setVirtualHost        vhost)
       (.setHost               host)
       (.setPort               port)
       (.setRequestedHeartbeat requested-heartbeat)
       (.setConnectionTimeout  connection-timeout)
       (.setRequestedChannelMax requested-channel-max))
+    (if credentials-provider
+      (.setCredentialsProvider cf credentials-provider)
+      (doto cf
+        (.setUsername username)
+        (.setPassword password)))
+    (when metrics-collector
+      (.setMetricsCollector cf metrics-collector))
+    (when requested-frame-max
+      (.setRequestedFrameMax cf requested-frame-max))
+    (when handshake-timeout
+      (.setHandshakeTimeout cf handshake-timeout))
+    (when shutdown-timeout
+      (.setShutdownTimeout cf shutdown-timeout))
+    (when socket-configurator
+      (.setSocketConfigurator cf socket-configurator))
+    (when shutdown-executor
+      (.setShutdownExecutor cf shutdown-executor))
+    (when heartbeat-executor
+      (.setHeartbeatExecutor cf heartbeat-executor))
+    (when topology-recovery-executor
+      (.setTopologyRecoveryExecutor cf topology-recovery-executor))
+    (when topology-recovery-filter
+      (.setTopologyRecoveryFilter cf topology-recovery-filter))
+    (when observation-collector
+      (.setObservationCollector cf observation-collector))
+    (when credentials-refresh-service
+      (.setCredentialsRefreshService cf credentials-refresh-service))
+    (when recovery-delay-handler
+      (.setRecoveryDelayHandler cf recovery-delay-handler))
+    (when use-nio?
+      (.useNio cf))
+    (when nio-params
+      (.setNioParams cf nio-params))
+    (when use-blocking-io?
+      (.useBlockingIo cf))
+    (when channel-rpc-timeout
+      (.setChannelRpcTimeout cf channel-rpc-timeout))
+    (when max-inbound-message-body-size
+      (.setMaxInboundMessageBodySize cf max-inbound-message-body-size))
+    (when (some? channel-should-check-rpc-response-type?)
+      (.setChannelShouldCheckRpcResponseType cf channel-should-check-rpc-response-type?))
+    (when work-pool-timeout
+      (.setWorkPoolTimeout cf work-pool-timeout))
+    (when error-on-write-listener
+      (.setErrorOnWriteListener cf error-on-write-listener))
+    (when connection-recovery-triggering-condition
+      (.setConnectionRecoveryTriggeringCondition cf connection-recovery-triggering-condition))
+    (when recovered-queue-name-supplier
+      (.setRecoveredQueueNameSupplier cf recovered-queue-name-supplier))
+    (when traffic-listener
+      (.setTrafficListener cf traffic-listener))
     (when sasl-config
       (.setSaslConfig cf sasl-config))
     (when ssl-context
@@ -359,9 +415,13 @@
       (.setThreadFactory cf ^ThreadFactory thread-factory))
     (when topology-recovery-retry-handler
       (.setTopologyRecoveryRetryHandler cf ^RetryHandler topology-recovery-retry-handler))
+    (when ssl-context-factory
+      (.setSslContextFactory cf ssl-context-factory))
     (when socket-factory
       (.setSocketFactory cf ^SocketFactory socket-factory))
     (if exception-handler
       (.setExceptionHandler cf ^ExceptionHandler exception-handler)
       (.setExceptionHandler cf (ForgivingExceptionHandler.)))
+    (when update-connection-factory
+      (update-connection-factory cf))
     cf))
