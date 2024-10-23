@@ -115,20 +115,12 @@ on Twitter.
 
 Langohr is part of the group of libraries known as [ClojureWerkz](http://clojurewerkz.org), together with
 
- * [Elastisch](https://clojureelasticsearch.info)
- * [Cassaforte](https://clojurecassandra.info)
- * [Monger](https://clojuremongodb.info)
- * [Welle](https://clojureriak.info)
- * [Neocons](https://clojureneo4j.info)
- * [Quartzite](https://clojurequartz.info)
- * [Titanium](https://titanium.clojurewerkz.org)
-
-
-
-## Continuous Integration
-
-[![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/langohr.png)](http://travis-ci.org/michaelklishin/langohr)
-[![Dependencies Status](http://jarkeeper.com/michaelklishin/langohr/status.png)](http://jarkeeper.com/michaelklishin/langohr)
+ * [[Elastisch](https://github.com/clojurewerkz/elastisch)
+ * [Cassaforte](https://github.com/clojurewerkz/cassaforte)
+ * [Monger](https://github.com/clojurewerkz/monger)
+ * [Neocons](https://github.com/clojurewerkz/neocons)
+ * [Quartzite](https://github.com/clojurewerkz/quartize)
+ * [Titanium](https://github.com/clojurewerkz/titanium)
 
 
 ## Development
@@ -138,7 +130,7 @@ See [CONTRIBUTING.md](https://github.com/michaelklishin/langohr/blob/master/CONT
 
 ## License
 
-Copyright (C) 2011-2022 Michael S. Klishin and the ClojureWerkz Team.
+Copyright (C) 2011-2024 Michael S. Klishin and the ClojureWerkz Team.
 
 Double licensed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html) (the same as Clojure) or
 the [Apache Public License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
