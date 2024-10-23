@@ -1,4 +1,4 @@
-;; Copyright (c) 2011-2020 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team
+;; Copyright (c) 2011-2024 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team
 ;;
 ;; The use and distribution terms for this software are covered by the
 ;; Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
@@ -15,9 +15,9 @@
             [langohr.channel :as lch]
             [langohr.queue   :as lq]))
 
-(defn- with-local-conn 
+(defn- with-local-conn
   [run-all-tests!]
-  (hc/with-tmp-global-host 
+  (hc/with-tmp-global-host
     {:endpoint "http://localhost:15672"
      :username "guest"
      :password "guest"}

@@ -4,7 +4,7 @@
 ;; The APL v2.0:
 ;;
 ;; ----------------------------------------------------------------------------------
-;; Copyright (c) 2011-2020 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team
+;; Copyright (c) 2011-2024 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team
 ;;
 ;; Licensed under the Apache License, Version 2.0 (the "License");
 ;; you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 ;; The EPL v1.0:
 ;;
 ;; ----------------------------------------------------------------------------------
-;; Copyright (c) 2011-2020 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team.
+;; Copyright (c) 2011-2024 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team.
 ;; All rights reserved.
 ;;
 ;; This program and the accompanying materials are made available under the terms of
@@ -50,20 +50,20 @@
 ;;
 
 (defn ^Consumer create-default
-  "Instantiates and returns a new consumer that handles various consumer life cycle events. 
-   Various handlers can be provided (per below): 
-   
+  "Instantiates and returns a new consumer that handles various consumer life cycle events.
+   Various handlers can be provided (per below):
+
    :handle-consume-ok-fn => fn [consumer-tag]
    :handle-cancel-fn     => fn [consumer-tag]
    :handle-cancel-ok-fn  => fn [consumer-tag]
    :handle-recover-ok-fn => fn [consumer-tag]
    :handle-delivery-fn   => fn [channel delivery-meta ^bytes body]
    :handle-shutdown-signal-fn => fn [tag, ShutdownSignalException]
-  
+
    See also langohr.basic/consume."
   [^Channel channel handlers]
   (->> (fn [h]
-         (when (some? h) 
+         (when (some? h)
            (fn [tag ^Envelope envelope ^AMQP$BasicProperties properties ^bytes body]
              (h channel (to-message-metadata (Delivery. envelope properties body)) body))))
        (update handlers :handle-delivery-fn)
