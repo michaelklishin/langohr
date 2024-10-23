@@ -40,7 +40,15 @@ definition to your `pom.xml`:
 
 With [Leiningen](http://leiningen.org):
 
-[![Clojars Project](http://clojars.org/com.novemberain/langohr/latest-version.svg)](http://clojars.org/com.novemberain/langohr)
+``` clojure
+[com.novemberain/langohr "5.5.0"]
+```
+
+With `deps.edn`:
+
+``` clojure
+com.novemberain/langohr {:mvn/version "5.5.0"}
+```
 
 
 With Maven:
