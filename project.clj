@@ -2,16 +2,16 @@
   :description "A Clojure client for RabbitMQ that embraces the underlying protocol. Built on top of the RabbitMQ Java client"
   :min-lein-version "2.5.1"
   :license {:name "Eclipse Public License"}
-  :dependencies [[org.clojure/clojure      "1.11.1"]
-                 [com.rabbitmq/amqp-client "5.20.0"]
-                 [clojurewerkz/support     "1.1.0" :exclusions [com.google.guava/guava]]
-                 [clj-http                 "3.12.3"]
-                 [hato                     "0.9.0"]
-                 [cheshire                 "5.12.0"]]
+  :dependencies [[org.clojure/clojure      "1.12.0"]
+                 [com.rabbitmq/amqp-client "5.22.0"]
+                 [clojurewerkz/support     "1.5.0" :exclusions [com.google.guava/guava]]
+                 [clj-http                 "3.13.0"]
+                 [hato                     "1.0.0"]
+                 [cheshire                 "5.13.0"]]
   :profiles {:1.10 {:dependencies [[org.clojure/clojure "1.10.2"]]}
              :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
              :master {:dependencies [[org.clojure/clojure "1.12.0-master-SNAPSHOT"]]}
-             :dev {:dependencies [[org.clojure/tools.cli "0.4.1" :exclusions [org.clojure/clojure]]]
+             :dev {:dependencies [[org.clojure/tools.cli "1.1.230" :exclusions [org.clojure/clojure]]]
                    :resource-paths ["test/resources"]
                    :plugins [[lein-codox "0.10.8"]]
                    :codox {:source-paths ["src/clojure"]
