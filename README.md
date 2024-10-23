@@ -49,7 +49,7 @@ With Maven:
 <dependency>
   <groupId>com.novemberain</groupId>
   <artifactId>langohr</artifactId>
-  <version>5.4.0</version>
+  <version>5.5.0</version>
 </dependency>
 ```
 
