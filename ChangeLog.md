@@ -1,8 +1,33 @@
-## Changes between Langohr 5.4.0 and 5.5.0 (unreleased)
+## Changes between Langohr 5.4.0 and 5.5.0 (October 22)
+
+### HTTP 2 Client
+
+Contributed by @jimpil.
+
+GitHub issue: [#119](https://github.com/michaelklishin/langohr/pull/119)
+
+### Support for More (Java Client's) ConnectionFactory Options
+
+Contributd by @vincentjames501.
+
+GitHub issue: [#122](https://github.com/michaelklishin/langohr/pull/122)
+
+### Default Consumer Had an Incorrect Signature of handleRecoveryOk
+
+Contributed by @jimpil.
+
+GitHub issue: [#116](https://github.com/michaelklishin/langohr/issues/116)
+
+### Correctly Pick TLS Port (5671) When Only :ssl is Passed in Connection Options
+
+Contributed by @vincentjames501.
+
+GitHub issue: [#114](https://github.com/michaelklishin/langohr/issues/114)
 
 ### RabbitMQ Java Client Upgrade
 
-RabbitMQ Java client dependency has been updated to `5.16.x`.
+RabbitMQ Java client dependency has been updated to `5.22.x`.
+
 
 ## Changes between Langohr 5.3.0 and 5.4.0 (April 24, 2022)
 
