@@ -343,8 +343,6 @@
         final-port  (or port (if tls-expected
                                ConnectionFactory/DEFAULT_AMQP_OVER_SSL_PORT
                                ConnectionFactory/DEFAULT_AMQP_PORT))]
-    (when tls-expected
-      (.useSslProtocol cf))
     (doto cf
       (.setClientProperties   final-properties)
       (.setVirtualHost        vhost)
@@ -406,9 +404,12 @@
       (.setTrafficListener cf traffic-listener))
     (when sasl-config
       (.setSaslConfig cf sasl-config))
-    (when ssl-context
-      (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context)
-      (.setPort cf final-port))
+    (when tls-expected
+      (if ssl-context
+        (do
+          (.useSslProtocol cf ^javax.net.ssl.SSLContext ssl-context)
+          (.setPort cf final-port))
+        (.useSslProtocol cf)))
     (when verify-hostname
       (.enableHostnameVerification cf))
     (when thread-factory
