@@ -1,4 +1,11 @@
-## Changes between Langohr 5.4.0 and 5.5.0 (October 22)
+## Changes between Langohr 5.5.0 and 5.6.0 (in development)
+
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `5.25.x`.
+
+
+## Changes between Langohr 5.4.0 and 5.5.0 (October 22, 2024)
 
 ### HTTP 2 Client
 
