@@ -17,14 +17,14 @@ jobs:
         java-version: [11, 17, 21]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
+      - name: Checkout code
+        uses: actions/checkout@v5
 
-    - name: Set up JDK ${{ matrix.java-version }}
-      uses: actions/setup-java@v4
-      with:
-        java-version: ${{ matrix.java-version }}
-        distribution: 'temurin'
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
 
       - name: Install clojure tools
         uses: DeLaGuardo/setup-clojure@13.4
@@ -43,14 +43,15 @@ jobs:
           # key: cljdeps-${{ hashFiles('build.boot') }}
           restore-keys: cljdeps-
 
-    - name: Install Leiningen
-      run: |
-        curl -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
-        chmod +x lein
-        sudo mv lein /usr/local/bin/
-        lein version  # This will download Leiningen if not cached
+      - name: Install Leiningen
+        run: |
+          curl -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+          chmod +x lein
+          sudo mv lein /usr/local/bin/
+          lein version  # This will download Leiningen if not cached
 
-    - name: Install dependencies
-      run: lein deps
-    - name: Run tests
-      run: lein all test
+      - name: Install dependencies
+        run: lein deps
+
+      - name: Run tests
+        run: lein all test
