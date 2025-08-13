@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-CTL=${LANGOHR_RABBITMQCTL:="sudo rabbitmqctl"}
-PLUGINS=${LANGOHR_RABBITMQ_PLUGINS:="sudo rabbitmq-plugins"}
+CTL=${LANGOHR_RABBITMQCTL:-"sudo rabbitmqctl"}
+PLUGINS=${LANGOHR_RABBITMQ_PLUGINS:-"sudo rabbitmq-plugins"}
 
 case $CTL in
         DOCKER*)
@@ -17,9 +17,9 @@ $PLUGINS enable rabbitmq_management
 sleep 3
 
 # guest:guest has full access to /
-
 $CTL add_vhost /
 $CTL add_user guest guest
+$CTL set_user_tags guest "administrator"
 $CTL set_permissions -p / guest ".*" ".*" ".*"
 
 # Reduce retention policy for faster publishing of stats
