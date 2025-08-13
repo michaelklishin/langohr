@@ -3,6 +3,15 @@
 CTL=${LANGOHR_RABBITMQCTL:="sudo rabbitmqctl"}
 PLUGINS=${LANGOHR_RABBITMQ_PLUGINS:="sudo rabbitmq-plugins"}
 
+case $CTL in
+        DOCKER*)
+          PLUGINS="docker exec ${CTL##*:} rabbitmq-plugins"
+          CTL="docker exec ${CTL##*:} rabbitmqctl";;
+esac
+
+echo "Will use rabbitmqctl at ${CTL}"
+echo "Will use rabbitmq-plugins at ${PLUGINS}"
+
 $PLUGINS enable rabbitmq_management
 
 sleep 3
