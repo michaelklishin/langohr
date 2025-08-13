@@ -60,11 +60,11 @@ jobs:
           sudo mv lein /usr/local/bin/
           lein version  # This will download Leiningen if not cached
 
-      - name: Configure RabbitMQ
-        run: LANGOHR_RABBITMQCTL=DOCKER:${{job.services.rabbitmq.id}} LANGOHR_RABBITMQ_PLUGINS=DOCKER:${{job.services.rabbitmq.id}} bin/ci/before_build.sh
-
       - name: Install dependencies
         run: lein deps
 
+      - name: Configure RabbitMQ
+        run: LANGOHR_RABBITMQCTL=DOCKER:${{job.services.rabbitmq.id}} LANGOHR_RABBITMQ_PLUGINS=DOCKER:${{job.services.rabbitmq.id}} bin/ci/before_build.sh
+
       - name: Run tests
-        run: lein all test
+        run: LANGOHR_RABBITMQCTL=DOCKER:${{job.services.rabbitmq.id}} LANGOHR_RABBITMQ_PLUGINS=DOCKER:${{job.services.rabbitmq.id}} lein test
