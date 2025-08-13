@@ -9,8 +9,18 @@ on:
       - "main"
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+
+    env:
+      CI: true
+
+    services:
+      rabbitmq:
+        image: rabbitmq:4-management
+        ports:
+          - 15672:15672
+          - 5672:5672
 
     strategy:
       matrix:
@@ -49,6 +59,9 @@ jobs:
           chmod +x lein
           sudo mv lein /usr/local/bin/
           lein version  # This will download Leiningen if not cached
+
+      - name: Configure RabbitMQ
+        run: BUNNY_RABBITMQCTL=DOCKER:${{job.services.rabbitmq.id}} BUNNY_RABBITMQ_PLUGINS=DOCKER:${{job.services.rabbitmq.id}} bin/ci/before_build.sh
 
       - name: Install dependencies
         run: lein deps
