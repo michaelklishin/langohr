@@ -61,7 +61,7 @@ jobs:
           lein version  # This will download Leiningen if not cached
 
       - name: Configure RabbitMQ
-        run: BUNNY_RABBITMQCTL=DOCKER:${{job.services.rabbitmq.id}} BUNNY_RABBITMQ_PLUGINS=DOCKER:${{job.services.rabbitmq.id}} bin/ci/before_build.sh
+        run: LANGOHR_RABBITMQCTL=DOCKER:${{job.services.rabbitmq.id}} LANGOHR_RABBITMQ_PLUGINS=DOCKER:${{job.services.rabbitmq.id}} bin/ci/before_build.sh
 
       - name: Install dependencies
         run: lein deps
