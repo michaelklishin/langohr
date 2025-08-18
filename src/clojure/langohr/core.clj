@@ -4,7 +4,7 @@
 ;; The APL v2.0:
 ;;
 ;; ----------------------------------------------------------------------------------
-;; Copyright (c) 2011-2024 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team
+;; Copyright (c) 2011-2025 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team
 ;;
 ;; Licensed under the Apache License, Version 2.0 (the "License");
 ;; you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 ;; The EPL v1.0:
 ;;
 ;; ----------------------------------------------------------------------------------
-;; Copyright (c) 2011-2024 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team.
+;; Copyright (c) 2011-2025 Michael S. Klishin, Alex Petrov, and the ClojureWerkz Team.
 ;; All rights reserved.
 ;;
 ;; This program and the accompanying materials are made available under the terms of
@@ -305,7 +305,7 @@
                      "information"  "See http://clojurerabbitmq.info/"
                      "platform"     (platform-string)
                      "capabilities" (get (AMQConnection/defaultClientProperties) "capabilities")
-                     "copyright"    "Copyright (C) 2011-2024 Michael S. Klishin, Alex Petrov"
+                     "copyright"    "Copyright (c) 2011-2025 Michael S. Klishin, Alex Petrov"
                      "version"      "5.6.0-SNAPSHOT"})
 
 (defn- auth-mechanism->sasl-config
