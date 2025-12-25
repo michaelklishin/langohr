@@ -5,9 +5,9 @@
   :dependencies [[org.clojure/clojure      "1.12.0"]
                  [com.rabbitmq/amqp-client "5.27.1"]
                  [clojurewerkz/support     "1.5.0" :exclusions [com.google.guava/guava]]
-                 [clj-http                 "3.13.0"]
+                 [clj-http                 "3.13.1"]
                  [hato                     "1.0.0"]
-                 [cheshire                 "5.13.0"]]
+                 [cheshire                 "6.1.0"]]
   :profiles {:1.10 {:dependencies [[org.clojure/clojure "1.10.2"]]}
              :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
              :master {:dependencies [[org.clojure/clojure "1.12.0-master-SNAPSHOT"]]}

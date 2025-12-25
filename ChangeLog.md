@@ -1,6 +1,16 @@
 ## Changes between Langohr 5.6.0 and 5.7.0 (in development)
 
-No changes yet.
+### RabbitMQ Java Client Upgrade
+
+RabbitMQ Java client dependency has been updated to `5.27.x`.
+
+### clj-http Upgrade
+
+clj-http dependency has been updated to `3.13.1`.
+
+### Cheshire Upgrade
+
+Cheshire dependency has been updated to `6.1.0`.
 
 
 ## Changes between Langohr 5.5.0 and 5.6.0 (Aug 13, 2025)
