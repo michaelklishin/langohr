@@ -15,20 +15,22 @@ jobs:
     env:
       CI: true
 
-    services:
-      rabbitmq:
-        image: rabbitmq:4-management
-        ports:
-          - 15672:15672
-          - 5672:5672
-
     strategy:
       matrix:
-        java-version: [11, 17, 21]
+        java-version: [17, 21, 25]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
+      - name: Start RabbitMQ
+        run: |
+          docker run -d --name rabbitmq \
+            -p 5672:5672 -p 15672:15672 \
+            -v "$PWD/bin/ci/rabbitmq.conf:/etc/rabbitmq/conf.d/99-langohr.conf:ro" \
+            rabbitmq:4-management
+          echo "RABBITMQ_CONTAINER_ID=$(docker inspect -f '{{.Id}}' rabbitmq)" >> "$GITHUB_ENV"
+          timeout 60 bash -c 'until docker exec rabbitmq rabbitmq-diagnostics -q ping; do sleep 2; done'
 
       - name: Set up JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v4
@@ -64,7 +66,7 @@ jobs:
         run: lein deps
 
       - name: Configure RabbitMQ
-        run: LANGOHR_RABBITMQCTL=DOCKER:${{job.services.rabbitmq.id}} LANGOHR_RABBITMQ_PLUGINS=DOCKER:${{job.services.rabbitmq.id}} bin/ci/before_build.sh
+        run: LANGOHR_RABBITMQCTL=DOCKER:${{env.RABBITMQ_CONTAINER_ID}} LANGOHR_RABBITMQ_PLUGINS=DOCKER:${{env.RABBITMQ_CONTAINER_ID}} bin/ci/before_build.sh
 
       - name: Run tests
-        run: LANGOHR_RABBITMQCTL=DOCKER:${{job.services.rabbitmq.id}} LANGOHR_RABBITMQ_PLUGINS=DOCKER:${{job.services.rabbitmq.id}} lein test
+        run: LANGOHR_RABBITMQCTL=DOCKER:${{env.RABBITMQ_CONTAINER_ID}} LANGOHR_RABBITMQ_PLUGINS=DOCKER:${{env.RABBITMQ_CONTAINER_ID}} lein test
