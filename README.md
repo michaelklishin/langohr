@@ -64,22 +64,9 @@ With Maven:
 
 ## Documentation & Examples
 
-If you are only starting out, please see our [Getting Started guide](http://clojurerabbitmq.info/articles/getting_started.html).
-
-[Documentation guides](./docs):
-
- * [AMQP 0.9.1 Concepts](./docs/amqp-concepts.html)
- * [Connecting To The Broker](./docs/connecting.html)
- * [Queues and Consumers](./docs/queues.html)
- * [Exchanges and Publishing](./docs/exchanges.html)
- * [Bindings](./docs/bindings.html)
- * [Durability](./docs/durability.html)
- * [TLS/SSL](./docs/tls.html)
-
-
 ### API Reference
 
-For existing users, there is [API reference](http://https://michaelklishin.github.io/langohr/index.html).
+[API reference](./docs).
 
 
 ### Code Examples
